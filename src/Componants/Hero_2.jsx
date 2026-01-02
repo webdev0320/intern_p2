@@ -20,7 +20,7 @@ const Hero_2 = () => {
                         </p>
 
 
-                        <button className="mt-8 bg-pink-600 hover:bg-pink-700 text-white px-7 py-3 rounded-lg font-medium transition">
+                        <button className="btn-primary mt-3 ">
                             Get started
                         </button>
                     </div>

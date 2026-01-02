@@ -309,7 +309,7 @@ const Header = () => {
                         </button>
                             {/* // Update the sign up button in your header: */}
                         <button
-                                className="px-5 py-2 bg-[#1E6EA7] text-white rounded-md hover:bg-orange-500 transition-all duration-200 font-medium "
+                                className="btn-primary"
                             onClick={() => setSignUpModalOpen(true)}
                         >
                             Sign up

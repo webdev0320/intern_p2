@@ -5,7 +5,7 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "Add Hero_2 Section and change logo"
+		git commit -m "maked btns colors "
 		git push origin main
 
 		npm run build
