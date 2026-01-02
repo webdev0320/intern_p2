@@ -5,7 +5,7 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "maked btns colors "
+		git commit -m "Add Trusted_3 Section "
 		git push origin main
 
 		npm run build
