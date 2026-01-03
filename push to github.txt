@@ -5,9 +5,9 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "Render/Added Hirer and worker in SignUp btn Section "
-		git push origin main
-
+		git commit -m "Add Hirer_login Section "
+		git push origin talha
+	
 		npm run build
 		npm run deploy
 🔹 3. Build the updated project

@@ -40,7 +40,7 @@ const SignIn_Modal = ({ isOpen, onClose }) => {
                         <button
                             onClick={() => {
                                 onClose();
-                                navigate("/signup/login"); // <-- goes to Worker_login page
+                                navigate("/login/worker"); // <-- goes to Worker_login page
                             }}
                             className="w-full flex gap-4 p-4 border border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all text-left"
                         >
@@ -56,7 +56,7 @@ const SignIn_Modal = ({ isOpen, onClose }) => {
                         <button
                             onClick={() => {
                                 onClose();
-                                navigate("/signup/hirer");
+                                navigate("/login/hirer");
                             }}
                             className="w-full flex gap-4 p-4 border border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all text-left"
                         >

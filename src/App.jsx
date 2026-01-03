@@ -8,7 +8,8 @@ import CoopleHelps_6 from "./Componants/CoopleHelps_6.jsx"
 import SignUpModal from "./Componants/SignUp_btn";
 import WorkerSignUpPage from "./Componants/Sign_up/Worker_signUp.jsx";
 import HirerSignUpPage from "./Componants/Sign_up/Hirer_SignUp.jsx";
-import Worker_login from "./Componants/Sign_up/Worker_login.jsx"; // <-- Import added
+import Worker_login from "./Componants/Sign_up/Worker_login.jsx"; 
+import Hirer_login from "./Componants/Sign_in/Hirer_login.jsx";
 import "./App.css";
 
 function HomePage() {
@@ -35,7 +36,8 @@ function App() {
             <Route path="/signup" element={<SignUpModal />} />
             <Route path="/signup/worker" element={<WorkerSignUpPage />} />
             <Route path="/signup/hirer" element={<HirerSignUpPage />} />
-            <Route path="/signup/login" element={<Worker_login />} /> {/* Works now */}
+            <Route path="/login/worker" element={<Worker_login />} /> {/* Works now */}
+            <Route path="/login/hirer" element={<Hirer_login />} /> 
           </Routes>
         </main>
       </div>
