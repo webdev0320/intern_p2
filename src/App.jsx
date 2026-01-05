@@ -5,10 +5,13 @@ import Trusted_3 from "./Componants/3_Trusted.jsx";
 import Manage_4 from './Componants/4_Manage.jsx'
 import Flexible_workforce_5 from './Componants/5_Flexible_workforce.jsx'
 import CoopleHelps_6 from "./Componants/CoopleHelps_6.jsx"
+
 import SignUpModal from "./Componants/SignUp_btn";
+      // Sign_up Btn
 import WorkerSignUpPage from "./Componants/Sign_up/Worker_signUp.jsx";
 import HirerSignUpPage from "./Componants/Sign_up/Hirer_SignUp.jsx";
-import Worker_login from "./Componants/Sign_up/Worker_login.jsx"; 
+    // Sign_in / Login Btn
+import Worker_login from "./Componants/Sign_in/Worker_login.jsx"; 
 import Hirer_login from "./Componants/Sign_in/Hirer_login.jsx";
 import FindWork from "./Componants/FindWork.jsx";
 import "./App.css";
@@ -35,9 +38,11 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/signup" element={<SignUpModal />} />
+
             <Route path="/signup/worker" element={<WorkerSignUpPage />} />
             <Route path="/signup/hirer" element={<HirerSignUpPage />} />
-            <Route path="/login/worker" element={<Worker_login />} /> {/* Works now */}
+
+            <Route path="/login/worker" element={<Worker_login />} /> 
             <Route path="/login/hirer" element={<Hirer_login />} /> 
             <Route path="/find-work" element={<FindWork />} /> 
           </Routes>

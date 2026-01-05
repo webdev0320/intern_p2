@@ -190,20 +190,20 @@ const HirerLoginPage = () => {
                                     New to our platform?{' '}
                                     <button
                                         onClick={() => navigate("/signup/hirer")}
-                                        className="font-semibold text-orange-500 hover:text-emerald-800 transition-colors"
+                                        className="font-semibold text-orange-500 hover:text-orange-600 transition-colors"
                                     >
                                         Create Hirer Account
                                     </button>
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                {/* <p className="text-xs text-gray-500">
                                     Looking for work?{' '}
                                     <button
                                         onClick={() => navigate("/login/worker")}
-                                        className="text-orange-500 hover:text-emerald-800 underline"
+                                        className="text-orange-500 hover:text-orange-600 underline"
                                     >
                                         Worker Login
                                     </button>
-                                </p>
+                                </p> */}
                             </div>
                         </div>
                     </div>

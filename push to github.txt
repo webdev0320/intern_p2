@@ -5,7 +5,7 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "Add Hirer_login Section "
+		git commit -m "Adjust paths "
 		git push origin talha
 	
 		npm run build

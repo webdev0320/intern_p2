@@ -234,7 +234,7 @@ const WorkerSignUpPage = () => {
                                         <button
                                             type="button"
                                             className="text-blue-600 font-semibold hover:text-blue-800 transition"
-                                            onClick={() => navigate('/signup/login')}
+                                            onClick={() => navigate('/login/worker')}
                                         >
                                             Sign In
                                         </button>

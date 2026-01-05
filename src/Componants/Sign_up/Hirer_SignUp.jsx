@@ -226,7 +226,7 @@ const HirerSignUpPage = () => {
                                         <button
                                             type="button"
                                             className="text-orange-600 font-semibold hover:text-orange-800 transition"
-                                            onClick={() => navigate('/login')}
+                                            onClick={() => navigate('/login/hirer')}
                                         >
                                             Sign In
                                         </button>
