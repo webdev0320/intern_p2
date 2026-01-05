@@ -10,6 +10,7 @@ import WorkerSignUpPage from "./Componants/Sign_up/Worker_signUp.jsx";
 import HirerSignUpPage from "./Componants/Sign_up/Hirer_SignUp.jsx";
 import Worker_login from "./Componants/Sign_up/Worker_login.jsx"; 
 import Hirer_login from "./Componants/Sign_in/Hirer_login.jsx";
+import FindWork from "./Componants/FindWork.jsx";
 import "./App.css";
 
 function HomePage() {
@@ -38,6 +39,7 @@ function App() {
             <Route path="/signup/hirer" element={<HirerSignUpPage />} />
             <Route path="/login/worker" element={<Worker_login />} /> {/* Works now */}
             <Route path="/login/hirer" element={<Hirer_login />} /> 
+            <Route path="/find-work" element={<FindWork />} /> 
           </Routes>
         </main>
       </div>

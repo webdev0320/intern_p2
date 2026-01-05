@@ -160,7 +160,7 @@ const Header = () => {
             text: "For workers",
             link: "/For_workers",
             dropdown: [
-                { text: "Find work", link: "/" },
+                { text: "Find work", link: "/find-work" },
                 { text: "Registration process", link: "/" },
                 { text: "Payments", link: "/" },
                 { text: "Community", link: "/" },
