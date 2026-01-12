@@ -6,7 +6,7 @@
 🔹 2. Run the following commands in terminal:
 		git add .
 		git commit -m "Add workforce_planning Section "
-		git push origin talha
+		git push origin main 
 	
 		npm run build
 		npm run deploy
@@ -15,3 +15,15 @@
 
 🔹 4. Deploy to GitHub Pages (using gh branch)
 		npm run deploy
+
+
+pull to github 
+		
+	# switch to your branch
+		git checkout talha
+
+	# get latest changes from remote
+		git fetch origin
+
+	# merge main into talha
+		git merge origin/main
