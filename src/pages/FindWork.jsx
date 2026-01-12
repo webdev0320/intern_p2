@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Header_1 from "./1_Header.jsx";
+import Header_1 from "../Componants/1_Header";
+
 import "./../App.css";
 
 function FindWork() {

@@ -8,4 +8,8 @@
            hover:bg-orange-500 transition-all duration-200
            font-medium;
   }
+
+  .bg-layout-primary{
+    background-color: #f97316 !important;
+  }
 }

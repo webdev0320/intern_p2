@@ -1,214 +1,189 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // <-- IMPORT useNavigate
-import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import { Mail, Lock, LogIn } from 'lucide-react';
 
 const LoginPage = () => {
-    const navigate = useNavigate(); // <-- INITIATE navigate
+  const navigate = useNavigate();
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        rememberMe: false
-    });
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
-    };
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false
+  });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Login attempt:', formData);
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+const [isLoggedIn, setIsLoggedIn] = useState(false);
+useEffect(() => {
+    const user_id = localStorage.getItem("user_id");
+    setIsLoggedIn(!!user_id);
+  }, []);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        setError("");
+    setError("");
     setLoading(true);
 
-    const payload = {
-      email: email.trim(),
-      password: password,
-      user_type: 'emp'
-    };
-
-    console.log("Sending payload:", payload);
+    const payload = new FormData();
+    payload.append("email", formData.email.trim());
+    payload.append("password", formData.password);
+    payload.append("user_type", "emp");
 
     try {
-      const response = await fetch("https://iyouworks.taxaccolega.co.uk/index.php/api/users/login", {
-        method: "POST",
-        headers: {
-        //   "Content-Type": "application/json",
-          "iU-API-KEY": "1234", // Add this line
-        },
-        body: JSON.stringify(payload),
-      });
+      const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+      const formBody = new URLSearchParams(payload);
 
-      console.log("Response status:", response.status);
-      
+        const response = await fetch(`${BASE_URL}/api/users/login`, {
+          method: "POST",
+          body: payload,
+        });
+
       const responseText = await response.text();
-      console.log("Response text:", responseText);
-      
+
       let data;
       try {
         data = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error("Failed to parse JSON:", parseError);
-        throw new Error(`Invalid JSON response: ${responseText}`);
+      } catch {
+        throw new Error("Invalid server response");
       }
 
-      console.log("Response data:", data);
+      if (response.ok && (data.status || data.message)) {
 
-      if (response.ok && (data.success || data.status)) {
-        if (data.token) {
           localStorage.setItem("token", data.token);
+          localStorage.setItem("user_id", data.user_id);
+          localStorage.setItem("role", 'self-emp');
           localStorage.setItem("user", JSON.stringify(data.user || {}));
-        }
-        alert("Login Successful ✔️");
-        navigate("/dashboard");
+          setIsLoggedIn(true);      
+        navigate("/emp/dashboard");
       } else {
         setError(data.message || data.error || "Invalid email or password");
       }
+
     } catch (err) {
-      console.error("Full error:", err);
       setError(err.message || "Server Error 🚨");
     } finally {
       setLoading(false);
     }
+  };
 
-        // Add your authentication logic here
-    };
+  return (
+    <div className='min-h-screen bg-gradient-to-br from-blue-50 p-2 flex flex-col justify-center to-indigo-100'>
+      <div className="flex flex-col items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
 
-    const handleSocialLogin = (provider) => {
-        console.log(`${provider} login clicked`);
-        // Add social login logic here
-    };
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-center">
+              <div className="flex items-center justify-center space-x-3">
+                <div className="bg-white p-3 rounded-full">
+                  <LogIn className="w-8 h-8 text-blue-600" />
+                </div>
+                <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
+              </div>
+              <p className="text-blue-100 mt-4">Sign in to your account</p>
+            </div>
 
-    return (
-        <div className='min-h-screen bg-gradient-to-br from-blue-50 p-2 flex flex-col justify-center to-indigo-100'>
-          
+            {/* Form */}
+            <div className="p-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
 
-            <div className=" flex flex-col  items-center justify-center p-4">
-                {/* Navigation Bar */}
+                {error && (
+                  <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm">
+                    {error}
+                  </div>
+                )}
 
-                <div className="max-w-md w-full">
-                    {/* Login Card */}
-                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-                        {/* Decorative Header */}
-                        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8">
-                            <div className="flex items-center justify-center space-x-3">
-                                <div className="bg-white p-3 rounded-full">
-                                    <LogIn className="w-8 h-8 text-blue-600" />
-                                </div>
-                                <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
-                            </div>
-                            <p className="text-blue-100 text-center mt-4">Sign in to your account to continue</p>
-                        </div>
-
-                        {/* Login Form */}
-                        <div className="p-8">
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Email Input */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-700 flex items-center">
-                                        <Mail className="w-4 h-4 mr-2" />
-                                        Email Address
-                                    </label>
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Mail className="h-5 w-5 text-gray-400" />
-                                        </div>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                            placeholder="Enter your email"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Password Input */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-700 flex items-center">
-                                        <Lock className="w-4 h-4 mr-2" />
-                                        Password
-                                    </label>
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Lock className="h-5 w-5 text-gray-400" />
-                                        </div>
-                                        <input
-                                            type={showPassword ? "text" : "password"}
-                                            name="password"
-                                            value={formData.password}
-                                            onChange={handleChange}
-                                            className="pl-10 pr-10 w-full  px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                            placeholder="Enter your password"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Remember Me & Forgot Password */}
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            name="rememberMe"
-                                            checked={formData.rememberMe}
-                                            onChange={handleChange}
-                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                        />
-                                        <label className="ml-2 text-sm text-gray-600">Remember me</label>
-                                    </div>
-                                    <a href="#" className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
-                                        Forgot password?
-                                    </a>
-                                </div>
-
-                                {/* Submit Button */}
-                                <button
-                                    type="submit"
-                                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-indigo-800 focus:ring-4 focus:ring-blue-300 focus:ring-opacity-50 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                                >
-                                    Sign In
-                                </button>
-                            </form>
-
-                            {/* Sign Up Link */}
-                            <div className="mt-8 text-center">
-                                <p className="text-sm text-gray-600">
-                                    Don't have an account?{' '}
-                                    <button
-                                        onClick={() => navigate("/signup/worker")}
-                                        className="font-semibold text-blue-600 hover:text-blue-800 transition-colors"
-                                    >
-                                        Sign up
-                                    </button>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                {/* Email */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 flex items-center">
+                    <Mail className="w-4 h-4 mr-2" /> Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border rounded-lg mt-1"
+                    required
+                  />
                 </div>
 
-            </div>
-              <div className=" p-2">
+                {/* Password */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 flex items-center">
+                    <Lock className="w-4 h-4 mr-2" /> Password
+                  </label>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border rounded-lg mt-1"
+                    required
+                  />
+                </div>
+
+                {/* Remember me */}
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="rememberMe"
+                    checked={formData.rememberMe}
+                    onChange={handleChange}
+                    className="h-4 w-4"
+                  />
+                  <label className="ml-2 text-sm">Remember me</label>
+                </div>
+
+                {/* Button */}
                 <button
-                    onClick={() => navigate('/')}
-                    className="flex items-center gap-2  text-gray-600 hover:text-gray-800 transition-colors"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg disabled:opacity-60"
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    <span className="font-medium">Back to Home</span>
+                  {loading ? "Signing in..." : "Sign In"}
                 </button>
+
+              </form>
+
+              {/* Signup */}
+              <div className="mt-6 text-center">
+                <p className="text-sm">
+                  Don't have an account?{" "}
+                  <button
+                    onClick={() => navigate("/signup/worker")}
+                    className="text-blue-600 font-semibold"
+                  >
+                    Sign up
+                  </button>
+                </p>
+              </div>
+
             </div>
+          </div>
         </div>
-    );
+      </div>
+
+      {/* Back button */}
+      <div className="p-2">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 text-gray-600"
+        >
+          ← Back to Home
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default LoginPage;

@@ -12,7 +12,7 @@ const WorkerSignUpPage = () => {
         password: '',
         confirmPassword: '',
         dob: '',
-        gender: ''
+        sex: ''
     });
 
     const handleChange = (e) => {
@@ -22,11 +22,78 @@ const WorkerSignUpPage = () => {
         });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle form submission here
-        console.log('Form submitted:', formData);
-    };
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+    }
+
+    try {
+        const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+        // Get user location
+        let latitude = "";
+        let longitude = "";
+
+        if (navigator.geolocation) {
+            await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        latitude = position.coords.latitude;
+                        longitude = position.coords.longitude;
+                        resolve();
+                    },
+                    (error) => {
+                        console.warn("Geolocation error:", error.message);
+                        resolve(); // Continue without location
+                    },
+                    { enableHighAccuracy: true }
+                );
+            });
+        }
+
+        // Prepare form data
+        const fullName = `${formData.forenames || ""} ${formData.surname || ""}`.trim();
+        const payload = new FormData();
+        payload.append("name", fullName || "");
+        payload.append("u_type", 'self-emp');
+        payload.append("email", formData.email || "");
+        payload.append("password", formData.password || "");
+        payload.append("user_type", "self-emp");
+        payload.append("dateofbirth", formData.dateofbirth || "");
+        payload.append("sex", (formData.sex || "").toLowerCase());
+        payload.append("lat", latitude);
+        payload.append("lon", longitude);
+
+        // Call API
+        const response = await fetch(`${BASE_URL}/api/users/dualuser_register`, {
+            method: "POST",
+            body: payload,
+        });
+
+        const responseText = await response.text();
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch {
+            throw new Error("Invalid server response");
+        }
+
+        if (response.ok) {
+            alert(data.message || "Account created successfully!");
+            navigate("/login/hirer");
+        } else {
+            alert(data.message || data.error || "Registration failed!");
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert(err.message || "Server Error 🚨");
+    }
+};
+
 
     return (
         <div className="min-h-screen p-4">
@@ -185,17 +252,17 @@ const WorkerSignUpPage = () => {
                                             Gender
                                         </label>
                                         <div className="flex gap-4">
-                                            {['Male', 'Female', 'Other'].map((gender) => (
-                                                <label key={gender} className="flex items-center gap-2 cursor-pointer">
+                                            {['Male', 'Female'].map((sex) => (
+                                                <label key={sex} className="flex items-center gap-2 cursor-pointer">
                                                     <input
                                                         type="radio"
-                                                        name="gender"
-                                                        value={gender.toLowerCase()}
-                                                        checked={formData.gender === gender.toLowerCase()}
+                                                        name="sex"
+                                                        value={sex.toLowerCase()}
+                                                        checked={formData.sex === sex.toLowerCase()}
                                                         onChange={handleChange}
                                                         className="w-4 h-4 text-blue-600"
                                                     />
-                                                    <span className="text-gray-700">{gender}</span>
+                                                    <span className="text-gray-700">{sex}</span>
                                                 </label>
                                             ))}
                                         </div>

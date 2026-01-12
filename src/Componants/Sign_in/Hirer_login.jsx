@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, LogIn, Building2, Briefcase, Users } from 'lucide-react';
 
 const HirerLoginPage = () => {
     const navigate = useNavigate();
-
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
@@ -19,11 +20,60 @@ const HirerLoginPage = () => {
             [name]: type === 'checkbox' ? checked : value
         }));
     };
+const [isLoggedIn, setIsLoggedIn] = useState(false);
+useEffect(() => {
+    const user_id = localStorage.getItem("user_id");
+    setIsLoggedIn(!!user_id);
+  }, []);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Hirer login attempt:', formData);
-        // Add hirer authentication logic here
+const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    const payload = new FormData();
+    payload.append("email", formData.email.trim());
+    payload.append("password", formData.password);
+    payload.append("user_type", "self-emp");
+
+    try {
+      const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+      const formBody = new URLSearchParams(payload);
+
+        const response = await fetch(`${BASE_URL}/api/users/login`, {
+          method: "POST",
+          body: payload,
+        });
+
+      const responseText = await response.text();
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        throw new Error("Invalid server response");
+      }
+
+      if (response.ok && (data.status || data.message)) {
+
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("role", 'self-emp');
+          localStorage.setItem("user_id", data.user_id);
+          localStorage.setItem("user", JSON.stringify(data.user || {}));
+          setIsLoggedIn(true);
+        navigate("/hirer-dashboard");
+      } else {
+        setError(data.message || data.error || "Invalid email or password");
+      }
+
+    } catch (err) {
+      setError(err.message || "Server Error 🚨");
+    } finally {
+      setLoading(false);
+    }
+  
     };
 
     const handleSocialLogin = (provider) => {

@@ -4,24 +4,26 @@ import { FaArrowRight } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { MdOutlineMenu, MdClose } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
-// import logo from "../assets/logo.svg"
+import { FaChevronDown } from "react-icons/fa";
 import logo from '../assets/logo_p2.png'
-
 import SignUp_btn from "./SignUp_btn.jsx"
 import SignIn_btn from "./SignIn_btn.jsx";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 
-const Header = () => {
+const Header = ({ open, setOpen }) => {
     // Sign In modal
     const [signInOpen, setSignInOpen] = useState(false);
-
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     // Sign Up modal
     const [signUpOpen, setSignUpOpen] = useState(false);
-
+    const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const [mobileDropdown, setMobileDropdown] = useState(null);
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const role = localStorage.getItem("role");
 
     // Prevent scrolling when menu is open
     useEffect(() => {
@@ -35,13 +37,24 @@ const Header = () => {
             document.body.style.position = "static";
         }
 
+         const user_id = localStorage.getItem("user_id");
+         setIsLoggedIn(!!user_id);   
+
         return () => {
             document.body.style.overflow = "auto";
             document.body.style.position = "static";
         };
+
     }, [menuOpen]);
 
 
+
+
+        const location = useLocation();
+
+        useEffect(() => {
+          setOpen(false);
+        }, [location.pathname]);
 
 
     const menuItems = [
@@ -295,24 +308,140 @@ const Header = () => {
                         )}
                     </button>
 
-                    {/* Buttons */}
-                    <div className="flex items-center space-x-3">
-                        {/* Sign In */}
-                        <button
-                            className="px-5 py-2 hover:bg-[#1E6EA7] rounded-md bg-transparent border hover:text-white transition-all duration-200 font-medium"
-                            onClick={() => setSignInOpen(true)}
-                        >
-                            Sign in
-                        </button>
+                   {!isLoggedIn ? (
+                                <div className="flex items-center space-x-3">
+                                    {/* Sign In */}
+                                    <button
+                                        className="px-5 py-2 hover:bg-[#1E6EA7] rounded-md bg-transparent border hover:text-white transition-all duration-200 font-medium"
+                                        onClick={() => setSignInOpen(true)}
+                                    >
+                                        Sign in
+                                    </button>
 
-                        {/* Sign Up */}
-                        <button
-                            className="btn-primary"
-                            onClick={() => setSignUpOpen(true)}
-                        >
-                            Sign up
-                        </button>
-                    </div>
+                                    {/* Sign Up */}
+                                    <button
+                                        className="btn-primary"
+                                        onClick={() => setSignUpOpen(true)}
+                                    >
+                                        Sign up
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex items-center space-x-3">
+                                    {/* Example: Profile and Logout buttons */}
+                                    
+                                    <div className="relative">
+                                          {/* Dropdown toggle */}
+                                          <button
+                                            className="px-5 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 font-medium flex items-center space-x-2"
+                                            onClick={() => setOpen(!open)}
+                                          >
+                                            Profile
+                                            <FaChevronDown className={`transition-transform ${open ? "rotate-180" : ""}`} />
+                                          </button>
+
+                                          {/* Dropdown menu */}
+                                          {open && (
+                                            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                                              <ul className="flex flex-col">
+                                                {role === "emp" && (<li>
+                                                  <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      navigate("/emp-profile");
+                                                      setOpen(false);
+                                                    }}
+                                                  >
+                                                    Basic Info
+                                                  </button>
+                                                </li> )}
+                                                {role === "self-emp" && (<li>
+                                                  <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      navigate("/hirer-profile");
+                                                      setOpen(false);
+                                                    }}
+                                                  >
+                                                    Basic Info
+                                                  </button>
+                                                </li> )}
+                                                <li>
+                                                  <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      navigate("/settings");
+                                                      setOpen(false);
+                                                    }}
+                                                  >
+                                                    Settings
+                                                  </button>
+                                                </li>
+                                                 <li>
+                                                  <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      navigate("/services");
+                                                      setOpen(false);
+                                                    }}
+                                                  >
+                                                    Services
+                                                  </button>
+                                                </li>
+                                                 <li>
+                                                  <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      console.log("Go to profile");
+                                                      setOpen(false);
+                                                    }}
+                                                  >
+                                                    Invite Freinds
+                                                  </button>
+                                                </li>
+                                                 <li>
+                                                  <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      console.log("Go to profile");
+                                                      setOpen(false);
+                                                    }}
+                                                  >
+                                                    Blocked Worker List
+                                                  </button>
+                                                </li>
+                                                 <li>
+                                                  <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      console.log("Go to profile");
+                                                      setOpen(false);
+                                                    }}
+                                                  >
+                                                    Stripe Cards
+                                                  </button>
+                                                </li>
+                                                <li>
+                                                  <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      localStorage.removeItem("token");
+                                                      localStorage.removeItem("user");
+                                                      setIsLoggedIn(false);
+                                                      setOpen(false);
+                                                    }}
+                                                  >
+                                                    Logout
+                                                  </button>
+                                                </li>
+                                              </ul>
+                                            </div>
+                                          )}
+                                        </div>
+
+                                </div>
+                            )}
+
 
                     {/* Modals */}
                     <SignIn_btn
