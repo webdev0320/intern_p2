@@ -427,7 +427,9 @@ const Header = ({ open, setOpen }) => {
                                                     onClick={() => {
                                                       localStorage.removeItem("token");
                                                       localStorage.removeItem("user");
+                                                      localStorage.removeItem("user_id");
                                                       setIsLoggedIn(false);
+                                                     window.location.href = "/intern_p2";
                                                       setOpen(false);
                                                     }}
                                                   >
