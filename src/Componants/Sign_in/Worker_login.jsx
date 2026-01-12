@@ -63,7 +63,7 @@ useEffect(() => {
           localStorage.setItem("role", 'self-emp');
           localStorage.setItem("user", JSON.stringify(data.user || {}));
           setIsLoggedIn(true);      
-        navigate("/emp/dashboard");
+        navigate("/emp-dashboard");
       } else {
         setError(data.message || data.error || "Invalid email or password");
       }

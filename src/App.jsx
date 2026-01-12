@@ -27,7 +27,10 @@ import HirerProfile from "./pages/HirerProfile";
 import Settings from "./pages/Settings";
 import Services from "./pages/Services";
 import BottomNavigation from "./Componants/BottomNavigation";
+import EmpFindWork from "./pages/EmpFindWork.jsx"
+import PostAJob from "./pages/PostAJob.jsx";
 import "./App.css";
+
 
 function HomePage() {
   return (
@@ -64,7 +67,8 @@ function App() {
             <Route path="/signup/hirer" element={<HirerSignUpPage />} />
             <Route path="/login/worker" element={<Worker_login />} />
             <Route path="/login/hirer" element={<Hirer_login />} />
-            <Route path="/find-work" element={<FindWork />} />
+            <Route path="/emp-find-work" element={<EmpFindWork />} />
+            <Route path="/post-job" element={<PostAJob />} />
             <Route path="/emp-dashboard" element={<EmpDashboard />} />
             <Route path="/hirer-dashboard" element={<HirerDashboard />} />
             <Route path="/feedbacks" element={<Feedbacks />} />
