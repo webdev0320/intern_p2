@@ -1,9 +1,7 @@
 import React from "react";
-import BackButton from "../componants/BackButton";
 function Followers() {
   return (
     <div className="p-6">
-     <BackButton />
       <h1 className="text-2xl font-bold mb-4">Followers</h1>
 
 

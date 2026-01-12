@@ -12,7 +12,7 @@ const EmpProfile = () => {
     const fetchProfile = async () => {
       try {
         const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-        const userId = 17; // Replace with dynamic user ID if needed
+        const userId = localStorage.getItem("user_id");
 
         const response = await fetch(
           `${BASE_URL}/api/users/profile/?id=${userId}`

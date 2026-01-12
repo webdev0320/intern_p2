@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header_1 from "./Componants/1_Header.jsx";
 import Hero_2 from "./Componants/2_Hero.jsx";
@@ -23,6 +24,8 @@ import Following from "./pages/Following";
 import WorkHistory from "./pages/WorkHistory";
 import EmpProfile from "./pages/EmpProfile";
 import HirerProfile from "./pages/HirerProfile";
+import Settings from "./pages/Settings";
+import BottomNavigation from "./Componants/BottomNavigation";
 import "./App.css";
 
 function HomePage() {
@@ -39,10 +42,11 @@ function HomePage() {
 }
 
 function App() {
+ const [profileOpen, setProfileOpen] = useState(false);
   return (
     <Router basename="/intern_p2">
       <div className="min-h-screen">
-        <Header_1 />
+      <Header_1 open={profileOpen} setOpen={setProfileOpen} />
 
         <main className="pt-16">
           <Routes>
@@ -61,8 +65,11 @@ function App() {
             <Route path="/work-history" element={<WorkHistory />} />
             <Route path="/emp-profile" element={<EmpProfile />} />
             <Route path="/hirer-profile" element={<HirerProfile />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </main>
+        <BottomNavigation setProfileOpen={setProfileOpen} />
+
       </div>
     </Router>
   );

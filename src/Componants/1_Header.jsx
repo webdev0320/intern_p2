@@ -9,14 +9,13 @@ import logo from '../assets/logo_p2.png'
 import SignUp_btn from "./SignUp_btn.jsx"
 import SignIn_btn from "./SignIn_btn.jsx";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 
-
-const Header = () => {
+const Header = ({ open, setOpen }) => {
     // Sign In modal
     const [signInOpen, setSignInOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-     const [open, setOpen] = useState(false);
     // Sign Up modal
     const [signUpOpen, setSignUpOpen] = useState(false);
     const navigate = useNavigate();
@@ -37,9 +36,9 @@ const Header = () => {
             document.body.style.position = "static";
         }
 
-         const token = localStorage.getItem("token");
-         console.log(token);
-         setIsLoggedIn(!!token);   
+         const user_id = localStorage.getItem("user_id");
+         console.log(user_id);
+         setIsLoggedIn(!!user_id);   
 
         return () => {
             document.body.style.overflow = "auto";
@@ -49,6 +48,13 @@ const Header = () => {
     }, [menuOpen]);
 
 
+
+
+        const location = useLocation();
+
+        useEffect(() => {
+          setOpen(false);
+        }, [location.pathname]);
 
 
     const menuItems = [
@@ -364,7 +370,7 @@ const Header = () => {
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      console.log("Go to profile");
+                                                      navigate("/settings");
                                                       setOpen(false);
                                                     }}
                                                   >

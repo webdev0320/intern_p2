@@ -54,6 +54,7 @@ const handleSubmit = async (e) => {
       if (response.ok && (data.status || data.message)) {
 
           localStorage.setItem("token", data.token);
+          localStorage.setItem("user_id", data.user_id);
           localStorage.setItem("user", JSON.stringify(data.user || {}));
       
         navigate("/hirer-dashboard");
