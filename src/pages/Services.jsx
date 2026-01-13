@@ -9,6 +9,7 @@ function Services() {
 
   const userId = localStorage.getItem("user_id");
 
+
   useEffect(() => {
     const fetchIndustries = async () => {
       try {
