@@ -9,6 +9,11 @@
            font-medium;
   }
 
+  .menu-btn {
+  @apply w-full flex items-center gap-4 px-5 py-[6px] hover:bg-gray-100 text-left;
+}
+
+
   .bg-layout-primary{
     background-color: #f97316 !important;
   }

@@ -9,11 +9,11 @@ import CoopleHelps_6 from "./Componants/6_CoopleHelps.jsx";
 import WorkforcePlanning from "./Componants/7_workforce_planning.jsx";
 
 import SignUpModal from "./Componants/SignUp_btn";
-      // Sign_up Btn
+// Sign_up Btn
 import WorkerSignUpPage from "./Componants/Sign_up/Worker_signUp.jsx";
 import HirerSignUpPage from "./Componants/Sign_up/Hirer_SignUp.jsx";
-    // Sign_in / Login Btn
-import Worker_login from "./Componants/Sign_in/Worker_login.jsx"; 
+// Sign_in / Login Btn
+import Worker_login from "./Componants/Sign_in/Worker_login.jsx";
 import Hirer_login from "./Componants/Sign_in/Hirer_login.jsx";
 import FindWork from "./pages/FindWork.jsx";
 import EmpDashboard from "./pages/EmpDashboard.jsx";
@@ -30,6 +30,21 @@ import BottomNavigation from "./Componants/BottomNavigation";
 import EmpFindWork from "./pages/EmpFindWork.jsx"
 import PostAJob from "./pages/PostAJob.jsx";
 import "./App.css";
+
+// pages of sidebars 
+import History from "./pages/History";
+import Messages from "./pages/Messages";
+import Spendings from "./pages/Spendings";
+import Invoices from "./pages/Invoices";
+import Wallet from "./pages/Wallet";
+import Resolution from "./pages/Resolution";
+import FollowWorkers from "./pages/FollowWorkers";
+import FAQs from "./pages/FAQs";
+import Support from "./pages/Support";
+import About from "./pages/About";
+import Invite from "./pages/Invite";
+import Sidebar from "./Componants/Sidebar.jsx";
+
 
 
 function HomePage() {
@@ -79,6 +94,22 @@ function App() {
             <Route path="/hirer-profile" element={<HirerProfile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/services" element={<Services />} />
+
+            {/* sidebar page  */}
+
+            <Route path="/sidebar" element={<Sidebar />} />
+            <Route path="/find-worker" element={<FindWork />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/spendings" element={<Spendings />} />
+            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/wallet" element={<Wallet />} />
+            <Route path="/resolution" element={<Resolution />} />
+            <Route path="/follow-workers" element={<FollowWorkers />} />
+            <Route path="/faqs" element={<FAQs />} />
+            <Route path="/support" element={<Support />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/invite" element={<Invite />} />
           </Routes>
         </main>
 

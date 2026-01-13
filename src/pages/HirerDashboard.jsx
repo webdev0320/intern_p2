@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { FaStar } from "react-icons/fa6";
+import {
+  FaStar,
+  FaBars
+} from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../Componants/Sidebar";
 
 
 const HirerDashboard = () => {
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
+  const [openSidebar, setOpenSidebar] = useState(false);
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   const [profile, setProfile] = useState(null);
   const userId = localStorage.getItem("user_id");
 
@@ -32,10 +38,32 @@ const HirerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 pb-24">
+    <div className="min-h-screen bg-gray-100 pb-24 relative">
+
+      {/* Sidebar Overlay */}
+      {openSidebar && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40"
+          onClick={() => setOpenSidebar(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <Sidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
+
+
       {/* Header */}
       <div className="relative bg-white shadow-sm pb-20">
-        <div className="relative z-10 container mx-auto px-4 pt-6">
+        <div className="relative z-10 container mx-auto gap-2 px-4 pt-6">
+
+          {/* Top Bar */}
+          <div>
+            <FaBars
+              className="text-2xl cursor-pointer mb-4"
+              onClick={() => setOpenSidebar(true)}
+            />
+          </div>
+
           {/* Profile Info */}
           <div className="flex items-center">
             <div className="flex-1">
@@ -55,23 +83,23 @@ const HirerDashboard = () => {
               <span className="text-sm text-gray-500 uppercase">Feedbacks</span>
             </div>
             <div onClick={() => navigate("/followers")} className="bg-white rounded-lg shadow text-center p-4">
-              <span className="block text-lg font-bold">{profile.total_follower}</span>
+              <span className="block text-lg font-bold">0</span>
               <span className="text-sm text-gray-500 uppercase">Followers</span>
             </div>
             <div onClick={() => navigate("/following")} className="bg-white rounded-lg shadow text-center p-4">
-              <span className="block text-lg font-bold">{profile.total_following}</span>
+              <span className="block text-lg font-bold">0</span>
               <span className="text-sm text-gray-500 uppercase">Following</span>
             </div>
             <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4">
-              <span className="block text-lg font-bold">{profile.Waiting}</span>
+              <span className="block text-lg font-bold">2</span>
               <span className="text-sm text-gray-500 uppercase">New Work</span>
             </div>
             <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4">
-              <span className="block text-lg font-bold">{profile.Accept}</span>
+              <span className="block text-lg font-bold">0</span>
               <span className="text-sm text-gray-500 uppercase">In-Progress</span>
             </div>
             <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4">
-              <span className="block text-lg font-bold">{profile.Complete}</span>
+              <span className="block text-lg font-bold">0</span>
               <span className="text-sm text-gray-500 uppercase">Finished</span>
             </div>
           </div>
