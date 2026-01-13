@@ -7,7 +7,8 @@ function Services() {
   const [loading, setLoading] = useState(false);
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-  const userId = 26; // replace with dynamic user ID if needed
+  const userId = localStorage.getItem("user_id");
+
 
   useEffect(() => {
     const fetchIndustries = async () => {
