@@ -43,6 +43,7 @@ import FAQs from "./pages/FAQs";
 import Support from "./pages/Support";
 import About from "./pages/About";
 import Invite from "./pages/Invite";
+import Sidebar from "./Componants/Sidebar.jsx";
 
 
 
@@ -95,6 +96,8 @@ function App() {
             <Route path="/services" element={<Services />} />
 
             {/* sidebar page  */}
+
+            <Route path="/sidebar" element={<Sidebar />} />
             <Route path="/find-worker" element={<FindWork />} />
             <Route path="/history" element={<History />} />
             <Route path="/messages" element={<Messages />} />

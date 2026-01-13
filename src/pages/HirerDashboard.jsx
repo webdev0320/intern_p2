@@ -1,22 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaStar,
-  FaBars,
-  FaXmark,
+  FaBars
 } from "react-icons/fa6";
-import { GoQuestion, GoInfo, GoPersonAdd } from "react-icons/go";
-import { BsPerson } from "react-icons/bs";
-import { FaRegStar } from "react-icons/fa";
-import { BsCash } from "react-icons/bs";
-import { LiaTelegram } from "react-icons/lia";
-import { IoSearch } from "react-icons/io5";
-import { MdHistory, MdOutlineMarkEmailUnread, MdOutlineSettings } from "react-icons/md";
-import { LuLogOut, LuWallet } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../Componants/Sidebar";
+
 
 const HirerDashboard = () => {
   const navigate = useNavigate();
   const [openSidebar, setOpenSidebar] = useState(false);
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+  const [profile, setProfile] = useState(null);
+  const userId = localStorage.getItem("user_id");
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+
+        const response = await fetch(`${BASE_URL}/api/users/profile/?id=${userId}`);
+        const data = await response.json();
+        if (data) {
+          setProfile(data);
+        }
+
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (!profile) {
+    return <div className="min-h-screen flex justify-center items-center">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 pb-24 relative">
@@ -30,51 +49,7 @@ const HirerDashboard = () => {
       )}
 
       {/* Sidebar */}
-      <div
-        className={`fixed top-0 left-0 h-screen w-[350px] bg-white z-50 shadow-lg
-          transition-transform duration-300 overflow-y-auto
-          ${openSidebar ? "translate-x-0" : "-translate-x-full"}`}
-
-      >
-        {/* Header */}
-        <div className="relative p-5 border-b">
-          <FaXmark
-            className="absolute right-4 top-4 text-2xl cursor-pointer"
-            onClick={() => setOpenSidebar(false)}
-          />
-
-          <div className="flex items-center gap-4">
-            <img src="" className="w-14 h-14 rounded-full bg-gray-300" />
-            <div>
-              <h2 className="font-semibold text-lg">Talha Raheem</h2>
-              <p className="text-sm text-orange-500">
-                malikabutalharaheem@gmail.com
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Menu */}
-        <div className="divide-y">
-          <button onClick={() => navigate("/find-worker")} className="menu-btn"> <IoSearch /> Find a Worker</button>
-          <button onClick={() => navigate("/history")} className="menu-btn"> <MdHistory /> History</button>
-          <button onClick={() => navigate("/messages")} className="menu-btn"> <LiaTelegram /> Messages</button>
-          <button onClick={() => navigate("/spendings")} className="menu-btn"> <BsCash /> My Spendings</button>
-          <button onClick={() => navigate("/invoices")} className="menu-btn"> <GoQuestion /> My Invoices</button>
-          <button onClick={() => navigate("/wallet")} className="menu-btn"> <LuWallet /> Wallet</button>
-          <button onClick={() => navigate("/resolution")} className="menu-btn"> <MdOutlineMarkEmailUnread /> Resolution Center</button>
-          <button onClick={() => navigate("/follow-workers")} className="menu-btn"> <FaRegStar /> Follow Workers</button>
-          <button onClick={() => navigate("/settings")} className="menu-btn"> <GoQuestion /> Settings</button>
-          <button onClick={() => navigate("/faqs")} className="menu-btn"> <GoQuestion /> FAQs</button>
-          <button onClick={() => navigate("/support")} className="menu-btn"> <BsPerson /> Support Chat</button>
-          <button onClick={() => navigate("/about")} className="menu-btn"> <GoInfo /> About</button>
-          <button onClick={() => navigate("/invite")} className="menu-btn"> <GoPersonAdd /> Invite Friends</button>
-          <button className="menu-btn"> <LuLogOut /> Log out</button>
-          <button className="menu-btn text-red-500"> Delete Account</button>
-        </div>
-
-
-      </div>
+      <Sidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
 
 
       {/* Header */}
@@ -92,8 +67,8 @@ const HirerDashboard = () => {
           {/* Profile Info */}
           <div className="flex items-center">
             <div className="flex-1">
-              <h1 className="text-2xl font-bold">Arif</h1>
-              <p className="text-gray-500 mb-1">Cinch</p>
+              <h1 className="text-2xl font-bold">{profile.name}</h1>
+              <p className="text-gray-500 mb-1">{profile.business_name}</p>
               <div className="flex items-center text-yellow-400">
                 <FaStar /><FaStar /><FaStar /><FaStar /><FaStar />
                 <span className="ml-2 text-gray-800 font-medium">5/5</span>
@@ -129,7 +104,7 @@ const HirerDashboard = () => {
             </div>
           </div>
 
-          <p className="mt-4 text-gray-600">about me text here</p>
+          <p className="mt-4 text-gray-600">{profile.aboutme}</p>
         </div>
       </div>
 
@@ -137,8 +112,15 @@ const HirerDashboard = () => {
       <div className="container mx-auto px-4 mt-6">
         <div className="bg-orange-500 text-white rounded-xl p-6 shadow">
           <h4 className="font-bold mb-4">My Industry & Skills</h4>
-          <div className="bg-white text-gray-800 rounded-lg px-4 py-2 font-medium">
-            Accounting & Finance
+          <div className="flex flex-wrap gap-2">
+            {profile.industries.map((industry) => (
+              <div
+                key={industry.id}
+                className="bg-white text-gray-800 rounded-lg px-4 py-2 font-medium"
+              >
+                {industry.name}
+              </div>
+            ))}
           </div>
         </div>
       </div>
