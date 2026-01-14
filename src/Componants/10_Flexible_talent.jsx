@@ -24,14 +24,14 @@ const Flexible_talent = () => {
                     <div className=' order-1 md:order-2 space-y-6'>
                         <div className=' space-y-7'>
                             <p className='font-semibold text-sm'>TEMP STAFFING</p>
-                            <h2 className="text-xl md:text-2xl lg:text-4xl ">
+                            <h2 className="text-2xl font-[400] md:text-3xl lg:text-4xl ">
                                 Flexible talent, ready when you need it.
                             </h2>
                         </div>
 
 
                         <div>
-                            <p className="mt-6 text-gray-600 max-w-md">
+                            <p className="mt-6 text-lg max-w-md">
                                 BAccess Coople’s pool of 800,000+ flexible workers. Build your own 
                                 favourites, rehire proven talent, and find the right people for every 
                                 shift – fast.

@@ -5,7 +5,7 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "Add 10_Flexible_talent Section "
+		git commit -m "Add 11_Test_Hire Section "
 		git push origin talha 
 	
 		npm run build
