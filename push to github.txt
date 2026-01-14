@@ -5,7 +5,7 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "Add workforce_planning Section "
+		git commit -m "Add 8_What_workforce Section "
 		git push origin main 
 	
 		npm run build
