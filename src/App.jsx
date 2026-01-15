@@ -11,6 +11,7 @@ import What_workforce from "./Componants/8_What_workforce.jsx";
 import With_Coople from "./Componants/9_With_Coople.jsx";
 import Flexible_talent from "./Componants/10_Flexible_talent.jsx";
 import Test_Hire from "./Componants/11_Test_Hire.jsx";
+import Outsource_admin from "./Componants/12_Outsource_admin.jsx";
 
 import SignUpModal from "./Componants/SignUp_btn";
 // Sign_up Btn
@@ -55,6 +56,7 @@ import Sidebar from "./Componants/Sidebar.jsx";
 
 
 
+
 function HomePage() {
   return (
     <>
@@ -68,6 +70,7 @@ function HomePage() {
       <With_Coople />
       <Flexible_talent />
       <Test_Hire />
+      <Outsource_admin />
     </>
   );
 }
