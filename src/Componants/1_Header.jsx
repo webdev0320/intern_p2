@@ -239,18 +239,7 @@ const Header = ({ open, setOpen }) => {
     return (
         <header className="fixed md:top-0 md:left-0 left-0 w-full bg-white z-50">
             <div className="max-w-7xl mx-auto flex items-center justify-between  p-4">
-                {/* Logo */}
-                 <button
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors md:hidden"
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    aria-label="Toggle sidebar"
-                  >
-                    {sidebarOpen ? (
-                      <MdClose size={24} className="text-black" />
-                    ) : (
-                      <MdOutlineMenu size={24} className="text-black" />
-                    )}
-                  </button>
+   
                 <div className="text-2xl font-bold">
                     <Link to="/" className="text-black md:block hidden hover:text-black no-underline">
                         <img src={logo} className="w-16" alt="" />
@@ -390,7 +379,20 @@ const Header = ({ open, setOpen }) => {
                                                     Settings
                                                   </button>
                                                 </li>
-                                                 <li>
+                                                 {role === "emp" && (
+                                                <li>
+                                                  <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      navigate("/employee-services");
+                                                      setOpen(false);
+                                                    }}
+                                                  >
+                                                    Services
+                                                  </button>
+                                                </li> 
+                                                )}
+                                                {role === "self-emp" && (<li>
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
@@ -400,7 +402,9 @@ const Header = ({ open, setOpen }) => {
                                                   >
                                                     Services
                                                   </button>
-                                                </li>
+                                                </li> )}
+
+
                                                  <li>
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"

@@ -82,7 +82,7 @@ const HirerDashboard = () => {
 
       {/* Skills Card */}
       <div className="container mx-auto px-4 mt-6">
-        <div className="bg-orange-500 text-white rounded-xl p-6 shadow">
+        <div className="bg-blue-500 text-white rounded-xl p-6 shadow">
           <h4 className="font-bold mb-4">My Industry & Skills</h4>
           <div className="flex flex-wrap gap-2">
             {profile.industries.map((industry) => (
