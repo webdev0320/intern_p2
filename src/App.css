@@ -12,4 +12,7 @@
   .bg-layout-primary{
     background-color: #f97316 !important;
   }
+  .links{
+    cursor: pointer;
+  }
 }

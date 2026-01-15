@@ -50,27 +50,27 @@ const HirerDashboard = () => {
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mt-6">
-            <div onClick={() => navigate("/feedbacks")} className="bg-white rounded-lg shadow text-center p-4">
+            <div onClick={() => navigate("/feedbacks")} className="bg-white rounded-lg shadow text-center p-4 links">
               <span className="block text-lg font-bold">0</span>
               <span className="text-sm text-gray-500 uppercase">Feedbacks</span>
             </div>
-            <div onClick={() => navigate("/followers")} className="bg-white rounded-lg shadow text-center p-4">
+            <div onClick={() => navigate("/followers")} className="bg-white rounded-lg shadow text-center p-4 links">
               <span className="block text-lg font-bold">{profile.total_follower}</span>
               <span className="text-sm text-gray-500 uppercase">Followers</span>
             </div>
-            <div onClick={() => navigate("/following")} className="bg-white rounded-lg shadow text-center p-4">
+            <div onClick={() => navigate("/following")} className="bg-white rounded-lg shadow text-center p-4 links">
               <span className="block text-lg font-bold">{profile.total_following}</span>
               <span className="text-sm text-gray-500 uppercase">Following</span>
             </div>
-            <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4">
+            <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4 links">
               <span className="block text-lg font-bold">{profile.Waiting}</span>
               <span className="text-sm text-gray-500 uppercase">New Work</span>
             </div>
-            <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4">
+            <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4 links">
               <span className="block text-lg font-bold">{profile.Accept}</span>
               <span className="text-sm text-gray-500 uppercase">In-Progress</span>
             </div>
-            <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4">
+            <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4 links">
               <span className="block text-lg font-bold">{profile.Complete}</span>
               <span className="text-sm text-gray-500 uppercase">Finished</span>
             </div>

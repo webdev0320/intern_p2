@@ -26,6 +26,7 @@ import EmpProfile from "./pages/EmpProfile";
 import HirerProfile from "./pages/HirerProfile";
 import Settings from "./pages/Settings";
 import Services from "./pages/Services";
+import EmpServices from "./pages/EmpServices";
 import BottomNavigation from "./Componants/BottomNavigation";
 import EmpFindWork from "./pages/EmpFindWork.jsx"
 import PostAJob from "./pages/PostAJob.jsx";
@@ -79,6 +80,7 @@ function App() {
             <Route path="/hirer-profile" element={<HirerProfile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/employee-services" element={<EmpServices />} />
           </Routes>
         </main>
 
