@@ -5,7 +5,7 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "Add About Section "
+		git commit -m "Add Protected Routes in app.jsx "
 		git push origin talha 
 	
 		npm run build
