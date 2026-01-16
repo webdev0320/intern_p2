@@ -107,7 +107,7 @@ function App() {
             <Route path="/feedbacks" element={<Feedbacks />} />
             <Route path="/followers" element={<Followers />} />
             <Route path="/following" element={<Following />} />
-            <Route path="/work-history" element={<WorkHistory />} />
+            <Route path="/work-history/:type" element={<WorkHistory />} />
             <Route path="/emp-profile" element={<EmpProfile />} />
             <Route path="/hirer-profile" element={<HirerProfile />} />
             <Route path="/settings" element={<Settings />} />
