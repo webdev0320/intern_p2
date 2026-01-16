@@ -446,7 +446,7 @@ const Header = ({ open, setOpen }) => {
                                                       localStorage.removeItem("user");
                                                       localStorage.removeItem("user_id");
                                                       setIsLoggedIn(false);
-                                                     window.location.href = "/intern_p2";
+                                                     window.location.href = "/";
                                                       setOpen(false);
                                                     }}
                                                   >

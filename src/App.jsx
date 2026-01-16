@@ -88,7 +88,7 @@ function App() {
   }, []);
 
   return (
-    <Router basename="/intern_p2">
+    <Router>
       <div className="min-h-screen">
         <Header_1 open={profileOpen} setOpen={setProfileOpen} />
 
