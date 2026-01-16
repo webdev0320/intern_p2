@@ -90,15 +90,15 @@ const HirerDashboard = () => {
               <span className="block text-lg font-bold">{profile.total_following}</span>
               <span className="text-sm text-gray-500 uppercase">Following</span>
             </div>
-            <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4 links">
+            <div onClick={() => navigate("/work-history/new")} className="bg-white rounded-lg shadow text-center p-4 links">
               <span className="block text-lg font-bold">{profile.Waiting}</span>
               <span className="text-sm text-gray-500 uppercase">New Work</span>
             </div>
-            <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4 links">
+            <div onClick={() => navigate("/work-history/inprogress")} className="bg-white rounded-lg shadow text-center p-4 links">
               <span className="block text-lg font-bold">{profile.Accept}</span>
               <span className="text-sm text-gray-500 uppercase">In-Progress</span>
             </div>
-            <div onClick={() => navigate("/work-history")} className="bg-white rounded-lg shadow text-center p-4 links">
+            <div onClick={() => navigate("/work-history/finished")} className="bg-white rounded-lg shadow text-center p-4 links">
               <span className="block text-lg font-bold">{profile.Complete}</span>
               <span className="text-sm text-gray-500 uppercase">Finished</span>
             </div>
