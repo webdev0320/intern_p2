@@ -64,7 +64,7 @@ const handleSubmit = async (e) => {
           localStorage.setItem("user", JSON.stringify(data.user || {}));
 
           setIsLoggedIn(true);
-            window.location.href = "/intern_p2/hirer-dashboard";
+            window.location.href = "/hirer-dashboard";
       } else {
         setError(data.message || data.error || "Invalid email or password");
       }
