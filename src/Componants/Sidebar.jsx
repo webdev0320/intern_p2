@@ -25,7 +25,6 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
           onClick={() => setOpenSidebar(false)}
         />
         <div className="flex items-center gap-4">
-          <img src="" className="w-14 h-14 rounded-full bg-gray-300" />
           <div>
             <h2 className="font-semibold text-lg">Talha Raheem</h2>
             <p className="text-sm text-orange-500">

@@ -4,7 +4,7 @@ import { FaArrowRight } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { MdOutlineMenu, MdClose } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown } from "react-icons/fa";
+import { FaChevronDown,FaBell } from "react-icons/fa";
 import logo from '../assets/logo_p2.png'
 import SignUp_btn from "./SignUp_btn.jsx"
 import SignIn_btn from "./SignIn_btn.jsx";
@@ -49,6 +49,42 @@ const Header = ({ open, setOpen }) => {
 
     }, [menuOpen]);
 
+
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    var userId = localStorage.getItem("user_id");
+    var email = localStorage.getItem("email");
+
+    const payload = new FormData();
+    payload.append("email", email);
+    payload.append("country", "GB");
+    payload.append("status", "test");
+    payload.append("user_id", userId);
+
+    const stripeConnect = async () => {
+          try {
+            const response = await fetch(
+              `${BASE_URL}/api/payment/create_stripe_account`,
+              {
+                method: "POST",
+                body: payload,
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("Stripe response:", data);
+
+            // 👉 If API returns Stripe onboarding / connect URL
+            if (data?.url) {
+              window.location.href = data.url;
+            }
+          } catch (error) {
+            console.error("Stripe connect error:", error);
+          }
+        };
 
 
 
@@ -332,6 +368,16 @@ const Header = ({ open, setOpen }) => {
                                 <div className="flex items-center space-x-3">
                                     {/* Example: Profile and Logout buttons */}
                                     
+                                    <button
+                                        onClick={() => navigate("/notifications")}
+                                        className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none"
+                                        title="Notifications"
+                                      >
+                                        <FaBell className="w-6 h-6" />
+                                        {/* Optional: Red dot for unread notifications */}
+                                        <span className="absolute top-2 right-2.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
+                                      </button>
+
                                     <div className="relative">
                                           {/* Dropdown toggle */}
                                           <button
@@ -427,17 +473,30 @@ const Header = ({ open, setOpen }) => {
                                                     Blocked Worker List
                                                   </button>
                                                 </li>
-                                                 <li>
+                                                {role === "emp" && (<li>
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      console.log("Go to profile");
+                                                      stripeConnect();
+                                                      setOpen(false);
+                                                    }}
+                                                  >
+                                                    Connect Stripe
+                                                  </button>
+                                                </li> )}
+
+                                                 {role === "self-emp" && (<li>
+                                                  <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      navigate("/stripe-card");
                                                       setOpen(false);
                                                     }}
                                                   >
                                                     Stripe Cards
                                                   </button>
-                                                </li>
+                                                </li> )}
+
                                                 <li>
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"

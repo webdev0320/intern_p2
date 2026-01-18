@@ -61,9 +61,10 @@ useEffect(() => {
           localStorage.setItem("token", data.token);
           localStorage.setItem("user_id", data.user_id);
           localStorage.setItem("role", 'self-emp');
-          localStorage.setItem("user", JSON.stringify(data.user || {}));
+          localStorage.setItem("email", data.email);
           setIsLoggedIn(true);      
-        navigate("/emp-dashboard");
+            window.location.href = "/emp-dashboard";
+
       } else {
         setError(data.message || data.error || "Invalid email or password");
       }

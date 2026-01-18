@@ -51,14 +51,10 @@ import Support from "./pages/Support";
 import About from "./pages/About";
 import Invite from "./pages/Invite";
 import Sidebar from "./Componants/Sidebar.jsx";
-
-
-
-
-
-
-
-
+import StripeCard from "./pages/StripeCard.jsx";
+import { Elements } from "@stripe/react-stripe-js";
+import { stripePromise } from "./stripe";
+import Notifications from "./pages/Notifications";
 function HomePage() {
   return (
     <>
@@ -128,6 +124,10 @@ function App() {
             <Route path="/support" element={<Support />} />
             <Route path="/about" element={<About />} />
             <Route path="/invite" element={<Invite />} />
+            <Route path="/stripe-card" element={<StripeCard />} />
+            <Route path="/notifications" element={<Notifications />} />
+
+
           </Routes>
         </main>
 
