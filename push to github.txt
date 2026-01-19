@@ -5,8 +5,8 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "Add Protected Routes in app.jsx "
-		git push origin main 
+		git commit -m "Add icon in header from dashborad  "
+		git push origin talha 
 	
 		npm run build
 		npm run deploy
