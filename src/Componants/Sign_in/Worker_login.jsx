@@ -62,6 +62,7 @@ useEffect(() => {
           localStorage.setItem("user_id", data.user_id);
           localStorage.setItem("role", 'self-emp');
           localStorage.setItem("email", data.email);
+          localStorage.setItem("name", data.name);          
           setIsLoggedIn(true);      
             window.location.href = "/emp-dashboard";
 

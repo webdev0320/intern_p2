@@ -173,7 +173,7 @@ function App() {
             <Route path="/find-worker" element={<PrivateRoute><FindWork /></PrivateRoute>} />
             <Route path="/history" element={<PrivateRoute><History /></PrivateRoute>} />
             <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
-            <Route path="/spendings" element={<PrivateRoute><Spendings /></PrivateRoute>} />
+            <Route path="/my-spendings" element={<PrivateRoute><Spendings /></PrivateRoute>} />
             <Route path="/invoices" element={<PrivateRoute><Invoices /></PrivateRoute>} />
             <Route path="/wallet" element={<PrivateRoute><Wallet /></PrivateRoute>} />
             <Route path="/resolution" element={<PrivateRoute><Resolution /></PrivateRoute>} />
