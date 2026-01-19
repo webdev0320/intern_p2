@@ -5,6 +5,14 @@ const workforce_planning = () => {
     return (
         <section className="">
             <div className="max-w-7xl mx-auto px-6 py-14">
+                <div className='flex gap-3 justify-center flex-col items-center px-5'>
+                    <h2 className='text-3xl text-center'>Your flexible workforce, organised. Every shift, optimised.</h2>
+                    <p className='text-center'>
+                        The Coople Flexwork Platform helps you structure and schedule your
+                        flexible workforce efficiently – combining internal staff, payrolled
+                        workers, and new talent into smart, reliable pools.
+                    </p>
+                </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2  gap-14 items-center">
 
 

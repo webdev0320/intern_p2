@@ -61,10 +61,11 @@ const handleSubmit = async (e) => {
           localStorage.setItem("token", data.token);
           localStorage.setItem("role", 'self-emp');
           localStorage.setItem("user_id", data.user_id);
-          localStorage.setItem("user", JSON.stringify(data.user || {}));
+          localStorage.setItem("email", data.name);
+          localStorage.setItem("name", data.name);
 
           setIsLoggedIn(true);
-            window.location.href = "/intern_p2/hirer-dashboard";
+            window.location.href = "/hirer-dashboard";
       } else {
         setError(data.message || data.error || "Invalid email or password");
       }

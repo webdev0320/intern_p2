@@ -11,7 +11,9 @@ import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ openSidebar, setOpenSidebar }) => {
   const navigate = useNavigate();
-
+    var userId = localStorage.getItem("user_id");
+    var email = localStorage.getItem("email");
+    var name = localStorage.getItem("name");
   return (
     <div
       className={`fixed top-0 left-0 h-screen w-[350px] bg-white z-50 shadow-lg
@@ -25,11 +27,10 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
           onClick={() => setOpenSidebar(false)}
         />
         <div className="flex items-center gap-4">
-          <img src="" className="w-14 h-14 rounded-full bg-gray-300" />
           <div>
-            <h2 className="font-semibold text-lg">Talha Raheem</h2>
+            <h2 className="font-semibold text-lg">{name}</h2>
             <p className="text-sm text-orange-500">
-              malikabutalharaheem@gmail.com
+              {email}
             </p>
           </div>
         </div>
@@ -40,7 +41,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
         <button onClick={() => navigate("/find-worker")} className="menu-btn">
           <IoSearch /> Find a Worker
         </button>
-        <button onClick={() => navigate("/history")} className="menu-btn">
+        <button onClick={() => navigate("/work-history/new")} className="menu-btn">
           <MdHistory /> History
         </button>
         <button onClick={() => navigate("/messages")} className="menu-btn">
