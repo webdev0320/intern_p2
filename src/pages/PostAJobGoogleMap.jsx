@@ -1,23 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  useMapEvents,
-} from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-
-/* Fix Leaflet marker icon issue */
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
 const PostAJob = () => {
   // Top filters
@@ -39,17 +21,16 @@ const PostAJob = () => {
   const [skills, setSkills] = useState([]);
 
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   
     const hours = Array.from({ length: 24 }, (_, i) =>
       String(i).padStart(2, "0")
     );
   // Location state
-
-
   const [location, setLocation] = useState(
     "J42J+P72, Street 17, New Gulzar-e-Quaid, Islamabad"
   );
-
+  const [marker, setMarker] = useState({ lat: 33.6844, lng: 73.0479 }); // Default Islamabad
 
   // Fetch industries on mount
   useEffect(() => {
@@ -81,70 +62,25 @@ const PostAJob = () => {
     }
   }, [industryId, industries]);
 
-  /* Recenter map when marker updates */
-  const RecenterMap = ({ lat, lng }) => {
-    const map = useMapEvents({});
-    useEffect(() => {
-      map.setView([lat, lng], map.getZoom(), { animate: true });
-    }, [lat, lng, map]);
-    return null;
-  };
-
-  /* Map click handler */
-  const MapClickHandler = ({ onSelect }) => {
-    useMapEvents({
-      click(e) {
-        onSelect(e.latlng);
-      },
-    });
-    return null;
-  };
-
-
-/* LOCATION */
-  const [marker, setMarker] = useState({
-    lat: 33.6844,
-    lng: 73.0479,
-  });
-
-
-/* GET USER LOCATION */
-  useEffect(() => {
-    if (!navigator.geolocation) return;
-
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setMarker({ lat, lng });
-
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-          );
-          const data = await res.json();
-          if (data?.display_name) setLocation(data.display_name);
-        } catch {}
-      }
-    );
-  }, []);
-
-   /* MAP CLICK */
-  const handleMapSelect = async ({ lat, lng }) => {
+  // Handle Map Click
+  const handleMapClick = async (event) => {
+    const lat = event.latLng.lat();
+    const lng = event.latLng.lng();
     setMarker({ lat, lng });
 
-    try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-      );
-      const data = await res.json();
-      if (data?.display_name) setLocation(data.display_name);
-    } catch {}
+    // Reverse geocoding to get address
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+      if (status === "OK" && results[0]) {
+        setLocation(results[0].formatted_address);
+      } else {
+        setLocation("Address not found");
+      }
+    });
   };
 
-
   // Handle submit
-
+  // Handle submit
 const handleSubmit = async () => {
   if (!industryId || !skillId) {
     alert("Please select both industry and skill.");
@@ -336,41 +272,7 @@ const handleSubmit = async () => {
           </div>
         </div>
 
-        {/* Location + Map Section */}
-        <div className="mt-6 bg-white rounded-xl shadow-md overflow-hidden">
-          <label className="block text-sm font-medium mb-1">
-            Job Location
-          </label>
-          <input
-            type="text"
-            value={location}
-            readOnly
-            className="w-full border rounded-md px-3 py-2 bg-gray-100"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Select Location on Map
-          </label>
-          <div className="h-[450px] border rounded-lg overflow-hidden">
-            <MapContainer
-              center={[marker.lat, marker.lng]}
-              zoom={13}
-              style={{ height: "100%", width: "100%" }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <RecenterMap lat={marker.lat} lng={marker.lng} />
-              <MapClickHandler onSelect={handleMapSelect} />
-              <Marker position={[marker.lat, marker.lng]} />
-            </MapContainer>
-          </div>
-        </div>
-
-
-                {/* Submit Button */}
+        {/* Submit Button */}
         <button
           onClick={handleSubmit}
           className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
@@ -378,8 +280,26 @@ const handleSubmit = async () => {
           Post Job
         </button>
 
+        {/* Location + Map Section */}
+        <div className="mt-6 bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="p-4 border-b">
+            <p className="text-sm text-gray-600">📍 Location</p>
+            <h2 className="text-lg font-semibold">{location}</h2>
+          </div>
 
-
+          <div className="h-[500px]">
+            <LoadScript googleMapsApiKey="{GOOGLE_MAPS_API_KEY}">
+              <GoogleMap
+                mapContainerStyle={{ width: "100%", height: "100%" }}
+                center={marker}
+                zoom={13}
+                onClick={handleMapClick}
+              >
+                <Marker position={marker} />
+              </GoogleMap>
+            </LoadScript>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -58,7 +58,9 @@ import StripeCard from "./pages/StripeCard.jsx";
 import { Elements } from "@stripe/react-stripe-js";
 import { stripePromise } from "./stripe";
 import Notifications from "./pages/Notifications";
-
+import 'leaflet/dist/leaflet.css';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
 import "./App.css";
 
 /* -----------------------------
