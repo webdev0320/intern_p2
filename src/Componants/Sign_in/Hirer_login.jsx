@@ -131,7 +131,7 @@ const handleSubmit = async (e) => {
                                             name="email"
                                             value={formData.email}
                                             onChange={handleChange}
-                                            className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                            className="pl-10 w-full bg-white px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
                                             placeholder="company@example.com"
                                             required
                                         />
@@ -153,7 +153,7 @@ const handleSubmit = async (e) => {
                                             name="password"
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className="pl-10 pr-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
+                                            className="pl-10 pr-10 w-full bg-white px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200"
                                             placeholder="Enter your password"
                                             required
                                         />
@@ -179,9 +179,9 @@ const handleSubmit = async (e) => {
                                             name="rememberMe"
                                             checked={formData.rememberMe}
                                             onChange={handleChange}
-                                            className="h-4 w-4 text-orange-500 focus:ring-emerald-500 border-gray-300 rounded"
+                                            className="h-4 w-4 text-orange-500  focus:ring-emerald-500 border-gray-300 rounded"
                                         />
-                                        <label className="ml-2 text-sm text-gray-600">Remember me</label>
+                                        <label className="ml-2 text-sm  text-gray-600">Remember me</label>
                                     </div>
                                     <button
                                         onClick={() => navigate("/hirer/forgot-password")}

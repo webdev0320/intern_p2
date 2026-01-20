@@ -114,7 +114,7 @@ useEffect(() => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-lg mt-1"
+                    className="w-full bg-white px-4 py-3 border rounded-lg mt-1"
                     required
                   />
                 </div>
@@ -129,7 +129,7 @@ useEffect(() => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-lg mt-1"
+                    className="w-full bg-white px-4 py-3 border rounded-lg mt-1"
                     required
                   />
                 </div>
