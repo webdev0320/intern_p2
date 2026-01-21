@@ -16,6 +16,7 @@ import Test_Hire from "./Componants/11_Test_Hire.jsx";
 import Outsource_admin from "./Componants/12_Outsource_admin.jsx";
 import Latest_news from "./Componants/13_Latest_news.jsx";
 import SignUpModal from "./Componants/SignUp_btn";
+import Ready_to_take from "./Componants/14_Ready_to_take.jsx";
 
 // Sign up / Sign in pages
 import WorkerSignUpPage from "./Componants/Sign_up/Worker_signUp.jsx";
@@ -58,7 +59,9 @@ import StripeCard from "./pages/StripeCard.jsx";
 import { Elements } from "@stripe/react-stripe-js";
 import { stripePromise } from "./stripe";
 import Notifications from "./pages/Notifications";
-
+import 'leaflet/dist/leaflet.css';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
 import "./App.css";
 
 /* -----------------------------
@@ -96,6 +99,7 @@ function HomePage() {
       <Test_Hire />
       <Outsource_admin />
       <Latest_news />
+      <Ready_to_take />
     </>
   );
 }

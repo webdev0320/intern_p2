@@ -25,6 +25,16 @@
     background-color: #f8f9fa;
     cursor: pointer;
   }
-  
+
+  input{
+    background-color: white !important;
+  }
+  textarea{
+    background-color: white !important;
+  }
+  select{
+    background-color: white !important;
+  }
+
 }
 

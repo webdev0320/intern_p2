@@ -5,7 +5,7 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "Add bg-white in all inputs"
+		git commit -m "Add 14_Ready_to_take section"
 		git push origin talha 
 	
 		npm run build

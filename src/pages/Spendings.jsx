@@ -1,24 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronDown, ArrowLeft, Bell } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
 
 const SpendingDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [spendingData, setSpendingData] = useState({
     amount: 0,
-    date: 'No Date'
+    date: "No Date",
   });
 
-  // Fetching data from your provided API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://iyouworks.taxaccolega.co.uk/index.php/api/users/payment?id=30&type=spending');
+        const response = await fetch(
+          "https://iyouworks.taxaccolega.co.uk/index.php/api/users/payment?id=30&type=spending"
+        );
         const json = await response.json();
-        
+
         if (json.status === "success!") {
           setSpendingData({
             amount: json["Total Amount"],
-            date: json.date
+            date: json.date,
           });
         }
       } catch (error) {
@@ -32,70 +33,61 @@ const SpendingDashboard = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#F8F9FA] font-sans pb-10 overflow-hidden">
-      
-      {/* Top Decorative Orange Shape */}
-      <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#FF6B00] rounded-full z-0" />
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">
+          My Spendings
+        </h1>
 
-      {/* Header Section */}
-      <header className="relative z-10 flex justify-between items-center px-6 pt-6">
-        <button className="p-3 bg-white rounded-full shadow-md hover:bg-gray-50 transition">
-          <ArrowLeft size={24} className="text-[#0056b3]" />
-        </button>
-        
-        {/* Replace with your actual Logo SVG or Image */}
-        <div className="flex items-center">
-           <span className="text-3xl font-bold italic text-[#0056b3]">i</span>
-           <span className="text-3xl font-bold italic text-[#FF6B00]">W</span>
-        </div>
+        {/* GRID 6 / 6 */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
 
-        <button className="p-3 bg-white rounded-full shadow-md hover:bg-gray-50 transition">
-          <Bell size={24} className="text-gray-600" />
-        </button>
-      </header>
+          {/* LEFT SIDE – SPENDING CARD */}
+          <div className="md:col-span-6">
+            <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 flex flex-col items-center h-full">
+              <img
+                src="https://i.ibb.co/Lz0zX3y/illustration.png"
+                alt="Spending Illustration"
+                className="w-40 mb-6"
+              />
 
-      <main className="relative z-10 px-6 mt-8 max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-[#333] mb-6">My Spendings</h1>
+              <div className="flex items-start">
+                <span className="text-2xl font-bold text-[#FF8C00] mt-2">
+                  £
+                </span>
+                <span className="text-6xl font-extrabold text-[#FF8C00]">
+                  {loading ? "..." : spendingData.amount.toFixed(1)}
+                </span>
+              </div>
 
-        {/* Main Amount Card */}
-        <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 flex flex-col items-center mb-8">
-          {/* Illustration Placeholder */}
-          <div className="mb-6">
-            <img 
-              src="https://i.ibb.co/Lz0zX3y/illustration.png" // Mock illustration from your design
-              alt="Spending Illustration" 
-              className="w-40 h-auto"
-            />
+              <p className="text-gray-500 mt-4 text-lg">
+                {loading ? "Loading..." : spendingData.date}
+              </p>
+            </div>
           </div>
 
-          <div className="flex items-start">
-            <span className="text-2xl font-bold text-[#FF8C00] mt-2">£</span>
-            <span className="text-6xl font-extrabold text-[#FF8C00]">
-              {loading ? "..." : spendingData.amount.toFixed(1)}
-            </span>
+          {/* RIGHT SIDE – FILTERS */}
+          <div className="md:col-span-6">
+            <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-8 h-full">
+              <h2 className="text-2xl font-bold text-[#FF8C00] mb-6">
+                Filter
+              </h2>
+
+              <div className="space-y-4">
+                <FilterButton label="Filter by workers" />
+                <FilterButton label="Filter by date" />
+                <FilterButton label="Filter by location" />
+              </div>
+            </div>
           </div>
 
-          <p className="text-gray-500 mt-4 text-lg">
-            {loading ? "Loading..." : spendingData.date}
-          </p>
         </div>
-
-        {/* Filter Section */}
-        <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-8">
-          <h2 className="text-2xl font-bold text-[#FF8C00] mb-6">Filter</h2>
-          
-          <div className="space-y-4">
-            <FilterButton label="Filter by workers" />
-            <FilterButton label="Filter by date" />
-            <FilterButton label="Filter by location" />
-          </div>
-        </div>
-      </main>
+      </div>
     </div>
   );
 };
 
-// Reusable Dropdown Component
+// Reusable Dropdown Button
 const FilterButton = ({ label }) => (
   <button className="w-full flex justify-between items-center px-6 py-4 border border-gray-200 rounded-full text-gray-500 hover:bg-gray-50 transition">
     <span className="italic">{label}</span>
