@@ -17,6 +17,8 @@ import Outsource_admin from "./Componants/12_Outsource_admin.jsx";
 import Latest_news from "./Componants/13_Latest_news.jsx";
 import SignUpModal from "./Componants/SignUp_btn";
 import Ready_to_take from "./Componants/14_Ready_to_take.jsx";
+import Footer from "./Componants/Footer.jsx";
+
 
 // Sign up / Sign in pages
 import WorkerSignUpPage from "./Componants/Sign_up/Worker_signUp.jsx";
@@ -100,6 +102,7 @@ function HomePage() {
       <Outsource_admin />
       <Latest_news />
       <Ready_to_take />
+      <Footer />
     </>
   );
 }
