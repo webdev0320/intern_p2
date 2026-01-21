@@ -4,12 +4,12 @@ import {
   FaBars
 } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../Componants/Sidebar";
+// import Sidebar from "../Componants/Sidebar";
 
 
 const HirerDashboard = () => {
   const navigate = useNavigate();
-  const [openSidebar, setOpenSidebar] = useState(false);
+  // const [openSidebar, setOpenSidebar] = useState(false);
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const [profile, setProfile] = useState(null);
@@ -38,18 +38,18 @@ const HirerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 pb-24 relative">
+    <div className="min-h-screen bg-gray-100 pb-24 pt-3 relative">
 
       {/* Sidebar Overlay */}
-      {openSidebar && (
+      {/* {openSidebar && (
         <div
           className="fixed inset-0 bg-black/40 z-40"
           onClick={() => setOpenSidebar(false)}
         />
-      )}
+      )} */}
 
       {/* Sidebar */}
-      <Sidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
+      {/* <Sidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} /> */}
 
 
       {/* Header */}
@@ -57,12 +57,12 @@ const HirerDashboard = () => {
         <div className="relative z-10 container mx-auto gap-2 px-4 pt-6">
 
           {/* Top Bar */}
-          <div>
+          {/* <div>
             <FaBars
               className="text-2xl cursor-pointer mb-4"
               onClick={() => setOpenSidebar(true)}
             />
-          </div>
+          </div> */}
 
           {/* Profile Info */}
           <div className="flex items-center">
