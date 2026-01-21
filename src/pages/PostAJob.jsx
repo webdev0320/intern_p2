@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import {
   MapContainer,
   TileLayer,
@@ -20,12 +21,12 @@ L.Icon.Default.mergeOptions({
 });
 
 const PostAJob = () => {
-  // Top filters
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [payRate, setPayRate] = useState(50);
   const [distance, setDistance] = useState(50);
   const [is_Remote, setRemote] = useState(false);
-
+  const [numWorkers, setNumWorkers] = useState(1); // default 1 worker
   // Post Job fields
   const [skillId, setSkillId] = useState("");
   const [industryId, setIndustryId] = useState("");
@@ -33,11 +34,16 @@ const PostAJob = () => {
   const [startTime, setStartTime] = useState(13);
   const [startDate, setStartDate] = useState("");
   const [offerRate, setOfferRate] = useState(20);
-  const userId = localStorage.getItem("user_id");
+  const [description, setDescription] = useState("");
+
+  
   // Industry & Skills data
   const [industries, setIndustries] = useState([]);
   const [skills, setSkills] = useState([]);
 
+  const [walletAmt, setWalletAmt] = useState(0);
+  const [useWallet, setUseWallet] = useState(false);
+   const [card, setCard] = useState(null);
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   
     const hours = Array.from({ length: 24 }, (_, i) =>
@@ -45,7 +51,7 @@ const PostAJob = () => {
     );
   // Location state
 
-
+  const userId = localStorage.getItem("user_id");
   const [location, setLocation] = useState(
     "J42J+P72, Street 17, New Gulzar-e-Quaid, Islamabad"
   );
@@ -107,6 +113,32 @@ const PostAJob = () => {
     lng: 73.0479,
   });
 
+  useEffect(() => {
+  const fetchWalletBalance = async () => {
+    try {
+      const payload = new FormData();
+      payload.append("user_id", userId);
+            const response = await fetch(
+              `${BASE_URL}/api/payment/create_stripe_account`,
+              {
+                method: "POST",
+                body: payload,
+              }
+            );      
+
+      const data = await response.json();
+
+      if (data?.status === "success!") {
+        setWalletAmt(Number(data.Balance) || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching wallet balance:", error);
+    }
+  };
+
+  fetchWalletBalance();
+}, [BASE_URL]);
+
 
 /* GET USER LOCATION */
   useEffect(() => {
@@ -156,10 +188,43 @@ const handleSubmit = async () => {
     return;
   }
 
+  // Calculate totalPayment similar to Kotlin logic
+  const totalPayment = payRate * duration * numWorkers;
+  console.log("Total Payment:", totalPayment);
+
+// WALLET CHECK
+  if (useWallet) {
+    if (totalPayment > walletAmt) {
+      alert(
+        `Insufficient wallet balance.\nWallet: £${walletAmt}\nRequired: £${totalPayment}`
+      );
+      return;
+    }
+
+    const confirmWallet = window.confirm(
+      `£${totalPayment} will be deducted from your wallet. Continue?`
+    );
+    if (!confirmWallet) return;
+  } else {
+    const confirmStripe = window.confirm(
+      `£${totalPayment} will be charged via Stripe. Continue?`
+    );
+    if (!confirmStripe) return;
+  }
+
+
+
   setLoading(true);
 
   try {
     // Prepare form data
+
+      
+
+
+
+
+
     const formData = new FormData();
     formData.append("skill_id", skillId);
     formData.append("industry_id", industryId);
@@ -170,10 +235,12 @@ const handleSubmit = async () => {
     formData.append("lat", marker.lat);
     formData.append("lon", marker.lng);
     formData.append("offer_status", "Waiting");
-    formData.append("description", "Job description here"); // you can replace with a field from input
+    formData.append("description", description);
     formData.append("job_location", location);
     formData.append("job_id", "1"); 
     formData.append("job_type", "1"); 
+    formData.append("platform", "web");
+    formData.append("worker_id", "1"); 
 
 
 
@@ -186,6 +253,64 @@ const handleSubmit = async () => {
     );
 
     const data = await response.json();
+
+     if (useWallet) {
+      // WALLET PAYMENT
+      const walletRes = await fetch(`${BASE_URL}/api/payment/deductWallet`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: totalPayment,
+        }),
+      });
+
+      const walletData = await walletRes.json();
+
+      if (walletData?.status !== "success!") {
+        alert("Wallet payment failed.");
+        setLoading(false);
+        return;
+      }
+    } else {
+        
+       console.log(data.job_id);
+
+       const cardRes = await fetch(`${BASE_URL}/api/users/cardHistory?user_id=${userId}`, {
+        method: "GET",
+      });
+
+      const card = await cardRes.json();
+      const name = localStorage.getItem("name");
+      const email = localStorage.getItem("email");
+      const phone = localStorage.getItem("phone");
+      const payload = new FormData();
+      payload.append("userName", name);
+      payload.append("email", email);
+      payload.append("phone", phone);
+      payload.append("zipcode", "");
+      payload.append("job_name", description);
+      payload.append("amount", totalPayment);
+      payload.append("status", "test");
+      payload.append("customer_id", "");
+      payload.append("user_id", userId);
+      payload.append("job_id", data.job_id);
+
+      const stripeRes = await fetch(`${BASE_URL}/api/payment/chargeWeb`, {
+        method: "POST",
+        body: payload,
+      });
+
+      const stripeData = await stripeRes.json();
+
+      if (stripeData?.status !== "success!") {
+        alert("Stripe payment failed.");
+        setLoading(false);
+        return;
+      }
+
+    }
+
+
     console.log("API Response:", data);
 
     if (data && data.status === "success!") {
@@ -319,10 +444,12 @@ const handleSubmit = async () => {
             <input
               type="date"
               value={startDate}
+              min={new Date().toISOString().split("T")[0]}
               onChange={(e) => setStartDate(e.target.value)}
               className="w-full border rounded-lg px-3 py-2"
             />
           </div>
+
 
           {/* Offer Rate */}
           <div>
@@ -337,6 +464,18 @@ const handleSubmit = async () => {
         </div>
 
         {/* Location + Map Section */}
+       <div className="mt-6 bg-white rounded-xl shadow-md overflow-hidden">
+          <label className="block text-sm font-medium mb-1">
+            Job Description
+          </label>
+          <input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full border rounded-md px-3 py-2 bg-gray-100"
+          />
+        </div>   
+
         <div className="mt-6 bg-white rounded-xl shadow-md overflow-hidden">
           <label className="block text-sm font-medium mb-1">
             Job Location
@@ -369,7 +508,21 @@ const handleSubmit = async () => {
           </div>
         </div>
 
-
+        <div className="mt-4 p-4 bg-gray-100 rounded-lg flex items-center justify-between">
+          <div>
+            <span className="font-medium">Wallet Balance: </span>
+            <span className="text-green-600">£{walletAmt}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium">Pay from Wallet</label>
+            <input
+              type="checkbox"
+              checked={useWallet}
+              onChange={() => setUseWallet(!useWallet)}
+              className="w-5 h-5"
+            />
+          </div>
+        </div>
                 {/* Submit Button */}
         <button
           onClick={handleSubmit}

@@ -77,6 +77,7 @@ const Header = ({ open, setOpen }) => {
             const data = await response.json();
             console.log("Stripe response:", data);
 
+
             // 👉 If API returns Stripe onboarding / connect URL
             if (data?.url) {
               window.location.href = data.url;
@@ -396,7 +397,7 @@ const Header = ({ open, setOpen }) => {
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      navigate("/emp-profile");
+                                                      navigate("/hirer-profile");
                                                       setOpen(false);
                                                     }}
                                                   >
@@ -407,7 +408,7 @@ const Header = ({ open, setOpen }) => {
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      navigate("/hirer-profile");
+                                                      navigate("/emp-profile");
                                                       setOpen(false);
                                                     }}
                                                   >
@@ -430,7 +431,7 @@ const Header = ({ open, setOpen }) => {
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      navigate("/employee-services");
+                                                      navigate("/services");
                                                       setOpen(false);
                                                     }}
                                                   >
@@ -442,7 +443,7 @@ const Header = ({ open, setOpen }) => {
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      navigate("/services");
+                                                      navigate("/employee-services");
                                                       setOpen(false);
                                                     }}
                                                   >
@@ -473,7 +474,7 @@ const Header = ({ open, setOpen }) => {
                                                     Blocked Worker List
                                                   </button>
                                                 </li>
-                                                {role === "emp" && (<li>
+                                                {role === "self-emp" && (<li>
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
@@ -485,7 +486,7 @@ const Header = ({ open, setOpen }) => {
                                                   </button>
                                                 </li> )}
 
-                                                 {role === "self-emp" && (<li>
+                                                 {role === "emp" && (<li>
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
