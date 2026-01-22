@@ -4,12 +4,18 @@ import { FaArrowRight } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { MdOutlineMenu, MdClose } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown,FaBell } from "react-icons/fa";
+import { FaChevronDown, FaBell } from "react-icons/fa";
 import logo from '../assets/logo_p2.png'
 import SignUp_btn from "./SignUp_btn.jsx"
 import SignIn_btn from "./SignIn_btn.jsx";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+
+import {
+  
+  FaBars
+} from "react-icons/fa6";
+import Sidebar from "./Sidebar.jsx";
 
 
 const Header = ({ open, setOpen }) => {
@@ -17,6 +23,9 @@ const Header = ({ open, setOpen }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const [signInOpen, setSignInOpen] = useState(false);
+
+    const [openSidebar, setOpenSidebar] = useState(false);
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     // Sign Up modal
     const [signUpOpen, setSignUpOpen] = useState(false);
@@ -39,8 +48,8 @@ const Header = ({ open, setOpen }) => {
             document.body.style.position = "static";
         }
 
-         const user_id = localStorage.getItem("user_id");
-         setIsLoggedIn(!!user_id);   
+        const user_id = localStorage.getItem("user_id");
+        setIsLoggedIn(!!user_id);
 
         return () => {
             document.body.style.overflow = "auto";
@@ -61,17 +70,17 @@ const Header = ({ open, setOpen }) => {
     payload.append("user_id", userId);
 
     const stripeConnect = async () => {
-          try {
+        try {
             const response = await fetch(
-              `${BASE_URL}/api/payment/create_stripe_account`,
-              {
-                method: "POST",
-                body: payload,
-              }
+                `${BASE_URL}/api/payment/create_stripe_account`,
+                {
+                    method: "POST",
+                    body: payload,
+                }
             );
 
             if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
@@ -80,20 +89,20 @@ const Header = ({ open, setOpen }) => {
 
             // 👉 If API returns Stripe onboarding / connect URL
             if (data?.url) {
-              window.location.href = data.url;
+                window.location.href = data.url;
             }
-          } catch (error) {
+        } catch (error) {
             console.error("Stripe connect error:", error);
-          }
-        };
+        }
+    };
 
 
 
-        const location = useLocation();
+    const location = useLocation();
 
-        useEffect(() => {
-          setOpen(false);
-        }, [location.pathname]);
+    useEffect(() => {
+        setOpen(false);
+    }, [location.pathname]);
 
 
     const menuItems = [
@@ -276,11 +285,29 @@ const Header = ({ open, setOpen }) => {
     return (
         <header className="fixed md:top-0 md:left-0 left-0 w-full bg-white z-50">
             <div className="max-w-7xl mx-auto flex items-center justify-between  p-4">
-   
-                <div className="text-2xl font-bold">
+
+                <div className="flex space-x-4">
                     <Link to="/" className="text-black md:block hidden hover:text-black no-underline">
                         <img src={logo} className="w-16" alt="" />
                     </Link>
+                    {/* Sidebar Overlay */}
+                    {openSidebar && (
+                        <div
+                            className="fixed inset-0 bg-black/40 z-40"
+                            onClick={() => setOpenSidebar(false)}
+                        />
+                    )}
+
+                    {/* Sidebar */}
+                    <Sidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
+
+                    {/* Top Bar */}
+                    <div>
+                        <FaBars
+                            className="text-2xl cursor-pointer mb-4"
+                            onClick={() => setOpenSidebar(true)}
+                        />
+                    </div>
                 </div>
 
                 {/* Desktop Navigation */}
@@ -347,86 +374,86 @@ const Header = ({ open, setOpen }) => {
                         )}
                     </button>
 
-                   {!isLoggedIn ? (
-                                <div className="flex items-center space-x-3">
-                                    {/* Sign In */}
-                                    <button
-                                        className="px-5 py-2 hover:bg-[#1E6EA7] rounded-md bg-transparent border hover:text-white transition-all duration-200 font-medium"
-                                        onClick={() => setSignInOpen(true)}
-                                    >
-                                        Sign in
-                                    </button>
+                    {!isLoggedIn ? (
+                        <div className="flex items-center space-x-3">
+                            {/* Sign In */}
+                            <button
+                                className="px-5 py-2 hover:bg-[#1E6EA7] rounded-md bg-transparent border hover:text-white transition-all duration-200 font-medium"
+                                onClick={() => setSignInOpen(true)}
+                            >
+                                Sign in
+                            </button>
 
-                                    {/* Sign Up */}
-                                    <button
-                                        className="btn-primary"
-                                        onClick={() => setSignUpOpen(true)}
-                                    >
-                                        Sign up
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="flex items-center space-x-3">
-                                    {/* Example: Profile and Logout buttons */}
-                                    
-                                    <button
-                                        onClick={() => navigate("/notifications")}
-                                        className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none"
-                                        title="Notifications"
-                                      >
-                                        <FaBell className="w-6 h-6" />
-                                        {/* Optional: Red dot for unread notifications */}
-                                        <span className="absolute top-2 right-2.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
-                                      </button>
+                            {/* Sign Up */}
+                            <button
+                                className="btn-primary"
+                                onClick={() => setSignUpOpen(true)}
+                            >
+                                Sign up
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex items-center space-x-3">
+                            {/* Example: Profile and Logout buttons */}
 
-                                    <div className="relative">
-                                          {/* Dropdown toggle */}
-                                          <button
-                                            className="px-5 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 font-medium flex items-center space-x-2"
-                                            onClick={() => setOpen(!open)}
-                                          >
-                                            Profile
-                                            <FaChevronDown className={`transition-transform ${open ? "rotate-180" : ""}`} />
-                                          </button>
+                            <button
+                                onClick={() => navigate("/notifications")}
+                                className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors duration-200 focus:outline-none"
+                                title="Notifications"
+                            >
+                                <FaBell className="w-6 h-6" />
+                                {/* Optional: Red dot for unread notifications */}
+                                <span className="absolute top-2 right-2.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
+                            </button>
 
-                                          {/* Dropdown menu */}
-                                          {open && (
-                                            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                                              <ul className="flex flex-col">
-                                                {role === "emp" && (<li>
-                                                  <button
+                            <div className="relative">
+                                {/* Dropdown toggle */}
+                                <button
+                                    className="px-5 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 font-medium flex items-center space-x-2"
+                                    onClick={() => setOpen(!open)}
+                                >
+                                    Profile
+                                    <FaChevronDown className={`transition-transform ${open ? "rotate-180" : ""}`} />
+                                </button>
+
+                                {/* Dropdown menu */}
+                                {open && (
+                                    <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                                        <ul className="flex flex-col">
+                                            {role === "emp" && (<li>
+                                                <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
                                                       navigate("/hirer-profile");
                                                       setOpen(false);
                                                     }}
-                                                  >
+                                                >
                                                     Basic Info
-                                                  </button>
-                                                </li> )}
-                                                {role === "self-emp" && (<li>
-                                                  <button
+                                                </button>
+                                            </li>)}
+                                            {role === "self-emp" && (<li>
+                                                <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
                                                       navigate("/emp-profile");
                                                       setOpen(false);
                                                     }}
-                                                  >
+                                                >
                                                     Basic Info
-                                                  </button>
-                                                </li> )}
-                                                <li>
-                                                  <button
+                                                </button>
+                                            </li>)}
+                                            <li>
+                                                <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      navigate("/settings");
-                                                      setOpen(false);
+                                                        navigate("/settings");
+                                                        setOpen(false);
                                                     }}
-                                                  >
+                                                >
                                                     Settings
-                                                  </button>
-                                                </li>
-                                                 {role === "emp" && (
+                                                </button>
+                                            </li>
+                                            {role === "emp" && (
                                                 <li>
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
@@ -446,31 +473,31 @@ const Header = ({ open, setOpen }) => {
                                                       navigate("/employee-services");
                                                       setOpen(false);
                                                     }}
-                                                  >
+                                                >
                                                     Services
-                                                  </button>
-                                                </li> )}
+                                                </button>
+                                            </li>)}
 
 
-                                                 <li>
-                                                  <button
+                                            <li>
+                                                <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      console.log("Go to profile");
-                                                      setOpen(false);
+                                                        console.log("Go to profile");
+                                                        setOpen(false);
                                                     }}
-                                                  >
+                                                >
                                                     Invite Freinds
-                                                  </button>
-                                                </li>
-                                                 <li>
-                                                  <button
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      console.log("Go to profile");
-                                                      setOpen(false);
+                                                        console.log("Go to profile");
+                                                        setOpen(false);
                                                     }}
-                                                  >
+                                                >
                                                     Blocked Worker List
                                                   </button>
                                                 </li>
@@ -478,48 +505,48 @@ const Header = ({ open, setOpen }) => {
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      stripeConnect();
-                                                      setOpen(false);
+                                                        stripeConnect();
+                                                        setOpen(false);
                                                     }}
-                                                  >
+                                                >
                                                     Connect Stripe
-                                                  </button>
-                                                </li> )}
+                                                </button>
+                                            </li>)}
 
                                                  {role === "emp" && (<li>
                                                   <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      navigate("/stripe-card");
-                                                      setOpen(false);
+                                                        navigate("/stripe-card");
+                                                        setOpen(false);
                                                     }}
-                                                  >
+                                                >
                                                     Stripe Cards
-                                                  </button>
-                                                </li> )}
+                                                </button>
+                                            </li>)}
 
-                                                <li>
-                                                  <button
+                                            <li>
+                                                <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
-                                                      localStorage.removeItem("token");
-                                                      localStorage.removeItem("user");
-                                                      localStorage.removeItem("user_id");
-                                                      setIsLoggedIn(false);
-                                                     window.location.href = "/";
-                                                      setOpen(false);
+                                                        localStorage.removeItem("token");
+                                                        localStorage.removeItem("user");
+                                                        localStorage.removeItem("user_id");
+                                                        setIsLoggedIn(false);
+                                                        window.location.href = "/";
+                                                        setOpen(false);
                                                     }}
-                                                  >
+                                                >
                                                     Logout
-                                                  </button>
-                                                </li>
-                                              </ul>
-                                            </div>
-                                          )}
-                                        </div>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
 
-                                </div>
-                            )}
+                        </div>
+                    )}
 
 
                     {/* Modals */}

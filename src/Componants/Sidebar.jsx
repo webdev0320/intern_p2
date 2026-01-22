@@ -11,12 +11,12 @@ import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ openSidebar, setOpenSidebar }) => {
   const navigate = useNavigate();
-    var userId = localStorage.getItem("user_id");
-    var email = localStorage.getItem("email");
-    var name = localStorage.getItem("name");
+  var userId = localStorage.getItem("user_id");
+  var email = localStorage.getItem("email");
+  var name = localStorage.getItem("name");
   return (
     <div
-      className={`fixed top-0 left-0 h-screen w-[350px] bg-white z-50 shadow-lg
+      className={`fixed top-0 -left-4 h-screen w-[350px] bg-white z-50 shadow-lg
         transition-transform duration-300 overflow-y-auto
         ${openSidebar ? "translate-x-0" : "-translate-x-full"}`}
     >
@@ -38,47 +38,147 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
 
       {/* Menu */}
       <div className="divide-y">
-        <button onClick={() => navigate("/find-worker")} className="menu-btn">
+        <button
+          onClick={() => {
+            navigate("/find-worker");
+            setOpenSidebar(false); // close sidebar
+          }}
+          className="menu-btn"
+        >
           <IoSearch /> Find a Worker
         </button>
-        <button onClick={() => navigate("/work-history/new")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/work-history/new");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <MdHistory /> History
         </button>
-        <button onClick={() => navigate("/messages")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/messages");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <LiaTelegram /> Messages
         </button>
-        <button onClick={() => navigate("/spendings")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/spendings");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <BsCash /> My Spendings
         </button>
-        <button onClick={() => navigate("/wallet")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/wallet");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <LuWallet /> Wallet
         </button>
-        <button onClick={() => navigate("/resolution")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/resolution");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <MdOutlineMarkEmailUnread /> Resolution Center
         </button>
-        <button onClick={() => navigate("/follow-workers")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/follow-workers");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <FaRegStar /> Follow Workers
         </button>
-        <button onClick={() => navigate("/settings")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/settings");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <GoQuestion /> Settings
         </button>
-        <button onClick={() => navigate("/faqs")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/faqs");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <GoQuestion /> FAQs
         </button>
-        <button onClick={() => navigate("/support")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/support");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <BsPerson /> Support Chat
         </button>
-        <button onClick={() => navigate("/about")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/about");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <GoInfo /> About
         </button>
-        <button onClick={() => navigate("/invite")} className="menu-btn">
+
+        <button
+          onClick={() => {
+            navigate("/invite");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <GoPersonAdd /> Invite Friends
         </button>
-        <button className="menu-btn">
+
+        <button
+          onClick={() => {
+            // handle logout logic
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
           <LuLogOut /> Log out
         </button>
-        <button className="menu-btn text-red-500">Delete Account</button>
+
+        <button
+          onClick={() => {
+            // handle delete account logic
+            setOpenSidebar(false);
+          }}
+          className="menu-btn text-red-500"
+        >
+          Delete Account
+        </button>
       </div>
+
     </div>
   );
 };
