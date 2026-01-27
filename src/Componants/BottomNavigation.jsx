@@ -16,7 +16,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
   const [role, setRole] = useState(localStorage.getItem("role"));
 
   const handleRedirect = () => {
-    if (role === "emp") {
+    if (role === "self-emp") {
       navigate("/emp-dashboard");
     } else {
       navigate("/hirer-dashboard");
@@ -36,7 +36,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-white shadow-t py-2">
+<div className="fixed bottom-0 left-0 w-full bg-white shadow-t py-2 z-100-h">
       <div className="container mx-auto px-6 flex justify-between items-center">
 
         {/* Dashboard */}
@@ -55,7 +55,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
         </button>
 
         {/* Center Action */}
-        {role === "self-emp" && (
+        {role === "emp" && (
           <div
             onClick={() => navigate("/post-job")}
             className="bg-orange-500 w-14 h-14 rounded-full flex items-center justify-center text-white -mt-7 shadow-lg cursor-pointer"
@@ -64,7 +64,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
           </div>
         )}
 
-        {role === "emp" && (
+        {role === "self-emp" && (
           <div
             onClick={() => navigate("/emp-find-work")}
             className="bg-blue-500 w-14 h-14 rounded-full flex items-center justify-center text-white -mt-7 shadow-lg cursor-pointer"
@@ -79,7 +79,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
           className="flex flex-col items-center text-gray-500 text-sm"
         >
           <FaArrowsRotate className="text-xl mb-1" />
-          {role === "emp" ? "Switch To Hirer" : "Switch To Worker"}
+          {role === "self-emp" ? "Switch To Hirer" : "Switch To Worker"}
         </button>
 
         {/* Settings */}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
-import logo from '../assets/logo_p2.png'
+import logo from '../assets/logo_p2.png';
 const SpendingDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [spendingData, setSpendingData] = useState({
@@ -14,7 +14,7 @@ const SpendingDashboard = () => {
         const BASE_URL = import.meta.env.VITE_API_BASE_URL;
         const userId = localStorage.getItem("user_id");
         const response = await fetch(
-          `${BASE_URL}/api/users/payment?id=${userId}&type=spending`
+          `${BASE_URL}/api/users/payment?id=${userId}&type=earning`
         );
         const json = await response.json();
 
@@ -38,7 +38,7 @@ const SpendingDashboard = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          My Spendings
+          My Earnings
         </h1>
 
         {/* GRID 6 / 6 */}
@@ -49,7 +49,7 @@ const SpendingDashboard = () => {
             <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 flex flex-col items-center h-full">
               <img
                 src={logo}
-                alt="Spending Illustration"
+                alt="Earnings Illustration"
                 className="w-40 mb-6"
               />
 
@@ -65,6 +65,7 @@ const SpendingDashboard = () => {
                         : "0.0"
                     }
                   </span>
+
               </div>
 
               <p className="text-gray-500 mt-4 text-lg">
@@ -81,7 +82,7 @@ const SpendingDashboard = () => {
               </h2>
 
               <div className="space-y-4">
-                <FilterButton label="Filter by workers" />
+                <FilterButton label="Filter by hirers" />
                 <FilterButton label="Filter by date" />
                 <FilterButton label="Filter by location" />
               </div>
