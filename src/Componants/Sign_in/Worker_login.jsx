@@ -36,7 +36,7 @@ useEffect(() => {
     const payload = new FormData();
     payload.append("email", formData.email.trim());
     payload.append("password", formData.password);
-    payload.append("user_type", "self-emp");
+    payload.append("user_type", "emp");
 
     try {
       const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -60,7 +60,7 @@ useEffect(() => {
 
           localStorage.setItem("token", data.token);
           localStorage.setItem("user_id", data.user_id);
-          localStorage.setItem("role", 'self-emp');
+          localStorage.setItem("role", 'emp');
           localStorage.setItem("email", data.email);
           localStorage.setItem("name", data.name);          
           localStorage.setItem("phone", data.mobile_number);

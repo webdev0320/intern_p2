@@ -18,12 +18,12 @@ function WorkHistory() {
   useEffect(() => {
     fetchJobs();
   }, [type]);
-
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const fetchJobs = async () => {
     try {
       setLoading(true);
       const apiType = getApiType();
-      const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+      
       const userId = localStorage.getItem("user_id");
       const url = `${BASE_URL}/api/jobs/owner?owner_id=${userId}&type=${apiType}`;
       const response = await fetch(url);
@@ -36,6 +36,27 @@ function WorkHistory() {
       setLoading(false);
     }
   };
+
+  const handleCancel = async (jobId) => {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/jobs/update_work_status?job_offer_id=${jobId}`,
+      {
+        method: "POST", // or GET if your API expects GET
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      window.location.reload(); // 🔄 refresh page
+    } else {
+      console.error("Error:", data);
+    }
+  } catch (error) {
+    console.error("API Error:", error);
+  }
+};
 
   const formatTitle = (t) =>
     t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
@@ -85,7 +106,7 @@ function WorkHistory() {
                 {/* HEADER */}
                 <div className="flex justify-between items-center">
                   <h2 className="text-orange-600 font-semibold text-lg">
-                    {job.job_name}, {job.Worker_Required}
+                    {job.job_name}, {job.job_id}
                   </h2>
                   <div
                     className="flex items-center gap-1 text-green-600 text-sm font-medium cursor-pointer"
@@ -163,8 +184,8 @@ function WorkHistory() {
 
                 {/* BUTTON */}
                 {job.job_status === "Waiting" && (
-                  <button className="mt-5 w-full bg-orange-500 text-white py-3 rounded-xl shadow-lg text-lg font-medium">
-                    Refund Amount
+                  <button  onClick={() => handleCancel(job.id)} className="mt-5 w-full bg-orange-500 text-white py-3 rounded-xl shadow-lg text-lg font-medium">
+                    Cancel
                   </button>
                 )}
               </div>

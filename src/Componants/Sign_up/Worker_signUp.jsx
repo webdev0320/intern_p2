@@ -83,7 +83,7 @@ const handleSubmit = async (e) => {
 
         if (response.ok) {
             alert(data.message || "Account created successfully!");
-            navigate("/login/hirer");
+            navigate("/login/worker");
         } else {
             alert(data.message || data.error || "Registration failed!");
         }

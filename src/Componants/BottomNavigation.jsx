@@ -55,7 +55,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
         </button>
 
         {/* Center Action */}
-        {role === "emp" && (
+        {role === "self-emp" && (
           <div
             onClick={() => navigate("/post-job")}
             className="bg-orange-500 w-14 h-14 rounded-full flex items-center justify-center text-white -mt-7 shadow-lg cursor-pointer"
@@ -64,7 +64,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
           </div>
         )}
 
-        {role === "self-emp" && (
+        {role === "emp" && (
           <div
             onClick={() => navigate("/emp-find-work")}
             className="bg-blue-500 w-14 h-14 rounded-full flex items-center justify-center text-white -mt-7 shadow-lg cursor-pointer"
