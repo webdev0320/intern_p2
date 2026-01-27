@@ -14,7 +14,7 @@ const HirerDashboard = () => {
 
   const [profile, setProfile] = useState(null);
   const userId = localStorage.getItem("user_id");
-
+  const [rating, setRating] = useState(0);
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -32,6 +32,34 @@ const HirerDashboard = () => {
 
     fetchProfile();
   }, []);
+
+  /* ======================
+     Fetch Rating
+  ====================== */
+  useEffect(() => {
+    const fetchRating = async () => {
+      try {
+        const response = await fetch(
+          `${BASE_URL}/api/users/userRating/?user_id=${userId}`
+        );
+        const data = await response.json();
+
+        const total =
+          data.star_rating1 +
+          data.star_rating2 +
+          data.star_rating3 +
+          data.star_rating4 +
+          data.star_rating5;
+
+        setRating(total / 5);
+      } catch (error) {
+        console.error("Failed to fetch rating:", error);
+      }
+    };
+
+    if (userId) fetchRating();
+  }, [userId, BASE_URL]);
+
 
   if (!profile) {
     return <div className="min-h-screen flex justify-center items-center">Loading...</div>;
@@ -69,10 +97,24 @@ const HirerDashboard = () => {
             <div className="flex-1">
               <h1 className="text-2xl font-bold">{profile.name}</h1>
               <p className="text-gray-500 mb-1">{profile.business_name}</p>
-              <div className="flex items-center text-yellow-400">
-                <FaStar /><FaStar /><FaStar /><FaStar /><FaStar />
-                <span className="ml-2 text-gray-800 font-medium">5/5</span>
-              </div>
+             
+             <div className="flex items-center mt-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FaStar
+                  key={star}
+                  className={
+                    star <= rating
+                      ? "text-yellow-400"
+                      : "text-gray-300"
+                  }
+                />
+              ))}
+              <span className="ml-2 text-gray-800 font-medium">
+                {rating.toFixed(1)}/5
+              </span>
+            </div>   
+
+
             </div>
           </div>
 

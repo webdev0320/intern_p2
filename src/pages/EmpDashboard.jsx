@@ -131,11 +131,11 @@ const EmpDashboard = () => {
             </div>
 
             <div
-              onClick={() => navigate("/work-history/new")}
+              onClick={() => navigate("/emp-work-history/new")}
               className="bg-white rounded-lg shadow text-center p-4 cursor-pointer"
             >
               <span className="block text-lg font-bold">
-                {profile.Waiting}
+                {profile.Accept}
               </span>
               <span className="text-sm text-gray-500 uppercase">
                 New Work
@@ -143,7 +143,7 @@ const EmpDashboard = () => {
             </div>
 
             <div
-              onClick={() => navigate("/work-history/inprogress")}
+              onClick={() => navigate("/emp-work-history/inprogress")}
               className="bg-white rounded-lg shadow text-center p-4 cursor-pointer"
             >
               <span className="block text-lg font-bold">
@@ -155,7 +155,7 @@ const EmpDashboard = () => {
             </div>
 
             <div
-              onClick={() => navigate("/work-history/completed")}
+              onClick={() => navigate("/emp-work-history/completed")}
               className="bg-white rounded-lg shadow text-center p-4 cursor-pointer"
             >
               <span className="block text-lg font-bold">

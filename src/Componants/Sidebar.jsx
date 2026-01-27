@@ -14,6 +14,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
   var userId = localStorage.getItem("user_id");
   var email = localStorage.getItem("email");
   var name = localStorage.getItem("name");
+  var role = localStorage.getItem("role");
   return (
     <div
       className={`fixed top-0 -left-4 h-screen w-[350px] bg-white z-50 shadow-lg
@@ -40,7 +41,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
       <div className="divide-y">
         <button
           onClick={() => {
-            navigate("/find-worker");
+            navigate("/emp-find-work");
             setOpenSidebar(false); // close sidebar
           }}
           className="menu-btn"
@@ -68,6 +69,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
           <LiaTelegram /> Messages
         </button>
 
+        {role === "emp" && (
         <button
           onClick={() => {
             navigate("/spendings");
@@ -77,6 +79,19 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
         >
           <BsCash /> My Spendings
         </button>
+        )}
+
+        {role === "self-emp" && (
+        <button
+          onClick={() => {
+            navigate("/earnings");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
+          <BsCash /> My Earnings
+        </button>
+        )}
 
         <button
           onClick={() => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+    import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
@@ -302,15 +302,11 @@ const Header = ({ open, setOpen }) => {
                     <Sidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
 
                     {/* Top Bar */}
-                    <div>
-                        <FaBars
-                            className="text-2xl cursor-pointer mb-4"
-                            onClick={() => setOpenSidebar(true)}
-                        />
-                    </div>
+                    
                 </div>
 
                 {/* Desktop Navigation */}
+                 {isLoggedIn!=true && (
                 <nav className="hidden md:flex flex-1 justify-center">
                     <ul className="flex space-x-6 items-center border-b border-gray-300">
                         {menuItems.map((item, idx) => (
@@ -356,6 +352,7 @@ const Header = ({ open, setOpen }) => {
                         ))}
                     </ul>
                 </nav>
+                )}
 
 
                 <div className="flex items-center justify-between w-full md:w-auto">
@@ -408,6 +405,7 @@ const Header = ({ open, setOpen }) => {
 
                             <div className="relative">
                                 {/* Dropdown toggle */}
+                                {role === "self-emp" && (
                                 <button
                                     className="px-5 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 font-medium flex items-center space-x-2"
                                     onClick={() => setOpen(!open)}
@@ -415,6 +413,19 @@ const Header = ({ open, setOpen }) => {
                                     Profile
                                     <FaChevronDown className={`transition-transform ${open ? "rotate-180" : ""}`} />
                                 </button>
+                                )}
+
+                                {role === "emp" && (
+                                <button
+                                    className="px-5 py-2 rounded-md bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200 font-medium flex items-center space-x-2"
+                                    onClick={() => setOpen(!open)}
+                                >
+                                    Profile
+                                    <FaChevronDown className={`transition-transform ${open ? "rotate-180" : ""}`} />
+                                </button>
+                                )}
+
+                
 
                                 {/* Dropdown menu */}
                                 {open && (
@@ -544,6 +555,12 @@ const Header = ({ open, setOpen }) => {
                                     </div>
                                 )}
                             </div>
+                               <div>
+                                    <FaBars
+                                        className="text-2xl cursor-pointer mb-4"
+                                        onClick={() => setOpenSidebar(true)}
+                                    />
+                                </div>
 
                         </div>
                     )}
@@ -617,6 +634,7 @@ const Header = ({ open, setOpen }) => {
                                 </button>
                             </div>
 
+                            
                             <ul className="flex flex-col space-y-1">
                                 {menuItems.map((item, idx) => (
                                     <li key={idx} className="pb-2">
