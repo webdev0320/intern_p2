@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa6";
 
-function HirerFilterJobs() {
+function HirerFilterJobsByWorker() {
   const type = 'finished';
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
@@ -181,4 +181,4 @@ function HirerFilterJobs() {
   );
 }
 
-export default HirerFilterJobs;
+export default HirerFilterJobsByWorker;

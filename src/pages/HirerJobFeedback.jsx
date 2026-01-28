@@ -31,6 +31,8 @@ function HirerJobFeedback() {
   const [job, setJob] = useState(null);
   const [duration, setDuration] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hasRated, setHasRated] = useState(false);
+
 
   const [ratings, setRatings] = useState({
     presentation: 0,
@@ -81,6 +83,7 @@ function HirerJobFeedback() {
           });
 
           setComment(r.comment || "");
+          setHasRated(true); // ✅ rating already exists
         }
       } catch (e) {
         console.error("Rating fetch error:", e);
@@ -205,12 +208,14 @@ return (
             onChange={(e) => setComment(e.target.value)}
           />
 
-          <button
-            onClick={handleSubmit}
-            className="mt-6 w-full bg-orange-500 text-white py-4 rounded-xl text-lg font-semibold"
-          >
-            Submit Feedback
-          </button>
+         {!hasRated && (
+              <button
+                onClick={handleSubmit}
+                className="mt-6 w-full bg-orange-500 text-white py-4 rounded-xl text-lg font-semibold"
+              >
+                Submit Feedback
+              </button>
+            )}
         </div>
 
       </div>
