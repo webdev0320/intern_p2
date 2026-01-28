@@ -56,6 +56,10 @@ import About from "./pages/About";
 import Invite from "./pages/Invite";
 import MyEarnings from "./pages/MyEarnings";
 import Sidebar from "./Componants/Sidebar.jsx";
+import HirerFilterJobs from "./pages/HirerFilterJobs";
+import HirerJobFeedback from "./pages/HirerJobFeedback";
+import HirerJobFeedbackSuccess from "./pages/HirerJobFeedbackSuccess";
+
 
 import StripeCard from "./pages/StripeCard.jsx";
 import { Elements } from "@stripe/react-stripe-js";
@@ -191,6 +195,10 @@ function App() {
             <Route path="/employer-congrats-page" element={<PrivateRoute><EmpCongratsPage /></PrivateRoute>} />
             <Route path="/job-details/:offerId" element={<PrivateRoute><JobDetails /></PrivateRoute>} />
             <Route path="/earnings" element={<PrivateRoute><MyEarnings /></PrivateRoute>} />
+            <Route path="/hirer/filterjobs/:filterType" element={<PrivateRoute><HirerFilterJobs /></PrivateRoute>} />
+            <Route path="/hirer/work-leave-feedback/:job_id" element={<PrivateRoute><HirerJobFeedback /></PrivateRoute>} />
+            <Route path="/hirer/feedback-success/" element={<PrivateRoute><HirerJobFeedbackSuccess /></PrivateRoute>} />
+
           </Routes>
         </main>
 
