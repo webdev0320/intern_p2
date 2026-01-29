@@ -176,7 +176,7 @@ function App() {
             <Route path="/find-worker" element={<FindWork />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/spendings" element={<Spendings />} />
-            <Route path="/invoices" element={<Invoices />} />
+            
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/resolution" element={<Resolution />} />
             <Route path="/follow-workers" element={<FollowWorkers />} />
