@@ -2,6 +2,7 @@ import React from "react";
 import { FaXmark } from "react-icons/fa6";
 import { GoQuestion, GoInfo, GoPersonAdd } from "react-icons/go";
 import { BsPerson, BsCash } from "react-icons/bs";
+import { TbFileInvoice } from "react-icons/tb";
 import { FaRegStar } from "react-icons/fa";
 import { LiaTelegram } from "react-icons/lia";
 import { IoSearch } from "react-icons/io5";
@@ -101,6 +102,16 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
           className="menu-btn"
         >
           <LuWallet /> iYouWork Wallet
+        </button>
+
+        <button
+          onClick={() => {
+            navigate("/invoices");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
+          <TbFileInvoice />  My Invoices
         </button>
 
          <button

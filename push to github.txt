@@ -5,7 +5,7 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "Add Footer section"
+		git commit -m "updation in sidebar"
 		git push origin talha 
 	
 		npm run build
