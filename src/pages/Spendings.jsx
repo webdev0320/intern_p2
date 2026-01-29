@@ -76,19 +76,19 @@ const SpendingDashboard = () => {
                 <FilterButton
                   label="Filter by workers"
                   onClick={() =>
-                    navigate("/hirer/filterjobsbyworker/workers")
+                    navigate("/hirer/filterjobsbyworker")
                   }
                 />
                 <FilterButton
                   label="Filter by date"
                   onClick={() =>
-                    navigate("/hirer/filterjobsbydate/date")
+                    navigate("/hirer/filterjobsbydate")
                   }
                 />
                 <FilterButton
                   label="Filter by location"
                   onClick={() =>
-                    navigate("/hirer/filterjobs/location")
+                    navigate("/hirer/filterjobsbylocation")
                   }
                 />
               </div>

@@ -58,6 +58,7 @@ import MyEarnings from "./pages/MyEarnings";
 import Sidebar from "./Componants/Sidebar.jsx";
 import HirerFilterJobsByWorker from "./pages/HirerFilterJobsByWorker";
 import HirerFilterJobsByDate from "./pages/HirerFilterJobsByDate";
+import HirerFilterJobsByLocation from "./pages/HirerFilterJobsByLocation";
 import HirerJobFeedback from "./pages/HirerJobFeedback";
 import HirerJobFeedbackSuccess from "./pages/HirerJobFeedbackSuccess";
 
@@ -197,8 +198,9 @@ function App() {
             <Route path="/job-details/:offerId" element={<PrivateRoute><JobDetails /></PrivateRoute>} />
             <Route path="/job-details-worker/:offerId" element={<PrivateRoute><JobDetailsWorker /></PrivateRoute>} />
             <Route path="/earnings" element={<PrivateRoute><MyEarnings /></PrivateRoute>} />
-            <Route path="/hirer/filterjobsbyworker/:filterType" element={<PrivateRoute><HirerFilterJobsByWorker /></PrivateRoute>} />
-             <Route path="/hirer/filterjobsbydate/:filterType" element={<PrivateRoute><HirerFilterJobsByDate /></PrivateRoute>} />
+            <Route path="/hirer/filterjobsbyworker" element={<PrivateRoute><HirerFilterJobsByWorker /></PrivateRoute>} />
+            <Route path="/hirer/filterjobsbydate" element={<PrivateRoute><HirerFilterJobsByDate /></PrivateRoute>} />
+            <Route path="/hirer/filterjobsbylocation" element={<PrivateRoute><HirerFilterJobsByLocation /></PrivateRoute>} />
             <Route path="/hirer/work-leave-feedback/:job_id" element={<PrivateRoute><HirerJobFeedback /></PrivateRoute>} />
             <Route path="/hirer/feedback-success/" element={<PrivateRoute><HirerJobFeedbackSuccess /></PrivateRoute>} />
 
