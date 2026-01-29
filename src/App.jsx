@@ -130,7 +130,7 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen">
+      <div className="min-h-screen pb-12">
         {/* Header */}
         <Header_1 open={profileOpen} setOpen={setProfileOpen} />
 

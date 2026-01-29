@@ -8,6 +8,8 @@ function WorkHistory() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   const getApiType = () => {
     if (type === "new") return 1;
     if (type === "inprogress") return 2;
@@ -18,16 +20,17 @@ function WorkHistory() {
   useEffect(() => {
     fetchJobs();
   }, [type]);
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   const fetchJobs = async () => {
     try {
       setLoading(true);
       const apiType = getApiType();
-      
       const userId = localStorage.getItem("user_id");
+
       const url = `${BASE_URL}/api/jobs/owner?owner_id=${userId}&type=${apiType}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error("API failed");
+
       const result = await response.json();
       setJobs(result.data || []);
     } catch (e) {
@@ -38,25 +41,19 @@ function WorkHistory() {
   };
 
   const handleCancel = async (jobId) => {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/api/jobs/update_work_status?job_offer_id=${jobId}`,
-      {
-        method: "POST", // or GET if your API expects GET
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/jobs/update_work_status?job_offer_id=${jobId}`,
+        { method: "POST" }
+      );
+
+      if (response.ok) {
+        window.location.reload();
       }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-      window.location.reload(); // 🔄 refresh page
-    } else {
-      console.error("Error:", data);
+    } catch (error) {
+      console.error("API Error:", error);
     }
-  } catch (error) {
-    console.error("API Error:", error);
-  }
-};
+  };
 
   const formatTitle = (t) =>
     t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
@@ -68,46 +65,52 @@ function WorkHistory() {
   ];
 
   return (
-    <div className="p-4 bg-gray-100 min-h-screen">
-      {/* TITLE */}
-      <h1 className="text-xl font-bold mb-4">History – {formatTitle(type)}</h1>
+    <div className="bg-gray-100 min-h-screen overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-4 py-4 overflow-x-hidden">
+        {/* TITLE */}
+        <h1 className="text-xl font-bold mb-4">
+          History – {formatTitle(type)}
+        </h1>
 
-      {/* BUTTONS */}
-      <div className="flex mb-6">
-  {buttons.map((btn) => (
-    <button
-      key={btn.type}
-      onClick={() => navigate(`/work-history/${btn.type}`)}
-      className={`flex-1 py-2 font-medium rounded-none ${
-        type === btn.type
-          ? "bg-orange-500 text-white"
-          : "bg-white text-gray-600 border border-gray-300"
-      }`}
-    >
-      {btn.label}
-    </button>
-  ))}
-</div>
+        {/* BUTTONS */}
+        <div className="flex mb-6 w-full">
+          {buttons.map((btn) => (
+            <button
+              key={btn.type}
+              onClick={() => navigate(`/work-history/${btn.type}`)}
+              className={`flex-1 py-2 font-medium ${
+                type === btn.type
+                  ? "bg-orange-500 text-white"
+                  : "bg-white text-gray-600 border border-gray-300"
+              }`}
+            >
+              {btn.label}
+            </button>
+          ))}
+        </div>
 
-      {/* LOADING */}
-      {loading && <p className="text-center">Loading...</p>}
+        {/* LOADING */}
+        {loading && <p className="text-center">Loading...</p>}
 
-      {/* EMPTY */}
-      {!loading && jobs.length === 0 && (
-        <p className="text-center text-gray-500">No work found.</p>
-      )}
+        {/* EMPTY */}
+        {!loading && jobs.length === 0 && (
+          <p className="text-center text-gray-500">No work found.</p>
+        )}
 
-      {/* JOBS GRID */}
-      <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* JOBS GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
           {!loading &&
             jobs.map((job) => (
-              <div key={job.job_id} className="bg-white rounded-2xl shadow p-4">
+              <div
+                key={job.job_id}
+                className="bg-white rounded-2xl shadow p-4 w-full"
+              >
                 {/* HEADER */}
                 <div className="flex justify-between items-center">
                   <h2 className="text-orange-600 font-semibold text-lg">
                     {job.job_name}, {job.job_id}
                   </h2>
+
                   <div
                     className="flex items-center gap-1 text-green-600 text-sm font-medium cursor-pointer"
                     onClick={() =>
@@ -119,7 +122,7 @@ function WorkHistory() {
                   </div>
                 </div>
 
-                {/* STATUS MESSAGE */}
+                {/* STATUS */}
                 <p className="text-orange-500 text-sm mt-2">
                   {job.job_status === "Waiting"
                     ? "No Worker has accepted this work yet."
@@ -133,7 +136,7 @@ function WorkHistory() {
                 <p className="text-sm text-gray-600">{job.jobdetail}</p>
 
                 {/* LOCATION */}
-                <p className="text-sm mt-2 text-gray-500 flex items-center gap-1">
+                <p className="text-sm mt-2 text-gray-500">
                   📍 {job.job_location}
                 </p>
 
@@ -142,12 +145,16 @@ function WorkHistory() {
                 {/* PAY & DATE */}
                 <div className="flex justify-between text-sm">
                   <div>
-                    <p className="text-gray-500 flex items-center gap-1">💷 Pay Rate</p>
-                    <p className="text-orange-600 font-semibold">{job.offer_rate}</p>
+                    <p className="text-gray-500">💷 Pay Rate</p>
+                    <p className="text-orange-600 font-semibold">
+                      {job.offer_rate}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-gray-500 flex items-center gap-1">⏰ Date Posted</p>
-                    <p className="text-orange-600 font-semibold">{job.job_post_date}</p>
+                    <p className="text-gray-500">⏰ Date Posted</p>
+                    <p className="text-orange-600 font-semibold">
+                      {job.job_post_date}
+                    </p>
                   </div>
                 </div>
 
@@ -165,7 +172,7 @@ function WorkHistory() {
                 <div className="grid grid-cols-4 text-center text-xs text-gray-500 font-medium mb-2">
                   <div>Work Date</div>
                   <div>Duration</div>
-                  <div>Start Time (24h)</div>
+                  <div>Start Time</div>
                   <div>Status</div>
                 </div>
 
@@ -182,9 +189,12 @@ function WorkHistory() {
                   </div>
                 ))}
 
-                {/* BUTTON */}
+                {/* CANCEL BUTTON */}
                 {job.job_status === "Waiting" && (
-                  <button  onClick={() => handleCancel(job.id)} className="mt-5 w-full bg-orange-500 text-white py-3 rounded-xl shadow-lg text-lg font-medium">
+                  <button
+                    onClick={() => handleCancel(job.id)}
+                    className="mt-5 w-full bg-orange-500 text-white py-3 rounded-xl shadow-lg text-lg font-medium"
+                  >
                     Cancel
                   </button>
                 )}
