@@ -36,5 +36,17 @@
     background-color: white !important;
   }
 
+  .z-100-h{
+    z-index: 99999999999999999;
+  }
+
+  .card {
+    @apply bg-white rounded-xl p-4 shadow-md;
+  }
+
+  .card-hover {
+    @apply transition hover:shadow-lg;
+  }
+
 }
 

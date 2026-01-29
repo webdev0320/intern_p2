@@ -34,6 +34,7 @@ import Feedbacks from "./pages/Feedbacks";
 import Followers from "./pages/Followers";
 import Following from "./pages/Following";
 import WorkHistory from "./pages/WorkHistory";
+import EmpWorkHistory from "./pages/EmpWorkHistory";
 import EmpProfile from "./pages/EmpProfile";
 import HirerProfile from "./pages/HirerProfile";
 import Settings from "./pages/Settings";
@@ -42,9 +43,10 @@ import EmpServices from "./pages/EmpServices";
 import BottomNavigation from "./Componants/BottomNavigation";
 import EmpFindWork from "./pages/EmpFindWork.jsx";
 import PostAJob from "./pages/PostAJob.jsx";
+import EmpCongratsPage from "./pages/EmpCongratsPage";
+import JobDetails from "./pages/JobDetails";
+import JobDetailsWorker from "./pages/JobDetailsWorker";
 
-// Sidebar pages
-import History from "./pages/History";
 import Messages from "./pages/Messages";
 import Spendings from "./pages/Spendings";
 import Invoices from "./pages/Invoices";
@@ -55,7 +57,14 @@ import FAQs from "./pages/FAQs";
 import Support from "./pages/Support";
 import About from "./pages/About";
 import Invite from "./pages/Invite";
+import MyEarnings from "./pages/MyEarnings";
 import Sidebar from "./Componants/Sidebar.jsx";
+import HirerFilterJobsByWorker from "./pages/HirerFilterJobsByWorker";
+import HirerFilterJobsByDate from "./pages/HirerFilterJobsByDate";
+import HirerFilterJobsByLocation from "./pages/HirerFilterJobsByLocation";
+import HirerJobFeedback from "./pages/HirerJobFeedback";
+import HirerJobFeedbackSuccess from "./pages/HirerJobFeedbackSuccess";
+
 
 import StripeCard from "./pages/StripeCard.jsx";
 import { Elements } from "@stripe/react-stripe-js";
@@ -142,7 +151,7 @@ function App() {
             <Route path="/feedbacks" element={<Feedbacks />} />
             <Route path="/followers" element={<Followers />} />
             <Route path="/following" element={<Following />} />
-            <Route path="/work-history/:type" element={<WorkHistory />} />
+
             <Route path="/emp-profile" element={<EmpProfile />} />
             <Route path="/hirer-profile" element={<HirerProfile />} />
             <Route path="/settings" element={<Settings />} />
@@ -154,16 +163,17 @@ function App() {
             <Route path="/feedbacks" element={<PrivateRoute><Feedbacks /></PrivateRoute>} />
             <Route path="/followers" element={<PrivateRoute><Followers /></PrivateRoute>} />
             <Route path="/following" element={<PrivateRoute><Following /></PrivateRoute>} />
-            <Route path="/work-history" element={<PrivateRoute><WorkHistory /></PrivateRoute>} />
+            <Route path="/work-history/:type" element={<PrivateRoute><WorkHistory /></PrivateRoute>} />
+            <Route path="/emp-work-history/:type" element={<PrivateRoute><EmpWorkHistory /></PrivateRoute>} />
+
             <Route path="/emp-profile" element={<PrivateRoute><EmpProfile /></PrivateRoute>} />
             <Route path="/hirer-profile" element={<PrivateRoute><HirerProfile /></PrivateRoute>} />
             <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-            <Route path="/services" element={<PrivateRoute><Services /></PrivateRoute>} />
+            <Route path="/employee-services" element={<PrivateRoute><EmpServices /></PrivateRoute>} />
             <Route path="/emp-find-work" element={<PrivateRoute><EmpFindWork /></PrivateRoute>} />
             <Route path="/post-job" element={<PrivateRoute><PostAJob /></PrivateRoute>} />
             <Route path="/sidebar" element={<Sidebar />} />
             <Route path="/find-worker" element={<FindWork />} />
-            <Route path="/history" element={<History />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/spendings" element={<Spendings />} />
             <Route path="/invoices" element={<Invoices />} />
@@ -189,6 +199,16 @@ function App() {
             <Route path="/support" element={<PrivateRoute><Support /></PrivateRoute>} />
             <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
             <Route path="/invite" element={<PrivateRoute><Invite /></PrivateRoute>} />
+            <Route path="/employer-congrats-page" element={<PrivateRoute><EmpCongratsPage /></PrivateRoute>} />
+            <Route path="/job-details/:offerId" element={<PrivateRoute><JobDetails /></PrivateRoute>} />
+            <Route path="/job-details-worker/:offerId" element={<PrivateRoute><JobDetailsWorker /></PrivateRoute>} />
+            <Route path="/earnings" element={<PrivateRoute><MyEarnings /></PrivateRoute>} />
+            <Route path="/hirer/filterjobsbyworker" element={<PrivateRoute><HirerFilterJobsByWorker /></PrivateRoute>} />
+            <Route path="/hirer/filterjobsbydate" element={<PrivateRoute><HirerFilterJobsByDate /></PrivateRoute>} />
+            <Route path="/hirer/filterjobsbylocation" element={<PrivateRoute><HirerFilterJobsByLocation /></PrivateRoute>} />
+            <Route path="/hirer/work-leave-feedback/:job_id" element={<PrivateRoute><HirerJobFeedback /></PrivateRoute>} />
+            <Route path="/hirer/feedback-success/" element={<PrivateRoute><HirerJobFeedbackSuccess /></PrivateRoute>} />
+
           </Routes>
         </main>
 
