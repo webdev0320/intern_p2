@@ -90,7 +90,7 @@ const EmpDashboard = () => {
               />
             ))}
             <span className="ml-2 text-gray-800 font-medium">
-              {rating.toFixed(1)}/5
+              {rating?rating.toFixed(1):0}/5
             </span>
           </div>
 

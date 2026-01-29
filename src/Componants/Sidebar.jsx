@@ -100,7 +100,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
           }}
           className="menu-btn"
         >
-          <LuWallet /> Wallet
+          <LuWallet /> iYouWork Wallet
         </button>
 
         <button

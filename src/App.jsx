@@ -42,7 +42,7 @@ import EmpFindWork from "./pages/EmpFindWork.jsx";
 import PostAJob from "./pages/PostAJob.jsx";
 import EmpCongratsPage from "./pages/EmpCongratsPage";
 import JobDetails from "./pages/JobDetails";
-
+import JobDetailsWorker from "./pages/JobDetailsWorker";
 
 import Messages from "./pages/Messages";
 import Spendings from "./pages/Spendings";
@@ -56,6 +56,12 @@ import About from "./pages/About";
 import Invite from "./pages/Invite";
 import MyEarnings from "./pages/MyEarnings";
 import Sidebar from "./Componants/Sidebar.jsx";
+import HirerFilterJobsByWorker from "./pages/HirerFilterJobsByWorker";
+import HirerFilterJobsByDate from "./pages/HirerFilterJobsByDate";
+import HirerFilterJobsByLocation from "./pages/HirerFilterJobsByLocation";
+import HirerJobFeedback from "./pages/HirerJobFeedback";
+import HirerJobFeedbackSuccess from "./pages/HirerJobFeedbackSuccess";
+
 
 import StripeCard from "./pages/StripeCard.jsx";
 import { Elements } from "@stripe/react-stripe-js";
@@ -190,7 +196,14 @@ function App() {
             <Route path="/invite" element={<PrivateRoute><Invite /></PrivateRoute>} />
             <Route path="/employer-congrats-page" element={<PrivateRoute><EmpCongratsPage /></PrivateRoute>} />
             <Route path="/job-details/:offerId" element={<PrivateRoute><JobDetails /></PrivateRoute>} />
+            <Route path="/job-details-worker/:offerId" element={<PrivateRoute><JobDetailsWorker /></PrivateRoute>} />
             <Route path="/earnings" element={<PrivateRoute><MyEarnings /></PrivateRoute>} />
+            <Route path="/hirer/filterjobsbyworker" element={<PrivateRoute><HirerFilterJobsByWorker /></PrivateRoute>} />
+            <Route path="/hirer/filterjobsbydate" element={<PrivateRoute><HirerFilterJobsByDate /></PrivateRoute>} />
+            <Route path="/hirer/filterjobsbylocation" element={<PrivateRoute><HirerFilterJobsByLocation /></PrivateRoute>} />
+            <Route path="/hirer/work-leave-feedback/:job_id" element={<PrivateRoute><HirerJobFeedback /></PrivateRoute>} />
+            <Route path="/hirer/feedback-success/" element={<PrivateRoute><HirerJobFeedbackSuccess /></PrivateRoute>} />
+
           </Routes>
         </main>
 
