@@ -5,7 +5,7 @@
 
 🔹 2. Run the following commands in terminal:
 		git add .
-		git commit -m "Add icon in header from dashborad  "
+		git commit -m "Add Footer section"
 		git push origin talha 
 	
 		npm run build

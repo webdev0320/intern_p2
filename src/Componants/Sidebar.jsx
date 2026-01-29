@@ -70,27 +70,27 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
         </button>
 
         {role === "emp" && (
-        <button
-          onClick={() => {
-            navigate("/spendings");
-            setOpenSidebar(false);
-          }}
-          className="menu-btn"
-        >
-          <BsCash /> My Spendings
-        </button>
+          <button
+            onClick={() => {
+              navigate("/spendings");
+              setOpenSidebar(false);
+            }}
+            className="menu-btn"
+          >
+            <BsCash /> My Spendings
+          </button>
         )}
 
         {role === "self-emp" && (
-        <button
-          onClick={() => {
-            navigate("/earnings");
-            setOpenSidebar(false);
-          }}
-          className="menu-btn"
-        >
-          <BsCash /> My Earnings
-        </button>
+          <button
+            onClick={() => {
+              navigate("/earnings");
+              setOpenSidebar(false);
+            }}
+            className="menu-btn"
+          >
+            <BsCash /> My Earnings
+          </button>
         )}
 
         <button
@@ -103,9 +103,24 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
           <LuWallet /> iYouWork Wallet
         </button>
 
-        <button
+         <button
           onClick={() => {
-            navigate("/resolution");
+            const subject = "Dispute";
+            const body = `Dear iYouWork Team,
+
+              Here is the given information to open a dispute.
+
+              Work ID:
+              Work Role:
+              Dispute Details:
+
+              Thanks,
+              Sincerely,`;
+
+            window.location.href = `mailto:dispute@iyouwork.com?subject=${encodeURIComponent(
+              subject
+            )}&body=${encodeURIComponent(body)}`;
+
             setOpenSidebar(false);
           }}
           className="menu-btn"
@@ -192,6 +207,8 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
         >
           Delete Account
         </button>
+
+       
       </div>
 
     </div>

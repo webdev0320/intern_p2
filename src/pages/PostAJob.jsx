@@ -340,7 +340,7 @@ const handleSubmit = async () => {
             <select
               value={industryId}
               onChange={(e) => setIndustryId(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full border bg-white rounded-lg px-3 py-2"
             >
               <option value="">Select Industry</option>
               {industries.map((industry) => (
@@ -357,7 +357,7 @@ const handleSubmit = async () => {
             <select
               value={skillId}
               onChange={(e) => setSkillId(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full border bg-white rounded-lg px-3 py-2"
               disabled={skills.length === 0}
             >
               <option value="">Select Skill</option>
@@ -405,7 +405,7 @@ const handleSubmit = async () => {
               type="checkbox"
               checked={is_Remote}
               onChange={() => setRemote(!is_Remote)}
-              className="w-5 h-5"
+              className="w-5  h-5"
             />
             <label className="text-sm font-medium">Remote Work</label>
           </div>
@@ -417,7 +417,7 @@ const handleSubmit = async () => {
               type="number"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full border bg-white rounded-lg px-3 py-2"
             />
           </div>
 
@@ -446,7 +446,7 @@ const handleSubmit = async () => {
               value={startDate}
               min={new Date().toISOString().split("T")[0]}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full bg-white border rounded-lg px-3 py-2"
             />
           </div>
 
@@ -458,7 +458,7 @@ const handleSubmit = async () => {
               type="number"
               value={offerRate}
               onChange={(e) => setOfferRate(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full border bg-white rounded-lg px-3 py-2"
             />
           </div>
         </div>

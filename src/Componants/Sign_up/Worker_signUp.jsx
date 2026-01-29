@@ -165,7 +165,7 @@ const handleSubmit = async (e) => {
                                             required
                                             value={formData.forenames}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                             placeholder="Enter your forenames"
                                         />
                                     </div>
@@ -179,7 +179,7 @@ const handleSubmit = async (e) => {
                                             name="surname"
                                             value={formData.surname}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                             placeholder="Enter your surname"
                                         />
                                     </div>
@@ -195,7 +195,7 @@ const handleSubmit = async (e) => {
                                         required
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         placeholder="you@example.com"
                                     />
                                 </div>
@@ -211,7 +211,7 @@ const handleSubmit = async (e) => {
                                             required
                                             value={formData.password}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                             placeholder="••••••••"
                                         />
                                         <p className="text-xs text-gray-500 mt-1">At least 8 characters with uppercase, lowercase & number</p>
@@ -227,7 +227,7 @@ const handleSubmit = async (e) => {
                                             required
                                             value={formData.confirmPassword}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                             placeholder="••••••••"
                                         />
                                     </div>
@@ -243,7 +243,7 @@ const handleSubmit = async (e) => {
                                             name="dob"
                                             value={formData.dob}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                                            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         />
                                     </div>
 
