@@ -70,31 +70,72 @@ const Header = ({ open, setOpen }) => {
     payload.append("user_id", userId);
 
     const stripeConnect = async () => {
-        try {
-            const response = await fetch(
-                `${BASE_URL}/api/payment/create_stripe_account`,
-                {
-                    method: "POST",
-                    body: payload,
-                }
-            );
+  try {
+    // 1️⃣ Fetch user profile
+    const userId = 36; // replace with dynamic ID if needed
+    const profileResponse = await fetch(`${BASE_URL}/api/users/profile/?id=${userId}`);
+    
+    if (!profileResponse.ok) {
+      throw new Error(`Profile fetch error! Status: ${profileResponse.status}`);
+    }
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+    const profileData = await profileResponse.json();
+    console.log("User profile:", profileData);
 
-            const data = await response.json();
-            console.log("Stripe response:", data);
+    // 2️⃣ Check stripe_account_id
+    if (profileData?.stripe_account_id) {
+      // ✅ Already has Stripe account → call Stripe login API
+      console.log("Stripe account exists. Calling login API...");
+
+      const loginResponse = await fetch(`${BASE_URL}/api/payment/stripe_login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      });
+
+      if (!loginResponse.ok) {
+        throw new Error(`Stripe login API error! Status: ${loginResponse.status}`);
+      }
+
+      const loginData = await loginResponse.json();
+      console.log("Stripe login response:", loginData);
+
+      if (loginData?.url) {
+        window.location.href = loginData.url; // redirect to Stripe login
+      } else {
+        alert("Stripe login URL not found!");
+      }
+    } else {
+      // ❌ No Stripe account → create Stripe account
+      console.log("No Stripe account. Calling create Stripe account API...");
 
 
-            // 👉 If API returns Stripe onboarding / connect URL
-            if (data?.url) {
-                window.location.href = data.url;
-            }
-        } catch (error) {
-            console.error("Stripe connect error:", error);
-        }
-    };
+      const createResponse = await fetch(`${BASE_URL}/api/payment/create_stripe_account`, {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!createResponse.ok) {
+        throw new Error(`Create Stripe account error! Status: ${createResponse.status}`);
+      }
+
+      const createData = await createResponse.json();
+      console.log("Create Stripe response:", createData);
+
+      if (createData?.url) {
+        window.location.href = createData.url; // redirect to Stripe onboarding
+      } else {
+        alert("Stripe account creation URL not found!");
+      }
+    }
+  } catch (error) {
+    console.error("Stripe connect error:", error);
+    alert("Something went wrong while connecting to Stripe.");
+  }
+};
+
 
 
 
@@ -502,6 +543,8 @@ const Header = ({ open, setOpen }) => {
                                                 </button>
                                             </li>
                                             <li>
+                                                
+                                                {role === "emp" && (
                                                 <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
@@ -511,6 +554,21 @@ const Header = ({ open, setOpen }) => {
                                                 >
                                                     Blocked Worker List
                                                   </button>
+                                                  )}
+
+                                                {role === "self-emp" && (
+                                                <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      navigate("/blocked-hirer-list");
+                                                      setOpen(false);
+                                                    }}
+                                                >
+                                                    Blocked Hirer List
+                                                  </button>
+                                                  )}
+
+
                                                 </li>
                                                 {role === "self-emp" && (<li>
                                                   <button

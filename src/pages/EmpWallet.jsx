@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 
-const Wallet = () => {
+const EmpWallet = () => {
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const userId = localStorage.getItem("user_id") || 30;
 
@@ -146,20 +146,20 @@ const Wallet = () => {
 
       {/* ================= BALANCE CARD ================= */}
       <div className="bg-white rounded-3xl shadow p-6 text-center mx-4">
-        <h2 className="text-2xl font-bold text-orange-600 mt-1">
+        <h2 className="text-2xl font-bold text-blue-600 mt-1">
           Balance : £ {Number(balance).toFixed(2)}
         </h2>
 
         <div className="flex justify-around mt-6">
           <button
             onClick={() => setShowTopUp(true)}
-            className="flex flex-col items-center text-orange-500"
+            className="flex flex-col items-center text-blue-500"
           >
             <ArrowDownLeft />
-            <span className="text-sm mt-1">Top Up</span>
+            <span className="text-sm mt-1">Withdraw</span>
           </button>
 
-          <button className="flex flex-col items-center text-orange-500">
+          <button className="flex flex-col items-center text-blue-500">
             <ArrowUpRight />
             <span className="text-sm mt-1">Transfer</span>
           </button>
@@ -243,13 +243,13 @@ const Wallet = () => {
                     placeholder="£ 0.00"
                     value={topUpAmount}
                     onChange={(e) => setTopUpAmount(e.target.value)}
-                    className="w-full border rounded-xl px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    className="w-full border rounded-xl px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
                 <button
                   disabled={processing}
                   onClick={handleTopUp}
-                  className="w-full bg-orange-500 text-white py-4 rounded-xl text-lg font-semibold shadow-lg"
+                  className="w-full bg-blue-500 text-white py-4 rounded-xl text-lg font-semibold shadow-lg"
                 >
                   {processing ? "Processing..." : "Send OTP"}
                 </button>
@@ -271,13 +271,13 @@ const Wallet = () => {
                     placeholder="Enter OTP"
                     value={otpInput}
                     onChange={(e) => setOtpInput(e.target.value)}
-                    className="w-full border rounded-xl px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    className="w-full border rounded-xl px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </div>
                 <button
                   disabled={processing}
                   onClick={handleVerifyOtp}
-                  className="w-full bg-orange-500 text-white py-4 rounded-xl text-lg font-semibold shadow-lg"
+                  className="w-full bg-blue-500 text-white py-4 rounded-xl text-lg font-semibold shadow-lg"
                 >
                   {processing ? "Processing..." : "Verify OTP & Topup"}
                 </button>
@@ -290,4 +290,4 @@ const Wallet = () => {
   );
 };
 
-export default Wallet;
+export default EmpWallet;

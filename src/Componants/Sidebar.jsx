@@ -16,6 +16,8 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
   var email = localStorage.getItem("email");
   var name = localStorage.getItem("name");
   var role = localStorage.getItem("role");
+  const phoneNumber = "+447823454547"; // WhatsApp number with country code
+  const message = "Hello! I need support."; // Optional prefilled message
   return (
     <div
       className={`fixed top-0 -left-4 h-screen w-[350px] bg-white z-50 shadow-lg
@@ -50,15 +52,30 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
           <IoSearch /> Find a Worker
         </button>
 
-        <button
-          onClick={() => {
-            navigate("/work-history/new");
-            setOpenSidebar(false);
-          }}
-          className="menu-btn"
-        >
-          <MdHistory /> History
-        </button>
+        {role === "emp" && (        
+          <button
+            onClick={() => {
+              navigate("/work-history/new");
+              setOpenSidebar(false);
+            }}
+            className="menu-btn"
+          >
+            <MdHistory /> History
+          </button>
+         )}
+
+        {role === "self-emp" && (        
+          <button
+            onClick={() => {
+              navigate("/emp-work-history/new");
+              setOpenSidebar(false);
+            }}
+            className="menu-btn"
+          >
+            <MdHistory /> History
+          </button>
+        )}
+
 
         <button
           onClick={() => {
@@ -94,6 +111,19 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
           </button>
         )}
 
+        {role === "self-emp" && (
+        <button
+          onClick={() => {
+            navigate("/emp-wallet");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
+          <LuWallet /> iYouWork Wallet
+        </button>
+        )}
+
+        {role === "emp" && (
         <button
           onClick={() => {
             navigate("/wallet");
@@ -103,7 +133,9 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
         >
           <LuWallet /> iYouWork Wallet
         </button>
+        )}
 
+        {role === "emp" && (
         <button
           onClick={() => {
             navigate("/invoices");
@@ -113,6 +145,19 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
         >
           <TbFileInvoice />  My Invoices
         </button>
+        )}
+
+        {role === "self-emp" && (
+        <button
+          onClick={() => {
+            navigate("/emp-invoices");
+            setOpenSidebar(false);
+          }}
+          className="menu-btn"
+        >
+          <TbFileInvoice />  My Invoices
+        </button>
+        )}
 
          <button
           onClick={() => {
@@ -146,7 +191,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
           }}
           className="menu-btn"
         >
-          <FaRegStar /> Follow Workers
+          <FaRegStar /> Follow {role === "emp" ? "Workers" : role === "self-emp" ? "Hirers" : ""}
         </button>
 
         <button
@@ -171,8 +216,15 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
 
         <button
           onClick={() => {
-            navigate("/support");
-            setOpenSidebar(false);
+            // Open WhatsApp link in a new tab
+            window.open(
+              `https://wa.me/${phoneNumber.replace(/\+/g, "")}?text=${encodeURIComponent(
+                message
+              )}`,
+              "_blank"
+            );
+
+            setOpenSidebar(false); // close sidebar if needed
           }}
           className="menu-btn"
         >

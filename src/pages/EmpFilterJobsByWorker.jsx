@@ -2,36 +2,29 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa6";
 
-function WorkHistory() {
-  const { type } = useParams();
+function EmpFilterJobsByWorker() {
+  const type = 'finished';
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
   const getApiType = () => {
-    if (type === "new") return 1;
-    if (type === "inprogress") return 2;
-    if (type === "finished") return 3;
-    return 1;
+    return 4;
   };
 
   useEffect(() => {
     fetchJobs();
   }, [type]);
-
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const fetchJobs = async () => {
     try {
       setLoading(true);
-    setJobs([]); // clear previous jobs
       const apiType = getApiType();
+      
       const userId = localStorage.getItem("user_id");
-
-      const url = `${BASE_URL}/api/jobs/owner?owner_id=${userId}&type=${apiType}`;
+      const url = `${BASE_URL}/api/jobs/workers?worker_id=${userId}&type=${apiType}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error("API failed");
-
       const result = await response.json();
       setJobs(result.data || []);
     } catch (e) {
@@ -42,19 +35,25 @@ function WorkHistory() {
   };
 
   const handleCancel = async (jobId) => {
-    try {
-      const response = await fetch(
-        `${BASE_URL}/api/jobs/update_work_status?job_offer_id=${jobId}`,
-        { method: "POST" }
-      );
-
-      if (response.ok) {
-        window.location.reload();
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/jobs/update_work_status?job_offer_id=${jobId}`,
+      {
+        method: "POST", // or GET if your API expects GET
       }
-    } catch (error) {
-      console.error("API Error:", error);
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      window.location.reload(); // 🔄 refresh page
+    } else {
+      console.error("Error:", data);
     }
-  };
+  } catch (error) {
+    console.error("API Error:", error);
+  }
+};
 
   const formatTitle = (t) =>
     t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
@@ -66,54 +65,32 @@ function WorkHistory() {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen overflow-x-hidden">
-      <div className="max-w-7xl mx-auto px-4 py-4 overflow-x-hidden">
-        {/* TITLE */}
-        <h1 className="text-xl font-bold mb-4">
-          History – {formatTitle(type)}
-        </h1>
+    <div className="p-4 bg-gray-100 min-h-screen">
+      {/* TITLE */}
+      <h1 className="text-xl font-bold mb-4">Filter By Worker</h1>
 
-        {/* BUTTONS */}
-        <div className="flex mb-6 w-full">
-          {buttons.map((btn) => (
-            <button
-              key={btn.type}
-              onClick={() => navigate(`/work-history/${btn.type}`)}
-              className={`flex-1 py-2 font-medium ${
-                type === btn.type
-                  ? "bg-orange-500 text-white"
-                  : "bg-white text-gray-600 border border-gray-300"
-              }`}
-            >
-              {btn.label}
-            </button>
-          ))}
-        </div>
 
-        {/* LOADING */}
-        {loading && <p className="text-center">Loading...</p>}
+      {/* LOADING */}
+      {loading && <p className="text-center">Loading...</p>}
 
-        {/* EMPTY */}
-        {!loading && jobs.length === 0 && (
-          <p className="text-center text-gray-500">No work found.</p>
-        )}
+      {/* EMPTY */}
+      {!loading && jobs.length === 0 && (
+        <p className="text-center text-gray-500">No work found.</p>
+      )}
 
-        {/* JOBS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+      {/* JOBS GRID */}
+      <div className="container">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {!loading &&
             jobs.map((job) => (
-              <div
-                key={job.job_id}
-                className="bg-white rounded-2xl shadow p-4 w-full"
-              >
+              <div key={job.job_id} className="bg-white rounded-2xl shadow p-4">
                 {/* HEADER */}
                 <div className="flex justify-between items-center">
-                  <h2 className="text-orange-600 font-semibold text-lg">
+                  <h2 className="text-blue-600 font-semibold text-lg">
                     {job.job_name}, {job.job_id}
                   </h2>
-
                   <div
-                    className="flex items-center gap-1 text-green-600 text-sm font-medium cursor-pointer"
+                    className="flex items-center gap-1 text-blue-600 text-sm font-medium cursor-pointer"
                     onClick={() =>
                       window.open("https://wa.me/44782345457", "_blank")
                     }
@@ -123,8 +100,8 @@ function WorkHistory() {
                   </div>
                 </div>
 
-                {/* STATUS */}
-                <p className="text-orange-500 text-sm mt-2">
+                {/* STATUS MESSAGE */}
+                <p className="text-blue-500 text-sm mt-2">
                   {job.job_status === "Waiting"
                     ? "No Worker has accepted this work yet."
                     : job.job_status}
@@ -137,7 +114,7 @@ function WorkHistory() {
                 <p className="text-sm text-gray-600">{job.jobdetail}</p>
 
                 {/* LOCATION */}
-                <p className="text-sm mt-2 text-gray-500">
+                <p className="text-sm mt-2 text-gray-500 flex items-center gap-1">
                   📍 {job.job_location}
                 </p>
 
@@ -146,16 +123,12 @@ function WorkHistory() {
                 {/* PAY & DATE */}
                 <div className="flex justify-between text-sm">
                   <div>
-                    <p className="text-gray-500">💷 Pay Rate</p>
-                    <p className="text-orange-600 font-semibold">
-                      {job.offer_rate}
-                    </p>
+                    <p className="text-gray-500 flex items-center gap-1">💷 Pay Rate</p>
+                    <p className="text-blue-600 font-semibold">{job.offer_rate}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500">⏰ Date Posted</p>
-                    <p className="text-orange-600 font-semibold">
-                      {job.job_post_date}
-                    </p>
+                    <p className="text-gray-500 flex items-center gap-1">⏰ Date Posted</p>
+                    <p className="text-blue-600 font-semibold">{job.job_post_date}</p>
                   </div>
                 </div>
 
@@ -164,7 +137,7 @@ function WorkHistory() {
                 {/* REMOTE */}
                 <p className="text-sm">
                   <span className="text-gray-500">Remote Work:</span>{" "}
-                  <span className="text-orange-600 font-semibold">No</span>
+                  <span className="text-blue-600 font-semibold">No</span>
                 </p>
 
                 <hr className="my-3" />
@@ -173,7 +146,7 @@ function WorkHistory() {
                 <div className="grid grid-cols-4 text-center text-xs text-gray-500 font-medium mb-2">
                   <div>Work Date</div>
                   <div>Duration</div>
-                  <div>Start Time</div>
+                  <div>Start Time (24h)</div>
                   <div>Status</div>
                 </div>
 
@@ -181,7 +154,7 @@ function WorkHistory() {
                 {job.duration?.map((d) => (
                   <div
                     key={d.duration_id}
-                    className="grid grid-cols-4 text-center text-sm font-semibold text-orange-600"
+                    className="grid grid-cols-4 text-center text-sm font-semibold text-blue-600"
                   >
                     <div>{d.start_date}</div>
                     <div>{d.duration_in_hours} hrs</div>
@@ -190,15 +163,16 @@ function WorkHistory() {
                   </div>
                 ))}
 
-                {/* CANCEL BUTTON */}
-                {job.job_status === "Waiting" && (
-                  <button
-                    onClick={() => handleCancel(job.id)}
-                    className="mt-5 w-full bg-orange-500 text-white py-3 rounded-xl shadow-lg text-lg font-medium"
-                  >
-                    Cancel
-                  </button>
-                )}
+                  <div className="mt-5 flex gap-3">
+                    <button
+                      onClick={() => navigate(`/emp/work-leave-feedback/${job.job_id}`)}
+                      className="flex-1 bg-blue-500 text-white py-3 rounded-xl shadow-lg text-sm font-small"
+                    >
+                      Leave FeedBack
+                    </button>
+
+                  </div>
+                
               </div>
             ))}
         </div>
@@ -207,4 +181,4 @@ function WorkHistory() {
   );
 }
 
-export default WorkHistory;
+export default EmpFilterJobsByWorker;

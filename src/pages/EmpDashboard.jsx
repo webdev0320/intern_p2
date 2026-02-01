@@ -10,6 +10,7 @@ const EmpDashboard = () => {
 
   const [profile, setProfile] = useState(null);
   const [rating, setRating] = useState(0);
+  const [totalFeedback, setTotalFeedback] = useState(0);
 
   /* ======================
      Fetch Profile
@@ -49,6 +50,8 @@ const EmpDashboard = () => {
           data.star_rating5;
 
         setRating(total / 5);
+        setTotalFeedback(data.data.length);
+
       } catch (error) {
         console.error("Failed to fetch rating:", error);
       }
@@ -100,7 +103,7 @@ const EmpDashboard = () => {
               onClick={() => navigate("/feedbacks")}
               className="bg-white rounded-lg shadow text-center p-4 cursor-pointer"
             >
-              <span className="block text-lg font-bold">0</span>
+              <span className="block text-lg font-bold">{totalFeedback}</span>
               <span className="text-sm text-gray-500 uppercase">
                 Feedbacks
               </span>

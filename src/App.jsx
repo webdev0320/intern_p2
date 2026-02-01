@@ -46,11 +46,14 @@ import PostAJob from "./pages/PostAJob.jsx";
 import EmpCongratsPage from "./pages/EmpCongratsPage";
 import JobDetails from "./pages/JobDetails";
 import JobDetailsWorker from "./pages/JobDetailsWorker";
+import JobDetailsEmp from "./pages/JobDetailsEmp";
 
 import Messages from "./pages/Messages";
 import Spendings from "./pages/Spendings";
 import Invoices from "./pages/Invoices";
+import EmpInvoices from "./pages/EmpInvoices";
 import Wallet from "./pages/Wallet";
+import EmpWallet from "./pages/EmpWallet";
 import Resolution from "./pages/Resolution";
 import FollowWorkers from "./pages/FollowWorkers";
 import FAQs from "./pages/FAQs";
@@ -64,6 +67,19 @@ import HirerFilterJobsByDate from "./pages/HirerFilterJobsByDate";
 import HirerFilterJobsByLocation from "./pages/HirerFilterJobsByLocation";
 import HirerJobFeedback from "./pages/HirerJobFeedback";
 import HirerJobFeedbackSuccess from "./pages/HirerJobFeedbackSuccess";
+import InvoiceDetail from "./pages/InvoiceDetail";
+import EmpInvoiceDetail from "./pages/EmpInvoiceDetail";
+
+import EmpFilterJobsByWorker from "./pages/EmpFilterJobsByWorker";
+import EmpFilterJobsByDate from "./pages/EmpFilterJobsByDate";
+import EmpFilterJobsByLocation from "./pages/EmpFilterJobsByLocation";
+
+
+import EmpJobFeedback from "./pages/EmpJobFeedback";
+import EmpJobFeedbackSuccess from "./pages/EmpJobFeedbackSuccess";
+
+import EmpBlockedHirer from "./pages/EmpBlockedHirer";
+
 
 
 import StripeCard from "./pages/StripeCard.jsx";
@@ -177,7 +193,7 @@ function App() {
             <Route path="/messages" element={<Messages />} />
             <Route path="/spendings" element={<Spendings />} />
             
-            <Route path="/wallet" element={<Wallet />} />
+
             <Route path="/resolution" element={<Resolution />} />
             <Route path="/follow-workers" element={<FollowWorkers />} />
             <Route path="/faqs" element={<FAQs />} />
@@ -192,7 +208,9 @@ function App() {
             <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
             <Route path="/my-spendings" element={<PrivateRoute><Spendings /></PrivateRoute>} />
             <Route path="/invoices" element={<PrivateRoute><Invoices /></PrivateRoute>} />
+            <Route path="/invoice-detail/:id" element={<PrivateRoute><InvoiceDetail /></PrivateRoute>} />
             <Route path="/wallet" element={<PrivateRoute><Wallet /></PrivateRoute>} />
+            <Route path="/emp-wallet" element={<PrivateRoute><EmpWallet /></PrivateRoute>} />
             <Route path="/resolution" element={<PrivateRoute><Resolution /></PrivateRoute>} />
             <Route path="/follow-workers" element={<PrivateRoute><FollowWorkers /></PrivateRoute>} />
             <Route path="/faqs" element={<PrivateRoute><FAQs /></PrivateRoute>} />
@@ -208,6 +226,19 @@ function App() {
             <Route path="/hirer/filterjobsbylocation" element={<PrivateRoute><HirerFilterJobsByLocation /></PrivateRoute>} />
             <Route path="/hirer/work-leave-feedback/:job_id" element={<PrivateRoute><HirerJobFeedback /></PrivateRoute>} />
             <Route path="/hirer/feedback-success/" element={<PrivateRoute><HirerJobFeedbackSuccess /></PrivateRoute>} />
+
+            <Route path="/emp/filterjobsbyworker" element={<PrivateRoute><EmpFilterJobsByWorker /></PrivateRoute>} />
+            <Route path="/emp/filterjobsbydate" element={<PrivateRoute><EmpFilterJobsByDate /></PrivateRoute>} />
+            <Route path="/emp/filterjobsbylocation" element={<PrivateRoute><EmpFilterJobsByLocation /></PrivateRoute>} />
+            <Route path="/emp-job-details/:offerId" element={<PrivateRoute><JobDetailsEmp /></PrivateRoute>} />
+
+            <Route path="/emp/work-leave-feedback/:job_id" element={<PrivateRoute><EmpJobFeedback /></PrivateRoute>} />
+            <Route path="/emp/feedback-success/" element={<PrivateRoute><EmpJobFeedbackSuccess /></PrivateRoute>} />
+
+            <Route path="/emp-invoices" element={<PrivateRoute><EmpInvoices /></PrivateRoute>} />
+            <Route path="/emp-invoice-detail/:id" element={<PrivateRoute><EmpInvoiceDetail /></PrivateRoute>} />
+
+            <Route path="/blocked-hirer-list" element={<PrivateRoute><EmpBlockedHirer /></PrivateRoute>} />
 
           </Routes>
         </main>

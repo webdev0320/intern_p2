@@ -12,7 +12,7 @@ function EmpWorkHistory() {
   const getApiType = () => {
     if (type === "new") return 1;
     if (type === "inprogress") return 2;
-    if (type === "finished") return 3;
+    if (type === "completed") return 3;
     return 1;
   };
 
@@ -21,23 +21,23 @@ function EmpWorkHistory() {
   }, [type]);
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const userId = localStorage.getItem("user_id");
-  const fetchJobs = async () => {
-    try {
-      setLoading(true);
-      const apiType = getApiType();
-      
+const fetchJobs = async () => {
+  try {
+    setLoading(true);
+    setJobs([]); // clear previous jobs
 
-      const url = `${BASE_URL}/api/jobs/workers?worker_id=${userId}&type=${apiType}&IsEnterprise=false`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("API failed");
-      const result = await response.json();
-      setJobs(result.data || []);
-    } catch (e) {
-      console.error("API error:", e);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const apiType = getApiType();
+    const url = `${BASE_URL}/api/jobs/workers?worker_id=${userId}&type=${apiType}&IsEnterprise=false`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("API failed");
+    const result = await response.json();
+    setJobs(result.data || []); // will be empty array if API returns nothing
+  } catch (e) {
+    console.error("API error:", e);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleCancel = async (job) => {
   try {
@@ -133,7 +133,7 @@ function EmpWorkHistory() {
   const buttons = [
     { label: "New", type: "new" },
     { label: "In Progress", type: "inprogress" },
-    { label: "Completed", type: "finished" },
+    { label: "Completed", type: "completed" },
   ];
 
 // ✅ FOLLOW API
@@ -193,7 +193,7 @@ const handleFollow = async (followId) => {
   {buttons.map((btn) => (
     <button
       key={btn.type}
-      onClick={() => navigate(`/work-history/${btn.type}`)}
+      onClick={() => navigate(`/emp-work-history/${btn.type}`)}
       className={`flex-1 py-2 font-medium rounded-none ${
         type === btn.type
           ? "bg-blue-500 text-white"
