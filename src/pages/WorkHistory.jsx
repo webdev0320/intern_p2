@@ -10,7 +10,7 @@ function WorkHistory() {
   const [loading, setLoading] = useState(true);
 
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+  const userId = localStorage.getItem("user_id");
   const getApiType = () => {
     if (type === "new") return 1;
     if (type === "inprogress") return 2;
@@ -27,7 +27,7 @@ function WorkHistory() {
       setLoading(true);
     setJobs([]); // clear previous jobs
       const apiType = getApiType();
-      const userId = localStorage.getItem("user_id");
+
 
       const url = `${BASE_URL}/api/jobs/owner?owner_id=${userId}&type=${apiType}`;
       const response = await fetch(url);
@@ -42,41 +42,92 @@ function WorkHistory() {
     }
   };
 
-  const confirmRefund = (jobId) => {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "Are you sure to refund amount?",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#f97316", // orange
-    cancelButtonColor: "#6b7280",
-    confirmButtonText: "Yes, refund it",
-    cancelButtonText: "Cancel",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      handleRefund(jobId);
-    }
-  });
-};
 
-  const handleCancel = async (jobId) => {
+
+  const handleCancel = async (job) => {
+  try {
+
+    const response = await fetch(
+      `${BASE_URL}/api/jobs/reject_reason?type=1`,
+      {
+        method: "GET",
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || result.status !== "success!") {
+      Swal.fire("Error", "Failed to load rejection reasons", "error");
+      return;
+    }
+
+    // 🔹 Convert API response to Swal select options
+    const reasonOptions = {};
+    result.data.forEach((item) => {
+      reasonOptions[item.rj_id] = item.reason;
+    });
+
+    // 🔹 Show Swal Modal
+    const { value: selectedReason } = await Swal.fire({
+      title: "Cancel Job",
+      text: "Please select a rejection reason",
+      icon: "warning",
+      input: "select",
+      inputOptions: reasonOptions,
+      inputPlaceholder: "Select a reason",
+      showCancelButton: true,
+      confirmButtonText: "Confirm Cancel",
+      cancelButtonText: "Close",
+      inputValidator: (value) => {
+        if (!value) {
+          return "You must select a reason";
+        }
+      },
+    });
+
+    // ❌ User cancelled
+    if (!selectedReason) return;
+
+    console.log(job);
+
+      const payload = new FormData();
+      payload.append("status", 'Cancel');
+      payload.append("job_name", job.job_name);
+      payload.append("worker_id",null);
+      payload.append("who_offer_job_user_id", job.user_id);
+      payload.append("Reason_Id", selectedReason);
+
+
     try {
       const response = await fetch(
-        `${BASE_URL}/api/jobs/update_work_status?job_offer_id=${jobId}`,
-        { method: "POST" }
+        `${BASE_URL}/api/jobs/status_update?job_offer_id=${job.job_id}`,
+        {
+          method: "POST",
+          body: payload,
+        }
       );
 
+      const data = await response.json();
+      console.log("API Response:", data);
+
       if (response.ok) {
+        Swal.fire("Cancelled", data.message, "success");
         window.location.reload();
+      } else {
+        Swal.fire("Error", data.message || "Failed to cancel job", "error");
       }
     } catch (error) {
-      console.error("API Error:", error);
+      console.error("Cancel API error:", error);
+      Swal.fire("Error", "Something went wrong", "error");
     }
-  };
 
-  const handleRefund = async (jobId) => {
-    
-  };
+    Swal.fire("Cancelled", "Job cancelled successfully", "success");
+
+  } catch (error) {
+    console.error("API Error:", error);
+    Swal.fire("Error", "Something went wrong", "error");
+  }
+};
   
 
   const formatTitle = (t) =>
@@ -216,7 +267,7 @@ function WorkHistory() {
                 {/* CANCEL BUTTON */}
                 {type=='inprogress'  && job.job_status === "Waiting" && (
                   <button
-                    onClick={() => handleCancel(job.id)}
+                    onClick={() => handleCancel(job)}
                     className="mt-5 w-full bg-orange-500 text-white py-3 rounded-xl shadow-lg text-lg font-medium"
                   >
                     Cancel
@@ -225,7 +276,7 @@ function WorkHistory() {
 
                  {type === "new" && job.job_status === "Waiting" && (
                     <button
-                      onClick={() => confirmRefund(job.id)}
+                      onClick={() => handleCancel(job)}
                       className="mt-5 w-full bg-orange-500 text-white py-3 rounded-xl shadow-lg text-lg font-medium"
                     >
                       Refund Amount

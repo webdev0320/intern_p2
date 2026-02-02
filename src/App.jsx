@@ -162,8 +162,6 @@ function App() {
 
             <Route path="/emp-find-work" element={<EmpFindWork />} />
             <Route path="/post-job" element={<PostAJob />} />
-            <Route path="/emp-dashboard" element={<EmpDashboard />} />
-            <Route path="/hirer-dashboard" element={<HirerDashboard />} />
             <Route path="/feedbacks" element={<Feedbacks />} />
             <Route path="/followers" element={<Followers />} />
             <Route path="/following" element={<Following />} />

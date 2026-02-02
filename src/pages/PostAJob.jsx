@@ -223,15 +223,23 @@ const handleSubmit = async () => {
 
 
 
+    // Create a Date object
+    const dateObj = new Date(startDate);
 
+    // Get parts
+    const year = dateObj.getFullYear();
+    const monthName = dateObj.toLocaleString("default", { month: "long" });
+    const day = String(dateObj.getDate()).padStart(2, "0"); // ensures 2 digits
+
+    const formattedDate = `${year}-${monthName}-${day}`;
 
     const formData = new FormData();
     formData.append("skill_id", skillId);
     formData.append("industry_id", industryId);
     formData.append("duration_in_hours[]", duration);
     formData.append("start_time[]", startTime);
-    formData.append("start_date[]", startDate);
-    formData.append("offer_rate", `£${offerRate}`);
+    formData.append("start_date[]", formattedDate);
+    formData.append("offer_rate", `${offerRate}`);
     formData.append("lat", marker.lat);
     formData.append("lon", marker.lng);
     formData.append("offer_status", "Waiting");
@@ -240,7 +248,8 @@ const handleSubmit = async () => {
     formData.append("job_id", "1"); 
     formData.append("job_type", "1"); 
     formData.append("platform", "web");
-    formData.append("worker_id", "1"); 
+    formData.append("worker_id", "1");
+    formData.append("work_type", is_Remote ? "Remote" : "Onsite");
 
 
 
@@ -315,7 +324,7 @@ const handleSubmit = async () => {
 
     if (data && data.status === "success!") {
       alert("Job offer submitted successfully!");
-      navigate('hirer-dashboard')
+      window.location.href = 'hirer-dashboard';
     } else {
       alert("Failed to submit job offer.");
     }
@@ -422,21 +431,16 @@ const handleSubmit = async () => {
           </div>
 
           {/* Start Time */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Start Time (Hour)</label>
-            <select
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              className="w-full border rounded-lg px-3 py-2"
-            >
-              <option value="">Select hour</option>
-              {hours.map((h) => (
-                <option key={h} value={h}>
-                  {h}:00
-                </option>
-              ))}
-            </select>
-          </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Start Time</label>
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="w-full border rounded-lg px-3 py-2"
+              />
+            </div>
+
 
           {/* Start Date */}
           <div>
