@@ -1,43 +1,52 @@
-import React, { useState, useEffect } from "react";
-import {
-  FaStar,
-  FaBars
-} from "react-icons/fa6";
+import React, { useState, useEffect, useRef } from "react";
+import { FaStar } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-// import Sidebar from "../Componants/Sidebar";
-
 
 const HirerDashboard = () => {
   const navigate = useNavigate();
-  // const [openSidebar, setOpenSidebar] = useState(false);
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const [profile, setProfile] = useState(null);
-  const userId = localStorage.getItem("user_id");
   const [rating, setRating] = useState(0);
   const [totalFeedback, setTotalFeedback] = useState(0);
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
 
+  const userId = localStorage.getItem("user_id");
+
+  // Refs to prevent duplicate API calls in React 18 StrictMode (dev)
+  const profileFetched = useRef(false);
+  const ratingFetched = useRef(false);
+
+  /* ======================
+     Fetch Profile
+  ====================== */
+  useEffect(() => {
+    if (profileFetched.current) return; // prevent duplicate calls
+    profileFetched.current = true;
+
+    const fetchUserProfile = async () => {
+      try {
         const response = await fetch(`${BASE_URL}/api/users/profile/?id=${userId}`);
         const data = await response.json();
+        console.log(data);
         if (data) {
           setProfile(data);
+          localStorage.setItem("userProfile", JSON.stringify(data)); // store as string
         }
-
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }
     };
 
-    fetchProfile();
-  }, []);
+    if (userId) fetchUserProfile();
+  }, [BASE_URL, userId]);
 
   /* ======================
      Fetch Rating
   ====================== */
   useEffect(() => {
+    if (!userId || ratingFetched.current) return;
+    ratingFetched.current = true;
+
     const fetchRating = async () => {
       try {
         const response = await fetch(
@@ -45,110 +54,103 @@ const HirerDashboard = () => {
         );
         const data = await response.json();
 
-        const total =
-          data.star_rating1 +
-          data.star_rating2 +
-          data.star_rating3 +
-          data.star_rating4 +
-          data.star_rating5;
+        const totalStars =
+          (data.star_rating1 || 0) +
+          (data.star_rating2 || 0) +
+          (data.star_rating3 || 0) +
+          (data.star_rating4 || 0) +
+          (data.star_rating5 || 0);
 
-        setRating(total / 5);
-        setTotalFeedback(data.data.length);
+        setRating(totalStars / 5);
+        setTotalFeedback(data?.data?.length || 0);
       } catch (error) {
         console.error("Failed to fetch rating:", error);
       }
     };
 
-    if (userId) fetchRating();
-  }, [userId, BASE_URL]);
-
+    fetchRating();
+  }, [BASE_URL, userId]);
 
   if (!profile) {
-    return <div className="min-h-screen flex justify-center items-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        Loading...
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-100 pb-24 pt-3 relative">
-
-      {/* Sidebar Overlay */}
-      {/* {openSidebar && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40"
-          onClick={() => setOpenSidebar(false)}
-        />
-      )} */}
-
-      {/* Sidebar */}
-      {/* <Sidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} /> */}
-
-
       {/* Header */}
       <div className="relative bg-white shadow-sm pb-20">
         <div className="relative z-10 container mx-auto gap-2 px-4 pt-6">
-
-          {/* Top Bar */}
-          {/* <div>
-            <FaBars
-              className="text-2xl cursor-pointer mb-4"
-              onClick={() => setOpenSidebar(true)}
-            />
-          </div> */}
-
           {/* Profile Info */}
           <div className="flex items-center">
             <div className="flex-1">
               <h1 className="text-2xl font-bold">{profile.name}</h1>
               <p className="text-gray-500 mb-1">{profile.business_name}</p>
-             
-             <div className="flex items-center mt-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <FaStar
-                  key={star}
-                  className={
-                    star <= rating
-                      ? "text-yellow-400"
-                      : "text-gray-300"
-                  }
-                />
-              ))}
-              <span className="ml-2 text-gray-800 font-medium">
-                {rating?rating.toFixed(1):0}/5
-              </span>
-            </div>   
 
-
+              <div className="flex items-center mt-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <FaStar
+                    key={star}
+                    className={star <= rating ? "text-yellow-400" : "text-gray-300"}
+                  />
+                ))}
+                <span className="ml-2 text-gray-800 font-medium">
+                  {rating ? rating.toFixed(1) : 0}/5
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mt-6">
-            <div onClick={() => navigate("/feedbacks")} className="bg-white rounded-lg shadow text-center p-4 links">
+            <div
+              onClick={() => navigate("/feedbacks")}
+              className="bg-white rounded-lg shadow text-center p-4 links"
+            >
               <span className="block text-lg font-bold">{totalFeedback}</span>
               <span className="text-sm text-gray-500 uppercase">Feedbacks</span>
             </div>
-            <div onClick={() => navigate("/followers")} className="bg-white rounded-lg shadow text-center p-4 links">
-              <span className="block text-lg font-bold">{profile.total_follower}</span>
+            <div
+              onClick={() => navigate("/followers")}
+              className="bg-white rounded-lg shadow text-center p-4 links"
+            >
+              <span className="block text-lg font-bold">{profile.total_follower || 0}</span>
               <span className="text-sm text-gray-500 uppercase">Followers</span>
             </div>
-            <div onClick={() => navigate("/following")} className="bg-white rounded-lg shadow text-center p-4 links">
-              <span className="block text-lg font-bold">{profile.total_following}</span>
+            <div
+              onClick={() => navigate("/following")}
+              className="bg-white rounded-lg shadow text-center p-4 links"
+            >
+              <span className="block text-lg font-bold">{profile.total_following || 0}</span>
               <span className="text-sm text-gray-500 uppercase">Following</span>
             </div>
-            <div onClick={() => navigate("/work-history/new")} className="bg-white rounded-lg shadow text-center p-4 links">
-              <span className="block text-lg font-bold">{profile.Waiting}</span>
+            <div
+              onClick={() => navigate("/work-history/new")}
+              className="bg-white rounded-lg shadow text-center p-4 links"
+            >
+              <span className="block text-lg font-bold">{profile.Waiting || 0}</span>
               <span className="text-sm text-gray-500 uppercase">New Work</span>
             </div>
-            <div onClick={() => navigate("/work-history/inprogress")} className="bg-white rounded-lg shadow text-center p-4 links">
-              <span className="block text-lg font-bold">{profile.Accept}</span>
+            <div
+              onClick={() => navigate("/work-history/inprogress")}
+              className="bg-white rounded-lg shadow text-center p-4 links"
+            >
+              <span className="block text-lg font-bold">{profile.Accept || 0}</span>
               <span className="text-sm text-gray-500 uppercase">In-Progress</span>
             </div>
-            <div onClick={() => navigate("/work-history/finished")} className="bg-white rounded-lg shadow text-center p-4 links">
-              <span className="block text-lg font-bold">{profile.Complete}</span>
+            <div
+              onClick={() => navigate("/work-history/finished")}
+              className="bg-white rounded-lg shadow text-center p-4 links"
+            >
+              <span className="block text-lg font-bold">{profile.Complete || 0}</span>
               <span className="text-sm text-gray-500 uppercase">Finished</span>
             </div>
           </div>
 
-          <p className="mt-4 text-gray-600">{profile.aboutme}</p>
+          <p className="mt-4 text-gray-600">{profile.aboutme || ""}</p>
         </div>
       </div>
 
@@ -157,7 +159,7 @@ const HirerDashboard = () => {
         <div className="bg-orange-500 text-white rounded-xl p-6 shadow">
           <h4 className="font-bold mb-4">My Industry & Skills</h4>
           <div className="flex flex-wrap gap-2">
-            {profile.industries.map((industry) => (
+            {profile.industries?.map((industry) => (
               <div
                 key={industry.id}
                 className="bg-white text-gray-800 rounded-lg px-4 py-2 font-medium"

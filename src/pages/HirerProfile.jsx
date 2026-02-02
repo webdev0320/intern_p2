@@ -96,7 +96,7 @@ const EditHirerProfile = () => {
 
       if (response.ok && data.status === "success!") {
         alert(data.message || "Profile updated successfully!");
-        navigate("/hirer-profile");
+        navigate("/hirer-dashboard");
       } else {
         alert(data.message || "Failed to update profile");
       }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaStar } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 
@@ -11,11 +11,15 @@ const EmpDashboard = () => {
   const [profile, setProfile] = useState(null);
   const [rating, setRating] = useState(0);
   const [totalFeedback, setTotalFeedback] = useState(0);
-
+  // Refs to prevent duplicate API calls in React 18 StrictMode (dev)
+  const profileFetched = useRef(false);
+  const ratingFetched = useRef(false);
   /* ======================
      Fetch Profile
   ====================== */
   useEffect(() => {
+    if (profileFetched.current) return; // prevent duplicate calls
+    profileFetched.current = true;
     const fetchProfile = async () => {
       try {
         const response = await fetch(
@@ -23,6 +27,7 @@ const EmpDashboard = () => {
         );
         const data = await response.json();
         setProfile(data);
+          localStorage.setItem("userProfile", JSON.stringify(data)); // store as string
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }
@@ -35,6 +40,8 @@ const EmpDashboard = () => {
      Fetch Rating
   ====================== */
   useEffect(() => {
+    if (!userId || ratingFetched.current) return;
+    ratingFetched.current = true;
     const fetchRating = async () => {
       try {
         const response = await fetch(

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 function EmpServices() {
   const [industries, setIndustries] = useState([]);
   const [selectedIndustries, setSelectedIndustries] = useState([]);
@@ -8,7 +9,7 @@ function EmpServices() {
 
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const userId = localStorage.getItem("user_id");
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchIndustries = async () => {
       try {
@@ -92,6 +93,7 @@ function EmpServices() {
       const data = await response.json();
       if (data && data.status === "success!") {
         alert("Industries and skills submitted successfully!");
+        navigate('/emp-dashboard');
       } else {
         alert("Failed to submit.");
       }

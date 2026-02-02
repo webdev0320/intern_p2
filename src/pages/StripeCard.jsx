@@ -66,16 +66,17 @@ const StripeCard = () => {
       const data = await response.json();
       console.log("Backend Response:", data);
 
-      if (!response.ok) {
-        setError(data.message || "Something went wrong!");
-      } else {
-        alert("Card updated successfully!");
-        setPrevCard({ card: { ...data.data.card } }); // update displayed card
-        setShowForm(false); // hide form after success
-      }
+        if (!response.ok || data.status !== "success!") {
+          setError(data.message || "Something went wrong!");
+        } else {
+            alert(data.message || "Card updated successfully!");
+
+            setShowForm(false);
+
+            window.location.href = 'hirer-dashboard';
+        }
     } catch (err) {
       console.error(err);
-      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -106,7 +107,7 @@ const StripeCard = () => {
         {/* 4️⃣ Toggle Add Card form */}
         {!showForm && (
           <button
-            className="bg-indigo-600 text-white px-4 py-2 rounded mb-6"
+            className="bg-orange-600 text-white px-4 py-2 rounded mb-6"
             onClick={() => setShowForm(true)}
           >
             Add New Card
@@ -135,7 +136,7 @@ const StripeCard = () => {
             <button
               type="submit"
               disabled={!stripe || loading}
-              className="bg-indigo-600 text-white px-4 py-2 rounded w-full"
+              className="bg-orange-600 text-white px-4 py-2 rounded w-full"
             >
               {loading ? "Processing..." : "Add Card"}
             </button>
