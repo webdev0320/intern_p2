@@ -101,16 +101,14 @@ const JobDetails = () => {
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
       {/* Header */}
-      <div className="bg-[#248fcb] pt-8 pb-16 px-6 rounded-b-[40px] text-white">
-        <div className="flex justify-between items-center mb-6">
-          <FaHome
-            className="text-2xl cursor-pointer"
-            onClick={() => navigate("/")}
-          />
-          <h1 className="text-xl font-bold">{jobData.job_status}</h1>
-          <FaBell className="text-2xl cursor-pointer" />
-        </div>
+    <div className="bg-[#248fcb] pt-8 pb-16 px-6 rounded-b-[40px] text-white">
+      <div className="flex items-center justify-center h-full mb-6">
+        <h1 className="text-xl font-bold text-center">
+          Job Details # {jobData.job_name}
+        </h1>
       </div>
+    </div>
+
 
       {/* Content */}
       <div className="px-6 -mt-10">

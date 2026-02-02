@@ -15,6 +15,7 @@ const HirerDashboard = () => {
   const [profile, setProfile] = useState(null);
   const userId = localStorage.getItem("user_id");
   const [rating, setRating] = useState(0);
+  const [totalFeedback, setTotalFeedback] = useState(0);
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -52,6 +53,7 @@ const HirerDashboard = () => {
           data.star_rating5;
 
         setRating(total / 5);
+        setTotalFeedback(data.data.length);
       } catch (error) {
         console.error("Failed to fetch rating:", error);
       }
@@ -121,7 +123,7 @@ const HirerDashboard = () => {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mt-6">
             <div onClick={() => navigate("/feedbacks")} className="bg-white rounded-lg shadow text-center p-4 links">
-              <span className="block text-lg font-bold">0</span>
+              <span className="block text-lg font-bold">{totalFeedback}</span>
               <span className="text-sm text-gray-500 uppercase">Feedbacks</span>
             </div>
             <div onClick={() => navigate("/followers")} className="bg-white rounded-lg shadow text-center p-4 links">

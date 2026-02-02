@@ -25,9 +25,12 @@ const Header = ({ open, setOpen }) => {
     const [signInOpen, setSignInOpen] = useState(false);
 
     const [openSidebar, setOpenSidebar] = useState(false);
+    const [stripeEnabled, setStripeEnabled] = useState(false);
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     // Sign Up modal
+    const [profileData, setProfileData] = useState(null);
+
     const [signUpOpen, setSignUpOpen] = useState(false);
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
@@ -69,32 +72,104 @@ const Header = ({ open, setOpen }) => {
     payload.append("status", "test");
     payload.append("user_id", userId);
 
+
+        useEffect(() => {
+          const fetchProfile = async () => {
+            try {
+              if (!userId) return;
+
+              const response = await fetch(
+                `${BASE_URL}/api/users/profile?id=${userId}`,
+              );
+
+              if (!response.ok) {
+                throw new Error(`Profile fetch error! Status: ${response.status}`);
+              }
+
+              const data = await response.json();
+              setProfileData(data);
+              setStripeEnabled(data?.stripe_auth);
+            } catch (error) {
+              console.error("Profile fetch failed:", error);
+            }
+          };
+
+          fetchProfile();
+        }, [userId]);
+
+
     const stripeConnect = async () => {
-        try {
-            const response = await fetch(
-                `${BASE_URL}/api/payment/create_stripe_account`,
-                {
-                    method: "POST",
-                    body: payload,
-                }
+  try {
+    // 1️⃣ Fetch user profile
+
+
+    // 2️⃣ Check stripe_account_id
+    if (profileData?.stripe_account_id) {
+      // ✅ Already has Stripe account → call Stripe login API
+      console.log("Stripe account exists. Calling login API...");
+        const payload = new FormData();
+        payload.append("email", email);
+        payload.append("stripe_account_id", profileData?.stripe_account_id);
+        payload.append("status", "test");
+        payload.append("user_id", userId);
+
+
+        const loginResponse = await fetch(
+              `${BASE_URL}/api/payment/stripe_login_link`,
+              {
+                method: "POST",
+                body: payload,
+              }
             );
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (!loginResponse.ok) {
+              throw new Error(`Stripe login API error! Status: ${loginResponse.status}`);
             }
 
-            const data = await response.json();
-            console.log("Stripe response:", data);
+            const loginData = await loginResponse.json();
+            console.log("Stripe login response:", loginData);
 
+            const stripeUrl = loginData?.chargerecord?.url;
 
-            // 👉 If API returns Stripe onboarding / connect URL
-            if (data?.url) {
-                window.location.href = data.url;
+            if (stripeUrl) {
+             window.open(stripeUrl, "_blank", "noopener,noreferrer");
+
+            } else {
+              alert("Stripe login URL not found!");
             }
-        } catch (error) {
-            console.error("Stripe connect error:", error);
-        }
-    };
+
+
+
+
+    } else {
+      // ❌ No Stripe account → create Stripe account
+      console.log("No Stripe account. Calling create Stripe account API...");
+
+
+      const createResponse = await fetch(`${BASE_URL}/api/payment/create_stripe_account`, {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!createResponse.ok) {
+        throw new Error(`Create Stripe account error! Status: ${createResponse.status}`);
+      }
+
+      const createData = await createResponse.json();
+      console.log("Create Stripe response:", createData);
+
+      if (createData?.url) {
+        window.location.href = createData.url; // redirect to Stripe onboarding
+      } else {
+        alert("Stripe account creation URL not found!");
+      }
+    }
+  } catch (error) {
+    console.error("Stripe connect error:", error);
+    alert("Something went wrong while connecting to Stripe.");
+  }
+};
+
 
 
 
@@ -502,6 +577,8 @@ const Header = ({ open, setOpen }) => {
                                                 </button>
                                             </li>
                                             <li>
+                                                
+                                                {role === "emp" && (
                                                 <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
@@ -511,6 +588,21 @@ const Header = ({ open, setOpen }) => {
                                                 >
                                                     Blocked Worker List
                                                   </button>
+                                                  )}
+
+                                                {role === "self-emp" && (
+                                                <button
+                                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
+                                                    onClick={() => {
+                                                      navigate("/blocked-hirer-list");
+                                                      setOpen(false);
+                                                    }}
+                                                >
+                                                    Blocked Hirer List
+                                                  </button>
+                                                  )}
+
+
                                                 </li>
                                                 {role === "self-emp" && (<li>
                                                   <button
@@ -520,7 +612,7 @@ const Header = ({ open, setOpen }) => {
                                                         setOpen(false);
                                                     }}
                                                 >
-                                                    Connect Stripe
+                                                {stripeEnabled === 'charges_enabled' ? 'Bank Detail' : 'Connect Stripe'}
                                                 </button>
                                             </li>)}
 

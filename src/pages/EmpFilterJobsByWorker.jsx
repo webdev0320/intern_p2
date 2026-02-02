@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa6";
 
-function HirerFilterJobsByWorker() {
+function EmpFilterJobsByWorker() {
   const type = 'finished';
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
@@ -22,7 +22,7 @@ function HirerFilterJobsByWorker() {
       const apiType = getApiType();
       
       const userId = localStorage.getItem("user_id");
-      const url = `${BASE_URL}/api/jobs/owner?owner_id=${userId}&type=${apiType}`;
+      const url = `${BASE_URL}/api/jobs/workers?worker_id=${userId}&type=${apiType}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error("API failed");
       const result = await response.json();
@@ -86,11 +86,11 @@ function HirerFilterJobsByWorker() {
               <div key={job.job_id} className="bg-white rounded-2xl shadow p-4">
                 {/* HEADER */}
                 <div className="flex justify-between items-center">
-                  <h2 className="text-orange-600 font-semibold text-lg">
+                  <h2 className="text-blue-600 font-semibold text-lg">
                     {job.job_name}, {job.job_id}
                   </h2>
                   <div
-                    className="flex items-center gap-1 text-green-600 text-sm font-medium cursor-pointer"
+                    className="flex items-center gap-1 text-blue-600 text-sm font-medium cursor-pointer"
                     onClick={() =>
                       window.open("https://wa.me/44782345457", "_blank")
                     }
@@ -101,7 +101,7 @@ function HirerFilterJobsByWorker() {
                 </div>
 
                 {/* STATUS MESSAGE */}
-                <p className="text-orange-500 text-sm mt-2">
+                <p className="text-blue-500 text-sm mt-2">
                   {job.job_status === "Waiting"
                     ? "No Worker has accepted this work yet."
                     : job.job_status}
@@ -124,11 +124,11 @@ function HirerFilterJobsByWorker() {
                 <div className="flex justify-between text-sm">
                   <div>
                     <p className="text-gray-500 flex items-center gap-1">💷 Pay Rate</p>
-                    <p className="text-orange-600 font-semibold">{job.offer_rate}</p>
+                    <p className="text-blue-600 font-semibold">{job.offer_rate}</p>
                   </div>
                   <div>
                     <p className="text-gray-500 flex items-center gap-1">⏰ Date Posted</p>
-                    <p className="text-orange-600 font-semibold">{job.job_post_date}</p>
+                    <p className="text-blue-600 font-semibold">{job.job_post_date}</p>
                   </div>
                 </div>
 
@@ -137,7 +137,7 @@ function HirerFilterJobsByWorker() {
                 {/* REMOTE */}
                 <p className="text-sm">
                   <span className="text-gray-500">Remote Work:</span>{" "}
-                  <span className="text-orange-600 font-semibold">No</span>
+                  <span className="text-blue-600 font-semibold">No</span>
                 </p>
 
                 <hr className="my-3" />
@@ -154,7 +154,7 @@ function HirerFilterJobsByWorker() {
                 {job.duration?.map((d) => (
                   <div
                     key={d.duration_id}
-                    className="grid grid-cols-4 text-center text-sm font-semibold text-orange-600"
+                    className="grid grid-cols-4 text-center text-sm font-semibold text-blue-600"
                   >
                     <div>{d.start_date}</div>
                     <div>{d.duration_in_hours} hrs</div>
@@ -165,8 +165,8 @@ function HirerFilterJobsByWorker() {
 
                   <div className="mt-5 flex gap-3">
                     <button
-                      onClick={() => navigate(`/hirer/work-leave-feedback/${job.job_id}`)}
-                      className="flex-1 bg-orange-500 text-white py-3 rounded-xl shadow-lg text-sm font-small"
+                      onClick={() => navigate(`/emp/work-leave-feedback/${job.job_id}`)}
+                      className="flex-1 bg-blue-500 text-white py-3 rounded-xl shadow-lg text-sm font-small"
                     >
                       Leave FeedBack
                     </button>
@@ -181,4 +181,4 @@ function HirerFilterJobsByWorker() {
   );
 }
 
-export default HirerFilterJobsByWorker;
+export default EmpFilterJobsByWorker;

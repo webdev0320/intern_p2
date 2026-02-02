@@ -64,6 +64,7 @@ useEffect(() => {
           localStorage.setItem("email", data.email);
           localStorage.setItem("name", data.name);          
           localStorage.setItem("phone", data.mobile_number);
+          localStorage.setItem("userData", JSON.stringify(data));
           setIsLoggedIn(true);      
             window.location.href = "/emp-dashboard";
 

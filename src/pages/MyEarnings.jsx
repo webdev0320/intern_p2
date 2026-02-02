@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import logo from '../assets/logo_p2.png';
+import { useNavigate } from "react-router-dom";
 const SpendingDashboard = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [spendingData, setSpendingData] = useState({
     amount: 0,
@@ -54,10 +56,10 @@ const SpendingDashboard = () => {
               />
 
               <div className="flex items-start">
-                <span className="text-2xl font-bold text-[#FF8C00] mt-2">
+                <span className="text-2xl font-bold text-[#3b82f6] mt-2">
                   £
                 </span>
-                <span className="text-6xl font-extrabold text-[#FF8C00]">
+                <span className="text-6xl font-extrabold text-[#3b82f6]">
                     {loading 
                       ? "..." 
                       : typeof spendingData.amount === "number"
@@ -77,14 +79,31 @@ const SpendingDashboard = () => {
           {/* RIGHT SIDE – FILTERS */}
           <div className="md:col-span-6">
             <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-8 h-full">
-              <h2 className="text-2xl font-bold text-[#FF8C00] mb-6">
+              <h2 className="text-2xl font-bold text-[#3b82f6] mb-6">
                 Filter
               </h2>
 
               <div className="space-y-4">
-                <FilterButton label="Filter by hirers" />
-                <FilterButton label="Filter by date" />
-                <FilterButton label="Filter by location" />
+                <div className="space-y-4">
+                <FilterButton
+                  label="Filter by workers"
+                  onClick={() =>
+                    navigate("/emp/filterjobsbyworker")
+                  }
+                />
+                <FilterButton
+                  label="Filter by date"
+                  onClick={() =>
+                    navigate("/emp/filterjobsbydate")
+                  }
+                />
+                <FilterButton
+                  label="Filter by location"
+                  onClick={() =>
+                    navigate("/emp/filterjobsbylocation")
+                  }
+                />
+              </div>
               </div>
             </div>
           </div>
@@ -95,12 +114,16 @@ const SpendingDashboard = () => {
   );
 };
 
-// Reusable Dropdown Button
-const FilterButton = ({ label }) => (
-  <button className="w-full flex justify-between items-center px-6 py-4 border border-gray-200 rounded-full text-gray-500 hover:bg-gray-50 transition">
+// Reusable Button
+const FilterButton = ({ label, onClick }) => (
+  <button
+    onClick={onClick}
+    className="w-full flex justify-between items-center px-6 py-4 border border-gray-200 rounded-full text-gray-500 hover:bg-gray-50 transition"
+  >
     <span className="italic">{label}</span>
     <ChevronDown size={20} className="text-gray-800" />
   </button>
 );
+
 
 export default SpendingDashboard;
