@@ -73,6 +73,9 @@ const EmpDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 pb-24">
+
+
+      
       <div className="bg-white shadow-sm pb-20">
         <div className="container mx-auto px-4 pt-6">
 

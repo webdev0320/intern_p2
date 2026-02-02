@@ -64,6 +64,7 @@ const handleSubmit = async (e) => {
           localStorage.setItem("email", data.name);
           localStorage.setItem("name", data.name);
           localStorage.setItem("phone", data.mobile_number);
+          localStorage.setItem("userData", JSON.stringify(data));
 
           setIsLoggedIn(true);
             window.location.href = "/hirer-dashboard";

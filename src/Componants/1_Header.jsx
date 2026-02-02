@@ -25,9 +25,12 @@ const Header = ({ open, setOpen }) => {
     const [signInOpen, setSignInOpen] = useState(false);
 
     const [openSidebar, setOpenSidebar] = useState(false);
+    const [stripeEnabled, setStripeEnabled] = useState(false);
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     // Sign Up modal
+    const [profileData, setProfileData] = useState(null);
+
     const [signUpOpen, setSignUpOpen] = useState(false);
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
@@ -69,44 +72,75 @@ const Header = ({ open, setOpen }) => {
     payload.append("status", "test");
     payload.append("user_id", userId);
 
+
+        useEffect(() => {
+          const fetchProfile = async () => {
+            try {
+              if (!userId) return;
+
+              const response = await fetch(
+                `${BASE_URL}/api/users/profile?id=${userId}`,
+              );
+
+              if (!response.ok) {
+                throw new Error(`Profile fetch error! Status: ${response.status}`);
+              }
+
+              const data = await response.json();
+              setProfileData(data);
+              setStripeEnabled(data?.stripe_auth);
+            } catch (error) {
+              console.error("Profile fetch failed:", error);
+            }
+          };
+
+          fetchProfile();
+        }, [userId]);
+
+
     const stripeConnect = async () => {
   try {
     // 1️⃣ Fetch user profile
-    const userId = 36; // replace with dynamic ID if needed
-    const profileResponse = await fetch(`${BASE_URL}/api/users/profile/?id=${userId}`);
-    
-    if (!profileResponse.ok) {
-      throw new Error(`Profile fetch error! Status: ${profileResponse.status}`);
-    }
 
-    const profileData = await profileResponse.json();
-    console.log("User profile:", profileData);
 
     // 2️⃣ Check stripe_account_id
     if (profileData?.stripe_account_id) {
       // ✅ Already has Stripe account → call Stripe login API
       console.log("Stripe account exists. Calling login API...");
+        const payload = new FormData();
+        payload.append("email", email);
+        payload.append("stripe_account_id", profileData?.stripe_account_id);
+        payload.append("status", "test");
+        payload.append("user_id", userId);
 
-      const loginResponse = await fetch(`${BASE_URL}/api/payment/stripe_login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ user_id: userId }),
-      });
 
-      if (!loginResponse.ok) {
-        throw new Error(`Stripe login API error! Status: ${loginResponse.status}`);
-      }
+        const loginResponse = await fetch(
+              `${BASE_URL}/api/payment/stripe_login_link`,
+              {
+                method: "POST",
+                body: payload,
+              }
+            );
 
-      const loginData = await loginResponse.json();
-      console.log("Stripe login response:", loginData);
+            if (!loginResponse.ok) {
+              throw new Error(`Stripe login API error! Status: ${loginResponse.status}`);
+            }
 
-      if (loginData?.url) {
-        window.location.href = loginData.url; // redirect to Stripe login
-      } else {
-        alert("Stripe login URL not found!");
-      }
+            const loginData = await loginResponse.json();
+            console.log("Stripe login response:", loginData);
+
+            const stripeUrl = loginData?.chargerecord?.url;
+
+            if (stripeUrl) {
+             window.open(stripeUrl, "_blank", "noopener,noreferrer");
+
+            } else {
+              alert("Stripe login URL not found!");
+            }
+
+
+
+
     } else {
       // ❌ No Stripe account → create Stripe account
       console.log("No Stripe account. Calling create Stripe account API...");
@@ -578,7 +612,7 @@ const Header = ({ open, setOpen }) => {
                                                         setOpen(false);
                                                     }}
                                                 >
-                                                    Connect Stripe
+                                                {stripeEnabled === 'charges_enabled' ? 'Bank Detail' : 'Connect Stripe'}
                                                 </button>
                                             </li>)}
 

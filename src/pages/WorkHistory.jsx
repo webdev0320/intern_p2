@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa6";
+import Swal from "sweetalert2";
 
 function WorkHistory() {
   const { type } = useParams();
@@ -41,6 +42,23 @@ function WorkHistory() {
     }
   };
 
+  const confirmRefund = (jobId) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "Are you sure to refund amount?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#f97316", // orange
+    cancelButtonColor: "#6b7280",
+    confirmButtonText: "Yes, refund it",
+    cancelButtonText: "Cancel",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      handleRefund(jobId);
+    }
+  });
+};
+
   const handleCancel = async (jobId) => {
     try {
       const response = await fetch(
@@ -55,6 +73,11 @@ function WorkHistory() {
       console.error("API Error:", error);
     }
   };
+
+  const handleRefund = async (jobId) => {
+    
+  };
+  
 
   const formatTitle = (t) =>
     t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
@@ -191,7 +214,7 @@ function WorkHistory() {
                 ))}
 
                 {/* CANCEL BUTTON */}
-                {job.job_status === "Waiting" && (
+                {type=='inprogress'  && job.job_status === "Waiting" && (
                   <button
                     onClick={() => handleCancel(job.id)}
                     className="mt-5 w-full bg-orange-500 text-white py-3 rounded-xl shadow-lg text-lg font-medium"
@@ -199,6 +222,16 @@ function WorkHistory() {
                     Cancel
                   </button>
                 )}
+
+                 {type === "new" && job.job_status === "Waiting" && (
+                    <button
+                      onClick={() => confirmRefund(job.id)}
+                      className="mt-5 w-full bg-orange-500 text-white py-3 rounded-xl shadow-lg text-lg font-medium"
+                    >
+                      Refund Amount
+                    </button>
+                  )}
+
               </div>
             ))}
         </div>
