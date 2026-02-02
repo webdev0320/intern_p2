@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { FaWhatsapp, FaArrowLeft } from "react-icons/fa"; // Added Arrow icon
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-
+import Swal from "sweetalert2";
 /* Fix Leaflet marker icon issue */
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -35,7 +36,7 @@ const EmpFindWork = () => {
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const userId = localStorage.getItem("user_id");
-
+  const alertShownRef = useRef(false);
   // UI State
   const [showForm, setShowForm] = useState(true); // Control visibility of the form
 
@@ -46,41 +47,161 @@ const EmpFindWork = () => {
   const [selectedSkillId, setSelectedSkillId] = useState("");
 
   // State for Data
-  const [profile, setProfile] = useState(null);
+  const userProfile = localStorage.getItem("userProfile");
+  const profile = userProfile ? JSON.parse(userProfile) : null;
+
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // State for Location/Map
   const [locationName, setLocationName] = useState("Detecting location...");
   const [marker, setMarker] = useState({ lat: 33.6844, lng: 73.0479 });
+  const role = localStorage.getItem("role");
+  const currentPath = window.location.pathname; // just the path, e.g., "/hirer-dashboard"
+
+
+    var email = localStorage.getItem("email");
+
+    const payload = new FormData();
+    payload.append("email", email);
+    payload.append("country", "GB");
+    payload.append("status", "test");
+    payload.append("user_id", userId);
+
+
+    const stripeConnect = async () => {
+  try {
+    // 1️⃣ Fetch user profile
+
+
+    // 2️⃣ Check stripe_account_id
+
+    if (profile?.stripe_account_id) {
+      // ✅ Already has Stripe account → call Stripe login API
+      console.log("Stripe account exists. Calling login API...");
+        const payload = new FormData();
+        payload.append("email", email);
+        payload.append("stripe_account_id", profile?.stripe_account_id);
+        payload.append("status", "test");
+        payload.append("user_id", userId);
+
+
+        const loginResponse = await fetch(
+              `${BASE_URL}/api/payment/stripe_login_link`,
+              {
+                method: "POST",
+                body: payload,
+              }
+            );
+
+            if (!loginResponse.ok) {
+              throw new Error(`Stripe login API error! Status: ${loginResponse.status}`);
+            }
+
+            const loginData = await loginResponse.json();
+
+
+            const stripeUrl = loginData?.chargerecord?.url;
+
+            if (stripeUrl) {
+             window.open(stripeUrl, "_blank", "noopener,noreferrer");
+
+            } else {
+              alert("Stripe login URL not found!");
+            }
+
+
+
+
+    } else {
+      // ❌ No Stripe account → create Stripe account
+      console.log("No Stripe account. Calling create Stripe account API...");
+
+
+      const createResponse = await fetch(`${BASE_URL}/api/payment/create_stripe_account`, {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!createResponse.ok) {
+        throw new Error(`Create Stripe account error! Status: ${createResponse.status}`);
+      }
+
+      const createData = await createResponse.json();
+      console.log("Create Stripe response:", createData);
+
+      if (createData?.url) {
+        window.location.href = createData.url; // redirect to Stripe onboarding
+      } else {
+        alert("Stripe account creation URL not found!");
+      }
+    }
+  } catch (error) {
+    console.error("Stripe connect error:", error);
+    alert("Something went wrong while connecting to Stripe.");
+  }
+};
+
+
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/api/users/profile/?id=${userId}`);
-        const data = await response.json();
-        if (data) {
-          setProfile(data);
-          if (data.lat && data.lon) {
-            setMarker({ lat: parseFloat(data.lat), lng: parseFloat(data.lon) });
-            reverseGeocode(data.lat, data.lon);
-          }
+        if (!profile) return; // wait until profile is loaded
+
+        if(role=='emp'){
+            // Redirect to hirer-profile if business_name is empty and not already on that page
+            if (profile.business_name === "" && currentPath !== "hirer-profile") {
+                navigate("/hirer-profile"); // React Router redirect
+                return;
+            }
+
+            if (!profile.industries || profile.industries.length === 0 && currentPath !== "services") {
+                navigate("/services");
+                return;
+            }
+
+            // Redirect to services if card_id is empty and not already on services page
+            if ((!profile.card_id || profile.card_id === "") && currentPath !== "stripe-card") {
+                navigate("/stripe-card");
+                return;
+            }            
         }
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-      }
-    };
 
-    fetchProfile();
+        if(role=='self-emp'){
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const { latitude, longitude } = pos.coords;
-        setMarker({ lat: latitude, lng: longitude });
-        reverseGeocode(latitude, longitude);
-      });
-    }
-  }, [BASE_URL, userId]);
+           if ((!profile.industries || profile.industries.length === 0) && currentPath !== "employee-services") {
+                navigate("/employee-services");
+                return;
+            }
+
+             // Only show alert once
+            if (
+              (!profile.stripe_account_id || profile.stripe_account_id === "") &&
+              currentPath !== "/stripe-card" &&
+              !alertShownRef.current
+            ) {
+              alertShownRef.current = true; // mark as shown
+              Swal.fire("Error", "Add Stripe Account", "error").then(() => {
+                  stripeConnect();
+              });
+            }          
+        }
+
+    }, [profile, currentPath, navigate,role]);
+
+// Move this inside a useEffect!
+useEffect(() => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const { latitude, longitude } = pos.coords;
+      // Only update if the position is actually different to avoid extra renders
+      setMarker({ lat: latitude, lng: longitude });
+      reverseGeocode(latitude, longitude);
+    }, (error) => {
+      console.error("Geolocation error:", error);
+      setLocationName("Location access denied.");
+    });
+  }
+}, []); // Empty array means this runs ONLY ONCE on mount
 
   const reverseGeocode = async (lat, lng) => {
     try {

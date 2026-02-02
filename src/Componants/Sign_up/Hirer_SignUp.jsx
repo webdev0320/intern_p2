@@ -14,6 +14,7 @@ const HirerSignUpPage = () => {
         dateofbirth :'',
         sex :''
     });
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
@@ -29,7 +30,7 @@ const handleSubmit = async (e) => {
         alert("Passwords do not match!");
         return;
     }
-
+    setLoading(true); // 👈 start processing
     try {
         const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -58,10 +59,10 @@ const handleSubmit = async (e) => {
         const fullName = `${formData.forenames || ""} ${formData.surname || ""}`.trim();
         const payload = new FormData();
         payload.append("name", fullName || "");
-        payload.append("u_type", 'self-emp');
+        payload.append("u_type", 'emp');
         payload.append("email", formData.email || "");
         payload.append("password", formData.password || "");
-        payload.append("user_type", "self-emp");
+        payload.append("user_type", "emp");
         payload.append("dateofbirth", formData.dateofbirth || "");
         payload.append("sex", (formData.sex || "").toLowerCase());
         payload.append("lat", latitude);
@@ -91,6 +92,9 @@ const handleSubmit = async (e) => {
     } catch (err) {
         console.error(err);
         alert(err.message || "Server Error 🚨");
+    }
+    finally {
+        setLoading(false); // 👈 stop processing
     }
 };
 
@@ -295,11 +299,15 @@ const handleSubmit = async (e) => {
                                 {/* Submit Button */}
                                 <div className=" flex justify-center">
                                 <button
-                                    type="submit"
-                                    className=" bg-orange-500 hover:bg-orange-600 rounded-lg text-white px-16 py-3 transition-all shadow-lg hover:shadow-xl mt-6"
-                                >
-                                    Create Account
-                                </button>
+                                        type="submit"
+                                        disabled={loading}
+                                        className={`rounded-lg text-white px-16 py-3 transition-all shadow-lg mt-6
+                                            ${loading ? "bg-orange-400 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600 hover:shadow-xl"}
+                                        `}
+                                    >
+                                        {loading ? "Processing..." : "Create Account"}
+                                    </button>
+
                                 </div>
                                 {/* Already have account */}
                                 <div className="text-center pt-4 border-t border-gray-200">

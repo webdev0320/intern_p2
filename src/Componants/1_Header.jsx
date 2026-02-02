@@ -29,15 +29,21 @@ const Header = ({ open, setOpen }) => {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     // Sign Up modal
-    const [profileData, setProfileData] = useState(null);
+    const userProfile = localStorage.getItem("userProfile");
+    const profile = userProfile ? JSON.parse(userProfile) : null;
+
+
+    const navigate = useNavigate();
+    const role = localStorage.getItem("role");
+
 
     const [signUpOpen, setSignUpOpen] = useState(false);
-    const navigate = useNavigate();
+
     const [menuOpen, setMenuOpen] = useState(false);
     const [mobileDropdown, setMobileDropdown] = useState(null);
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const role = localStorage.getItem("role");
+
 
     // Prevent scrolling when menu is open
     useEffect(() => {
@@ -73,43 +79,19 @@ const Header = ({ open, setOpen }) => {
     payload.append("user_id", userId);
 
 
-        useEffect(() => {
-          const fetchProfile = async () => {
-            try {
-              if (!userId) return;
-
-              const response = await fetch(
-                `${BASE_URL}/api/users/profile?id=${userId}`,
-              );
-
-              if (!response.ok) {
-                throw new Error(`Profile fetch error! Status: ${response.status}`);
-              }
-
-              const data = await response.json();
-              setProfileData(data);
-              setStripeEnabled(data?.stripe_auth);
-            } catch (error) {
-              console.error("Profile fetch failed:", error);
-            }
-          };
-
-          fetchProfile();
-        }, [userId]);
-
-
     const stripeConnect = async () => {
   try {
     // 1️⃣ Fetch user profile
 
 
     // 2️⃣ Check stripe_account_id
-    if (profileData?.stripe_account_id) {
+
+    if (profile?.stripe_account_id) {
       // ✅ Already has Stripe account → call Stripe login API
       console.log("Stripe account exists. Calling login API...");
         const payload = new FormData();
         payload.append("email", email);
-        payload.append("stripe_account_id", profileData?.stripe_account_id);
+        payload.append("stripe_account_id", profile?.stripe_account_id);
         payload.append("status", "test");
         payload.append("user_id", userId);
 
@@ -127,7 +109,7 @@ const Header = ({ open, setOpen }) => {
             }
 
             const loginData = await loginResponse.json();
-            console.log("Stripe login response:", loginData);
+
 
             const stripeUrl = loginData?.chargerecord?.url;
 

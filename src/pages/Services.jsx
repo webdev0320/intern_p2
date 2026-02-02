@@ -21,8 +21,8 @@ function Services() {
         }
 
         // 2️⃣ Fetch user profile
-        const profileRes = await fetch(`${BASE_URL}/api/users/profile/?id=${userId}`);
-        const profileData = await profileRes.json();
+          const userProfile = localStorage.getItem("userProfile");
+          const profileData = userProfile ? JSON.parse(userProfile) : null;
 
         if (profileData && Array.isArray(profileData.industries)) {
           const userIndustryIds = profileData.industries.map((i) => i.id);
@@ -96,6 +96,7 @@ function Services() {
 
       if (data && data.status === "success!") {
         alert("Industries and skills submitted successfully!");
+        window.location.href = 'hirer-dashboard';
       } else {
         alert("Failed to submit.");
       }

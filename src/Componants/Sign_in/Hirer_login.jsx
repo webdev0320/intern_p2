@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, LogIn, Building2, Briefcase, Users } from 'lucide-react';
-
+import { useProfile } from "../ProfileContext";
 const HirerLoginPage = () => {
     const navigate = useNavigate();
     const [error, setError] = useState("");
@@ -64,8 +64,6 @@ const handleSubmit = async (e) => {
           localStorage.setItem("email", data.name);
           localStorage.setItem("name", data.name);
           localStorage.setItem("phone", data.mobile_number);
-          localStorage.setItem("userData", JSON.stringify(data));
-
           setIsLoggedIn(true);
             window.location.href = "/hirer-dashboard";
       } else {
