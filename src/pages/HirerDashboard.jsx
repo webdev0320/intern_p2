@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaStar } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-
+import ProfileCompleteHirerAlert from '../Componants/ProfileCompleteHirerAlert';
 const HirerDashboard = () => {
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -11,6 +11,7 @@ const HirerDashboard = () => {
   const [totalFeedback, setTotalFeedback] = useState(0);
 
   const userId = localStorage.getItem("user_id");
+  const role = localStorage.getItem("role");
 
   // Refs to prevent duplicate API calls in React 18 StrictMode (dev)
   const profileFetched = useRef(false);
@@ -103,6 +104,12 @@ const HirerDashboard = () => {
               </div>
             </div>
           </div>
+
+          <ProfileCompleteHirerAlert 
+                profile={profile} 
+                role={role} 
+                navigate={navigate} 
+            />            
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mt-6">

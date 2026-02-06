@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, LogIn, Building2, Briefcase, Users } from 'lucide-react';
-import { useProfile } from "../ProfileContext";
+
+import Swal from "sweetalert2";
 const HirerLoginPage = () => {
     const navigate = useNavigate();
     const [error, setError] = useState("");
@@ -53,7 +54,12 @@ const handleSubmit = async (e) => {
       try {
         data = JSON.parse(responseText);
       } catch {
-        throw new Error("Invalid server response");
+       Swal.fire({
+                icon: 'error',
+                title: 'Login Failed',
+                text: "Invalid email or password",
+                confirmButtonColor: '#f97316'
+            });
       }
 
       if (response.ok && (data.status || data.message)) {
@@ -64,14 +70,26 @@ const handleSubmit = async (e) => {
           localStorage.setItem("email", data.name);
           localStorage.setItem("name", data.name);
           localStorage.setItem("phone", data.mobile_number);
+          localStorage.setItem("userData", JSON.stringify(data));
           setIsLoggedIn(true);
             window.location.href = "/hirer-dashboard";
       } else {
-        setError(data.message || data.error || "Invalid email or password");
+         Swal.fire({
+                icon: 'error',
+                title: 'Login Failed',
+                text: data.message || data.error || "Invalid email or password",
+                confirmButtonColor: '#f97316'
+            });
       }
 
     } catch (err) {
-      setError(err.message || "Server Error 🚨");
+         Swal.fire({
+                icon: 'error',
+                title: 'Login Failed',
+                text: err.message || "Server Error 🚨",
+                confirmButtonColor: '#f97316'
+            });
+
     } finally {
       setLoading(false);
     }

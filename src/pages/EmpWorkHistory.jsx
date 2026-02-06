@@ -303,13 +303,13 @@ const handleFollow = async (followId) => {
                     
 
                     <button
-                      onClick={() =>
-                        window.open("https://wa.me/44782345457", "_blank")
-                      }
-                      className="flex-1 bg-green-500 text-white py-3 rounded-xl shadow-lg text-sm font-small"
-                    >
-                      Contact Hirer
-                    </button>
+                        onClick={() =>
+                          navigate(`/emp-chat/${job.job_id}`)
+                        }
+                        className="flex-1 bg-green-500 text-white py-3 rounded-xl shadow-lg text-sm font-medium"
+                      >
+                        Contact Hirer
+                      </button>
 
                     <button
                       onClick={() => handleFollow(job.user_id)}

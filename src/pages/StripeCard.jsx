@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useElements } from "@stripe/react-stripe-js";
-
+import Swal from "sweetalert2";
 const ELEMENT_OPTIONS = {
   style: {
     base: { fontSize: "16px", color: "#32325d", "::placeholder": { color: "#aab7c4" } },
@@ -67,16 +67,36 @@ const StripeCard = () => {
       console.log("Backend Response:", data);
 
         if (!response.ok || data.status !== "success!") {
-          setError(data.message || "Something went wrong!");
+          
+           Swal.fire({
+                icon: 'error',
+                title: 'Add Card',
+                text: "Something went wrong",
+                confirmButtonColor: '#f97316'
+        });
+
         } else {
-            alert(data.message || "Card updated successfully!");
+
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Add Card',
+                  text: "Card updated successfully!",
+                  confirmButtonColor: '#f97316'
+          });
 
             setShowForm(false);
 
             window.location.href = 'hirer-dashboard';
         }
     } catch (err) {
-      console.error(err);
+
+        Swal.fire({
+                icon: 'error',
+                title: 'Add Card',
+                text: "Something went wrong",
+                confirmButtonColor: '#f97316'
+        });
+
     } finally {
       setLoading(false);
     }
@@ -141,13 +161,7 @@ const StripeCard = () => {
               {loading ? "Processing..." : "Add Card"}
             </button>
 
-            <button
-              type="button"
-              onClick={() => setShowForm(false)}
-              className="mt-2 text-gray-600 underline"
-            >
-              Cancel
-            </button>
+
           </form>
         )}
       </div>

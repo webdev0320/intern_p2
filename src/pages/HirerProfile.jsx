@@ -1,4 +1,4 @@
-// pages/EditHirerProfile.jsx
+import Swal from "sweetalert2";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 const EditHirerProfile = () => {
@@ -95,14 +95,34 @@ const EditHirerProfile = () => {
       const data = await response.json();
 
       if (response.ok && data.status === "success!") {
-        alert(data.message || "Profile updated successfully!");
+
+        Swal.fire({
+                icon: 'success',
+                title: 'Profile Update',
+                text: data.message || "Profile updated successfully!",
+                confirmButtonColor: '#f97316'
+        });
+
         navigate("/hirer-dashboard");
       } else {
-        alert(data.message || "Failed to update profile");
+
+        Swal.fire({
+                icon: 'error',
+                title: 'Profile Update',
+                text: data.message || "Failed to update profile",
+                confirmButtonColor: '#f97316'
+        });
+
       }
     } catch (err) {
       console.error(err);
       alert(err.message || "Server error");
+      Swal.fire({
+                icon: 'error',
+                title: 'Profile Update',
+                text: data.message || "Failed to update profile",
+                confirmButtonColor: '#f97316'
+        });
     }
   };
 
