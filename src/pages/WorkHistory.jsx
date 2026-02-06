@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa6";
 import Swal from "sweetalert2";
-
+import logo from '../assets/logo_p2.png'
 function WorkHistory() {
   const { type } = useParams();
   const navigate = useNavigate();
@@ -43,7 +43,47 @@ function WorkHistory() {
   };
 
 
+  const handleInProgressCancel = async (job) => {
+  try {
 
+
+      const payload = new FormData();
+      payload.append("status", 'Cancel');
+      payload.append("job_name", job.job_name);
+      payload.append("worker_id",job.Workers[0].user_id);
+      payload.append("who_offer_job_user_id", job.user_id);
+
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/jobs/status_update?job_offer_id=${job.job_id}`,
+        {
+          method: "POST",
+          body: payload,
+        }
+      );
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      if (response.status!=400) {
+        Swal.fire("Cancelled", data.message, "success");
+        //window.location.reload();
+      } else {
+        Swal.fire("Error", data.message || "Failed to cancel job", "error");
+      }
+    } catch (error) {
+      console.error("Cancel API error:", error);
+      Swal.fire("Error", "Something went wrong", "error");
+    }
+
+  } catch (error) {
+    console.error("API Error:", error);
+    Swal.fire("Error", "Something went wrong", "error");
+  }
+};
+
+  
   const handleCancel = async (job) => {
   try {
 
@@ -130,6 +170,106 @@ function WorkHistory() {
 };
   
 
+const handleAssignWork = async (job, worker) => {
+  const confirm = await Swal.fire({
+    title: 'Assign Work?',
+    text: `Are you sure you want to assign this job to ${worker.name}?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#f97316',
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  setLoading(true); // Assuming you have a loading state
+
+  try {
+    const formData = new FormData();
+    formData.append("who_offer_job_user_id", job.user_id);
+    formData.append("job_name", job.job_name);
+    formData.append("status", "approve"); // Status set to 'approve' as per your payload
+    formData.append("worker_id", worker.user_id);
+
+    const response = await fetch(`${BASE_URL}/api/jobs/status_update?job_offer_id=${job.job_id}`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.status === "success!") {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Assigned!',
+        text: data.message,
+        timer: 2000,
+        showConfirmButton: false
+      });
+      // Refresh your job list here or navigate
+      window.location.reload(); 
+    } else {
+      throw new Error(data.message || "Failed to update status");
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.message || "Could not complete assignment."
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+// ✅ FOLLOW API
+const handleFollow = async (followId) => {
+  if (!followId) {
+    console.error("Invalid followId");
+    return;
+  }
+
+  try {
+    const payload = new FormData();
+    payload.append("follower_id", userId);
+    payload.append("following_id", followId);
+    payload.append("status", 2);
+
+    const response = await fetch(`${BASE_URL}/api/users/follow/`, {
+      method: "POST",
+      body: payload,
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+
+      Swal.fire({
+        title: "Success!",
+        text: "Followed successfully",
+        icon: "success",
+      });
+
+
+    } else {
+      Swal.fire({
+        title: "Success!",
+        text: "Follow failed",
+        icon: "error",
+      });
+
+    }
+  } catch (error) {
+      Swal.fire({
+        title: "Success!",
+        text: "Follow failed",
+        icon: "error",
+      });
+  }
+};
+
+
+
   const formatTitle = (t) =>
     t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
 
@@ -173,7 +313,7 @@ function WorkHistory() {
         )}
 
         {/* JOBS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
           {!loading &&
             jobs.map((job) => (
               <div
@@ -199,9 +339,7 @@ function WorkHistory() {
 
                 {/* STATUS */}
                 <p className="text-orange-500 text-sm mt-2">
-                  {job.job_status === "Waiting"
-                    ? "No Worker has accepted this work yet."
-                    : job.job_status}
+                  {job.job_status === "Waiting" ? "No Worker has accepted this work yet": ''}
                 </p>
 
                 <hr className="my-3" />
@@ -282,6 +420,81 @@ function WorkHistory() {
                       Refund Amount
                     </button>
                   )}
+
+                  {type === "new" && job.job_status === "Accept" && job.Workers?.map((worker, idx) => (
+                    <div key={idx} className="mt-4 p-4 border border-gray-100 rounded-xl bg-gray-50 flex items-center justify-between">
+                      {/* Worker Info Side */}
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src={worker.image || logo} 
+                          alt={worker.name} 
+                          className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                        />
+                        <div>
+                          <p className="font-bold text-gray-800">{worker.name}</p>
+                        </div>
+                      </div>
+
+                      {/* Assign Button Side */}
+                      <button
+                        onClick={() => handleAssignWork(job, worker)} 
+                        className="bg-orange-500 text-white px-4 py-2 rounded-lg shadow-md text-sm font-semibold hover:bg-orange-600 active:scale-95 transition-all"
+                      >
+                        Assign Work
+                      </button>
+                    </div>
+                  ))}
+
+                  {type === "inprogress" && job.job_status === "approve" && (
+  <>
+    <div className="mt-5 mb-2">
+      <h3 className="text-lg font-bold text-gray-700">Accepted By</h3>
+    </div>
+    
+    {job.Workers?.map((worker, idx) => (
+      <div key={idx} className="mt-2 p-4 border border-gray-100 rounded-xl bg-gray-50 flex flex-col shadow-sm">
+        
+        {/* Row 1: Worker Info */}
+        <div className="flex items-center gap-3 mb-4">
+          <img 
+            src={worker.image || logo} 
+            alt={worker.name} 
+            className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+          />
+          <div>
+            <p className="font-bold text-gray-800">{worker.name}</p>
+            <p className="text-xs text-gray-500">Professional Worker</p>
+          </div>
+        </div>
+
+        {/* Row 2: Action Buttons */}
+        <div className="flex flex-wrap md:flex-nowrap gap-2 border-t pt-4"> 
+          <button
+            onClick={() => navigate(`/hirer-chat/${job.job_id}`)}
+            className="flex-1 bg-green-500 text-white py-2 rounded-lg shadow text-sm font-medium hover:bg-green-600 transition-colors"
+          >
+            Contact Worker
+          </button>
+
+          <button
+            onClick={() => handleFollow(worker.user_id)}
+            className="flex-1 bg-yellow-500 text-white py-2 rounded-lg shadow text-sm font-medium hover:bg-yellow-600 transition-colors"
+          >
+            Follow Worker
+          </button>
+
+          <button
+            onClick={() => handleInProgressCancel(job)}
+            className="flex-1 bg-red-500 text-white py-2 rounded-lg shadow text-sm font-medium hover:bg-red-600 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+
+      </div>
+    ))}
+  </>
+)}
 
               </div>
             ))}

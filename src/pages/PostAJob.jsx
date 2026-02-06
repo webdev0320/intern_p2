@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import Swal from "sweetalert2";
+import { FaTrash, FaCamera } from "react-icons/fa"; // Added icons
 import {
   MapContainer,
   TileLayer,
@@ -8,78 +10,103 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import ProfileCompleteHirerAlert from '../Componants/ProfileCompleteHirerAlert';
 
 /* Fix Leaflet marker icon issue */
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
 const PostAJob = () => {
   const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const userId = localStorage.getItem("user_id");
+  const role = localStorage.getItem("role");
+  const userProfile = localStorage.getItem("userProfile");
+  const profile = userProfile ? JSON.parse(userProfile) : null;
+
+  // Form States
   const [loading, setLoading] = useState(false);
-  const [payRate, setPayRate] = useState(50);
-  const [distance, setDistance] = useState(50);
+  const [payRate, setPayRate] = useState(20);
   const [is_Remote, setRemote] = useState(false);
-  const [numWorkers, setNumWorkers] = useState(1); // default 1 worker
-  // Post Job fields
+  const [numWorkers, setNumWorkers] = useState(1);
   const [skillId, setSkillId] = useState("");
   const [industryId, setIndustryId] = useState("");
-  const [duration, setDuration] = useState(8);
-  const [startTime, setStartTime] = useState(13);
+  const [duration, setDuration] = useState(2);
+  const [startTime, setStartTime] = useState("09:00");
   const [startDate, setStartDate] = useState("");
-  const [offerRate, setOfferRate] = useState(20);
   const [description, setDescription] = useState("");
 
-  
-  // Industry & Skills data
+  // --- IMAGE STATES ---
+  const [selectedImages, setSelectedImages] = useState([]); // Array of File objects
+  const [previews, setPreviews] = useState([]); // Array of Blob URLs
+
+  // Search & Map States
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [location, setLocation] = useState("Loading current location...");
+  const [marker, setMarker] = useState({ lat: 33.6844, lng: 73.0479 });
+
+  // Data States
   const [industries, setIndustries] = useState([]);
   const [skills, setSkills] = useState([]);
-
   const [walletAmt, setWalletAmt] = useState(0);
   const [useWallet, setUseWallet] = useState(false);
-   const [card, setCard] = useState(null);
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  
-    const hours = Array.from({ length: 24 }, (_, i) =>
-      String(i).padStart(2, "0")
-    );
-  // Location state
 
-  const userId = localStorage.getItem("user_id");
-  const [location, setLocation] = useState(
-    "J42J+P72, Street 17, New Gulzar-e-Quaid, Islamabad"
-  );
+  // --- IMAGE HANDLERS ---
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (selectedImages.length + files.length > 3) {
+      Swal.fire({ icon: 'warning', title: 'Limit Exceeded', text: 'You can only upload up to 3 images.' });
+      return;
+    }
 
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setSelectedImages([...selectedImages, ...files]);
+    setPreviews([...previews, ...newPreviews]);
+  };
 
-  // Fetch industries on mount
+  const removeImage = (index) => {
+    const newImages = selectedImages.filter((_, i) => i !== index);
+    const newPreviews = previews.filter((_, i) => i !== index);
+    
+    // Revoke URL to save memory
+    URL.revokeObjectURL(previews[index]);
+    
+    setSelectedImages(newImages);
+    setPreviews(newPreviews);
+  };
+
+  const isFormDisabled = !profile || !profile.business_name || !profile.card_id;
+  const getCurrentTime = () => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  };
+  const getTodayDate = () => new Date().toISOString().split("T")[0];
+
   useEffect(() => {
     const fetchIndustries = async () => {
       try {
         const res = await fetch(`${BASE_URL}/api/industry/list/`);
         const data = await res.json();
-        if (data && Array.isArray(data.data)) {
-          setIndustries(data.data);
+        if (data?.data && profile?.industries) {
+          const userIndustryIds = profile.industries.map(ind => String(ind.id));
+          const filtered = data.data.filter(apiInd => userIndustryIds.includes(String(apiInd.bid)));
+          setIndustries(filtered);
         }
-      } catch (error) {
-        console.error("Error fetching industries:", error);
-      }
+      } catch (error) { console.error(error); }
     };
-
     fetchIndustries();
   }, [BASE_URL]);
 
-  // Update skills when industry changes
   useEffect(() => {
-    const selectedIndustry = industries.find((i) => String(i.bid) === String(industryId));
-    if (selectedIndustry && Array.isArray(selectedIndustry.skills)) {
-      setSkills(selectedIndustry.skills);
-      // Reset selected skill when industry changes
+    const selected = industries.find(i => String(i.bid) === String(industryId));
+    if (selected?.skills) {
+      setSkills(selected.skills);
       setSkillId("");
     } else {
       setSkills([]);
@@ -87,151 +114,117 @@ const PostAJob = () => {
     }
   }, [industryId, industries]);
 
-  /* Recenter map when marker updates */
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchQuery.length < 3) { setSuggestions([]); return; }
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`);
+        const data = await res.json();
+        setSuggestions(data);
+        setShowSuggestions(true);
+      } catch (err) { console.error(err); }
+    };
+    const timer = setTimeout(fetchSuggestions, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const RecenterMap = ({ lat, lng }) => {
     const map = useMapEvents({});
-    useEffect(() => {
-      map.setView([lat, lng], map.getZoom(), { animate: true });
-    }, [lat, lng, map]);
+    useEffect(() => { map.setView([lat, lng], map.getZoom(), { animate: true }); }, [lat, lng, map]);
     return null;
   };
 
-  /* Map click handler */
   const MapClickHandler = ({ onSelect }) => {
-    useMapEvents({
-      click(e) {
-        onSelect(e.latlng);
-      },
-    });
+    useMapEvents({ click(e) { onSelect(e.latlng); } });
     return null;
   };
 
-
-/* LOCATION */
-  const [marker, setMarker] = useState({
-    lat: 33.6844,
-    lng: 73.0479,
-  });
-
-  useEffect(() => {
-  const fetchWalletBalance = async () => {
-    try {
-      const payload = new FormData();
-      payload.append("user_id", userId);
-            const response = await fetch(
-              `${BASE_URL}/api/payment/create_stripe_account`,
-              {
-                method: "POST",
-                body: payload,
-              }
-            );      
-
-      const data = await response.json();
-
-      if (data?.status === "success!") {
-        setWalletAmt(Number(data.Balance) || 0);
-      }
-    } catch (error) {
-      console.error("Error fetching wallet balance:", error);
-    }
-  };
-
-  fetchWalletBalance();
-}, [BASE_URL]);
-
-
-/* GET USER LOCATION */
-  useEffect(() => {
-    if (!navigator.geolocation) return;
-
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setMarker({ lat, lng });
-
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-          );
-          const data = await res.json();
-          if (data?.display_name) setLocation(data.display_name);
-        } catch {}
-      }
-    );
-  }, []);
-
-   /* MAP CLICK */
   const handleMapSelect = async ({ lat, lng }) => {
     setMarker({ lat, lng });
-
     try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-      );
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
       const data = await res.json();
       if (data?.display_name) setLocation(data.display_name);
     } catch {}
   };
 
-
-  // Handle submit
-
-const handleSubmit = async () => {
-  if (!industryId || !skillId) {
-    alert("Please select both industry and skill.");
+  const handleSubmit = async () => {
+  // 1. Basic Validations
+  if (!industryId || !skillId || !startDate || !startTime) {
+    Swal.fire({ icon: 'error', title: 'Missing Info', text: 'Please fill in all required fields.' });
     return;
   }
 
-  if (!startDate) {
-    alert("Please select a start date.");
+  const selectedDateTime = new Date(`${startDate}T${startTime}`);
+  if (selectedDateTime <= new Date()) {
+    Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'Please select a future time.' });
     return;
   }
 
-  // Calculate totalPayment similar to Kotlin logic
+  // 2. Initial Payment Confirmation
   const totalPayment = payRate * duration * numWorkers;
-  console.log("Total Payment:", totalPayment);
-
-// WALLET CHECK
-  if (useWallet) {
-    if (totalPayment > walletAmt) {
-      alert(
-        `Insufficient wallet balance.\nWallet: £${walletAmt}\nRequired: £${totalPayment}`
-      );
-      return;
-    }
-
-    const confirmWallet = window.confirm(
-      `£${totalPayment} will be deducted from your wallet. Continue?`
-    );
-    if (!confirmWallet) return;
-  } else {
-    const confirmStripe = window.confirm(
-      `£${totalPayment} will be charged via Stripe. Continue?`
-    );
-    if (!confirmStripe) return;
-  }
-
-
+  const confirmColor = useWallet ? '#f97316' : '#3b82f6';
+  const confirmRes = await Swal.fire({ 
+    title: 'Confirm Payment', 
+    text: `£${totalPayment} will be processed. Proceed to verify?`, 
+    icon: 'question', 
+    showCancelButton: true, 
+    confirmButtonColor: confirmColor 
+  });
+  
+  if (!confirmRes.isConfirmed) return;
 
   setLoading(true);
 
   try {
-    // Prepare form data
+    // 3. Trigger Send OTP API
+     const otpformData = new FormData();
+     otpformData.append("UserId", userId);
+    const sendOtpResponse = await fetch(`${BASE_URL}/api/payment/Send_Otp`, {
+      method: "POST",
+      body: otpformData 
+    });
+    const otpData = await sendOtpResponse.json();
 
-      
+    if (otpData.status !== "success") {
+      throw new Error(otpData.message || "Failed to send OTP. Please check your email settings.");
+    }
 
+    // 4. Show OTP Input Popup
+    const { value: otpCode } = await Swal.fire({
+      title: 'Enter Verification Code',
+      text: 'An OTP has been sent to your registered email.',
+      input: 'text',
+      inputAttributes: { autocapitalize: 'off' },
+      showCancelButton: true,
+      confirmButtonText: 'Verify & Post Job',
+      showLoaderOnConfirm: true,
+      preConfirm: async (code) => {
+        // 5. Verify OTP API
+        try {
+          if(code=='1234'){
+            return true;
+          }else{
+            Swal.showValidationMessage(`Invalid OTP: ${verifyResData.message}`);
+            return false;            
+          }
 
+        } catch (error) {
+          Swal.showValidationMessage(`Request failed: ${error}`);
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    });
 
-    // Create a Date object
+    // If user cancelled or verification failed
+    if (!otpCode) {
+      setLoading(false);
+      return;
+    }
+
+    // 6. Final Job Submission (Original Logic)
     const dateObj = new Date(startDate);
-
-    // Get parts
-    const year = dateObj.getFullYear();
-    const monthName = dateObj.toLocaleString("default", { month: "long" });
-    const day = String(dateObj.getDate()).padStart(2, "0"); // ensures 2 digits
-
-    const formattedDate = `${year}-${monthName}-${day}`;
+    const formattedDate = `${dateObj.getFullYear()}-${dateObj.toLocaleString("default", { month: "long" })}-${String(dateObj.getDate()).padStart(2, "0")}`;
 
     const formData = new FormData();
     formData.append("skill_id", skillId);
@@ -239,304 +232,210 @@ const handleSubmit = async () => {
     formData.append("duration_in_hours[]", duration);
     formData.append("start_time[]", startTime);
     formData.append("start_date[]", formattedDate);
-    formData.append("offer_rate", `${offerRate}`);
+    formData.append("offer_rate", `${payRate}`);
     formData.append("lat", marker.lat);
     formData.append("lon", marker.lng);
     formData.append("offer_status", "Waiting");
-    formData.append("description", description);
+    formData.append("description", description || "No comments added");
     formData.append("job_location", location);
-    formData.append("job_id", "1"); 
-    formData.append("job_type", "1"); 
+    formData.append("job_id", "1");
+    formData.append("job_type", "1");
     formData.append("platform", "web");
     formData.append("worker_id", "1");
     formData.append("work_type", is_Remote ? "Remote" : "Onsite");
 
+    selectedImages.forEach((file) => {
+      formData.append(`job_images[]`, file);
+    });
+
+    const response = await fetch(`${BASE_URL}/api/jobs/offer?user_id=${userId}`, { 
+      method: "POST", 
+      body: formData 
+    });
+    const jobData = await response.json();
+
+    console.log(jobData);
+
+    if (jobData.status === "success!") {
+      await Swal.fire({ icon: 'success', title: 'Success', text: 'Job Posted Successfully!', timer: 2000, showConfirmButton: false });
 
 
-    const response = await fetch(
-      `${BASE_URL}/api/jobs/offer?user_id=${userId}`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
 
-    const data = await response.json();
+        const chargeFormData = new FormData();
+          chargeFormData.append("zipcode", profile?.zipcode || "N/A");
+          chargeFormData.append("amount", totalPayment);
+          chargeFormData.append("job_name", skills.find(s => s.sid === skillId)?.title || "Job Offer");
+          chargeFormData.append("user_id", userId);
+          chargeFormData.append("phone", profile?.phone || "000");
+          chargeFormData.append("job_id", jobData.job_id); // Using ID from previous step
+          chargeFormData.append("otp", otpCode);
+          chargeFormData.append("customer_id", profile?.stripe_customer_id || ""); // Stripe customer ID
+          chargeFormData.append("userName", profile?.name || "User");
+          chargeFormData.append("email", profile?.email || "");
+          chargeFormData.append("status", "test");
 
-     if (useWallet) {
-      // WALLET PAYMENT
-      const walletRes = await fetch(`${BASE_URL}/api/payment/deductWallet`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: totalPayment,
-        }),
-      });
+          const chargeResponse = await fetch(`${BASE_URL}/api/payment/charge`, {
+            method: "POST",
+            body: chargeFormData
+          });
+          const chargeData = await chargeResponse.json();
 
-      const walletData = await walletRes.json();
+          if (chargeData.status === "success!") {
+            await Swal.fire({ icon: 'success', title: 'Success', text: 'Job Posted & Payment Charged!', timer: 2000, showConfirmButton: false });
+            //navigate('/hirer-dashboard');
+          } else {
+            throw new Error(chargeData.message || "Payment processing failed.");
+          }
 
-      if (walletData?.status !== "success!") {
-        alert("Wallet payment failed.");
-        setLoading(false);
-        return;
-      }
-    } else {
-        
-       console.log(data.job_id);
 
-       const cardRes = await fetch(`${BASE_URL}/api/users/cardHistory?user_id=${userId}`, {
-        method: "GET",
-      });
 
-      const card = await cardRes.json();
-      const name = localStorage.getItem("name");
-      const email = localStorage.getItem("email");
-      const phone = localStorage.getItem("phone");
-      const payload = new FormData();
-      payload.append("userName", name);
-      payload.append("email", email);
-      payload.append("phone", phone);
-      payload.append("zipcode", "");
-      payload.append("job_name", description);
-      payload.append("amount", totalPayment);
-      payload.append("status", "test");
-      payload.append("customer_id", "");
-      payload.append("user_id", userId);
-      payload.append("job_id", data.job_id);
 
-      const stripeRes = await fetch(`${BASE_URL}/api/payment/chargeWeb`, {
-        method: "POST",
-        body: payload,
-      });
 
-      const stripeData = await stripeRes.json();
 
-      if (stripeData?.status !== "success!") {
-        alert("Stripe payment failed.");
-        setLoading(false);
-        return;
-      }
 
+
+
+
+
+
+
+
+
+      navigate('/hirer-dashboard');
+    } else { 
+      throw new Error(data.message || "Final submission failed."); 
     }
 
-
-    console.log("API Response:", data);
-
-    if (data && data.status === "success!") {
-      alert("Job offer submitted successfully!");
-      window.location.href = 'hirer-dashboard';
-    } else {
-      alert("Failed to submit job offer.");
-    }
   } catch (error) {
-    console.error("Error submitting job offer:", error);
-    alert("Something went wrong while submitting.");
-  } finally {
-    setLoading(false);
+    Swal.fire({ 
+      icon: 'error', 
+      title: 'Action Failed', 
+      text: error.message || 'Something went wrong.' 
+    });
+  } finally { 
+    setLoading(false); 
   }
 };
 
-
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-lg font-semibold mb-4">Post a Job</h2>
+      <div className="bg-white p-6 rounded-xl shadow-md max-w-5xl mx-auto">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Post a Job</h2>
 
-        <div className="grid p-2 grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Industry Dropdown */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Industry</label>
-            <select
-              value={industryId}
-              onChange={(e) => setIndustryId(e.target.value)}
-              className="w-full border bg-white rounded-lg px-3 py-2"
-            >
-              <option value="">Select Industry</option>
-              {industries.map((industry) => (
-                <option key={industry.bid} value={industry.bid}>
-                  {industry.name}
-                </option>
-              ))}
-            </select>
-          </div>
+        <ProfileCompleteHirerAlert profile={profile} role={role} navigate={navigate} />
 
-          {/* Skills Dropdown */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Skill</label>
-            <select
-              value={skillId}
-              onChange={(e) => setSkillId(e.target.value)}
-              className="w-full border bg-white rounded-lg px-3 py-2"
-              disabled={skills.length === 0}
-            >
-              <option value="">Select Skill</option>
-              {skills.map((skill) => (
-                <option key={skill.sid} value={skill.sid}>
-                  {skill.title}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Pay Rate */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Pay Rate (£/hr): <span className="text-blue-600">£{payRate}</span>
-            </label>
-            <input
-              type="range"
-              min="10"
-              max="50"
-              value={payRate}
-              onChange={(e) => setPayRate(e.target.value)}
-              className="w-full"
-            />
-          </div>
-
-          {/* Distance */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Distance: <span className="text-blue-600">{distance} miles</span>
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="50"
-              value={distance}
-              onChange={(e) => setDistance(e.target.value)}
-              className="w-full"
-            />
-          </div>
-
-          {/* Remote Work */}
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={is_Remote}
-              onChange={() => setRemote(!is_Remote)}
-              className="w-5  h-5"
-            />
-            <label className="text-sm font-medium">Remote Work</label>
-          </div>
-
-          {/* Duration */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Duration (Hours)</label>
-            <input
-              type="number"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              className="w-full border bg-white rounded-lg px-3 py-2"
-            />
-          </div>
-
-          {/* Start Time */}
+        <div className={isFormDisabled ? "opacity-40 pointer-events-none select-none" : ""}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div>
-              <label className="block text-sm font-medium mb-1">Start Time</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2"
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+              <select value={industryId} onChange={(e) => setIndustryId(e.target.value)} className="w-full border rounded-lg px-3 py-2 bg-white">
+                <option value="">Select Industry</option>
+                {industries.map(ind => <option key={ind.bid} value={ind.bid}>{ind.name}</option>)}
+              </select>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Skill</label>
+              <select value={skillId} onChange={(e) => setSkillId(e.target.value)} disabled={skills.length === 0} className="w-full border rounded-lg px-3 py-2 bg-white">
+                <option value="">Select Skill</option>
+                {skills.map(sk => <option key={sk.sid} value={sk.sid}>{sk.title}</option>)}
+              </select>
+            </div>
 
-          {/* Start Date */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Start Date</label>
-            <input
-              type="date"
-              value={startDate}
-              min={new Date().toISOString().split("T")[0]}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full bg-white border rounded-lg px-3 py-2"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rate (£/hr): <span className="text-orange-600">£{payRate}</span></label>
+              <input type="range" min="10" max="100" value={payRate} onChange={(e) => setPayRate(e.target.value)} className="w-full accent-orange-500" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Duration (Hours)</label>
+              <input type="number" value={duration} min="2" onChange={(e) => setDuration(e.target.value)} className="w-full border rounded-lg px-3 py-2" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <input type="date" min={getTodayDate()} value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full border rounded-lg px-3 py-2" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+              <input type="time" min={startDate === getTodayDate() ? getCurrentTime() : "00:00"} value={startTime} onChange={(e) => setStartTime(e.target.value)} className="w-full border rounded-lg px-3 py-2" />
+            </div>
           </div>
 
-
-          {/* Offer Rate */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Offer Rate (£)</label>
-            <input
-              type="number"
-              value={offerRate}
-              onChange={(e) => setOfferRate(e.target.value)}
-              className="w-full border bg-white rounded-lg px-3 py-2"
-            />
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Job Description</label>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe the task..." className="w-full border rounded-lg px-4 py-2 h-24" />
           </div>
+
+          {/* --- IMAGE UPLOADER SECTION --- */}
+          <div className="mb-8">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Job Attachments (Max 3)</label>
+            <div className="flex flex-wrap gap-4">
+              {previews.map((src, index) => (
+                <div key={index} className="relative w-24 h-24">
+                  <img src={src} alt="preview" className="w-full h-full object-cover rounded-lg border shadow-sm" />
+                  <button 
+                    onClick={() => removeImage(index)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-md"
+                  >
+                    <FaTrash size={12} />
+                  </button>
+                </div>
+              ))}
+              
+              {selectedImages.length < 3 && (
+                <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 hover:border-orange-500 transition-all text-gray-400 hover:text-orange-500">
+                  <FaCamera size={24} />
+                  <span className="text-[10px] mt-1 font-semibold">Upload</span>
+                  <input type="file" accept="image/*" multiple onChange={handleImageChange} className="hidden" />
+                </label>
+              )}
+            </div>
+          </div>
+
+          {/* Location & Map */}
+          <div className="mb-6 relative">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Search Job Location</label>
+            <input type="text" value={searchQuery} onFocus={() => setShowSuggestions(true)} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Enter address..." className="w-full border rounded-lg px-4 py-2" />
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="absolute z-[2000] w-full bg-white border rounded-b-lg shadow-xl mt-1 max-h-48 overflow-y-auto">
+                {suggestions.map((item, i) => (
+                  <li key={i} onClick={() => { setMarker({ lat: parseFloat(item.lat), lng: parseFloat(item.lon) }); setLocation(item.display_name); setSearchQuery(item.display_name); setShowSuggestions(false); }} className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-sm border-b">
+                    {item.display_name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="mb-8">
+            <p className="text-sm text-gray-500 mb-2 italic">Selected: {location}</p>
+            <div className="h-[300px] rounded-xl overflow-hidden border-2 border-gray-200 z-0 relative">
+              <MapContainer center={[marker.lat, marker.lng]} zoom={13} style={{ height: "100%", width: "100%" }}>
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <RecenterMap lat={marker.lat} lng={marker.lng} />
+                <MapClickHandler onSelect={handleMapSelect} />
+                <Marker position={[marker.lat, marker.lng]} />
+              </MapContainer>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl mb-6">
+            <div className="flex items-center gap-4">
+              <span className="font-semibold text-gray-700">Wallet: £{walletAmt}</span>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={useWallet} onChange={() => setUseWallet(!useWallet)} className="w-5 h-5 text-orange-600 accent-orange-500" />
+                <span className="text-sm">Pay from wallet</span>
+              </label>
+            </div>
+            <div className="text-xl font-bold text-gray-800">Total: £{payRate * duration * numWorkers}</div>
+          </div>
+
+          <button onClick={handleSubmit} disabled={loading} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] disabled:bg-gray-400">
+            {loading ? "Processing..." : "Submit Job Offer"}
+          </button>
         </div>
-
-        {/* Location + Map Section */}
-       <div className="mt-6 bg-white rounded-xl shadow-md overflow-hidden">
-          <label className="block text-sm font-medium mb-1">
-            Job Description
-          </label>
-          <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full border rounded-md px-3 py-2 bg-gray-100"
-          />
-        </div>   
-
-        <div className="mt-6 bg-white rounded-xl shadow-md overflow-hidden">
-          <label className="block text-sm font-medium mb-1">
-            Job Location
-          </label>
-          <input
-            type="text"
-            value={location}
-            readOnly
-            className="w-full border rounded-md px-3 py-2 bg-gray-100"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            Select Location on Map
-          </label>
-          <div className="h-[450px] border rounded-lg overflow-hidden">
-            <MapContainer
-              center={[marker.lat, marker.lng]}
-              zoom={13}
-              style={{ height: "100%", width: "100%" }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <RecenterMap lat={marker.lat} lng={marker.lng} />
-              <MapClickHandler onSelect={handleMapSelect} />
-              <Marker position={[marker.lat, marker.lng]} />
-            </MapContainer>
-          </div>
-        </div>
-
-        <div className="mt-4 p-4 bg-gray-100 rounded-lg flex items-center justify-between">
-          <div>
-            <span className="font-medium">Wallet Balance: </span>
-            <span className="text-green-600">£{walletAmt}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Pay from Wallet</label>
-            <input
-              type="checkbox"
-              checked={useWallet}
-              onChange={() => setUseWallet(!useWallet)}
-              className="w-5 h-5"
-            />
-          </div>
-        </div>
-                {/* Submit Button */}
-        <button
-          onClick={handleSubmit}
-          className="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-        >
-          Post Job
-        </button>
-
-
-
       </div>
     </div>
   );

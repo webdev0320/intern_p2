@@ -30,6 +30,7 @@ const Header = ({ open, setOpen }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     // Sign Up modal
     const userProfile = localStorage.getItem("userProfile");
+    
     const profile = userProfile ? JSON.parse(userProfile) : null;
 
 
@@ -86,7 +87,7 @@ const Header = ({ open, setOpen }) => {
 
     // 2️⃣ Check stripe_account_id
 
-    if (profile?.stripe_account_id) {
+    if (profile?.stripe_account_id && profile?.stripe_auth!='not auth') {
       // ✅ Already has Stripe account → call Stripe login API
       console.log("Stripe account exists. Calling login API...");
         const payload = new FormData();
@@ -614,11 +615,13 @@ const Header = ({ open, setOpen }) => {
                                                 <button
                                                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-gray-800"
                                                     onClick={() => {
+                                                        console.log('a');
                                                         localStorage.removeItem("token");
                                                         localStorage.removeItem("user");
                                                         localStorage.removeItem("user_id");
+                                                        localStorage.removeItem("userData");
                                                         setIsLoggedIn(false);
-                                                        window.location.href = "/";
+                                                        window.location.href = "logout";
                                                         setOpen(false);
                                                     }}
                                                 >

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import Swal from "sweetalert2";
 function Services() {
   const [industries, setIndustries] = useState([]);
   const [selectedIndustries, setSelectedIndustries] = useState([]);
@@ -67,14 +67,26 @@ function Services() {
         const skillIds = industry.skills.map((s) => s.sid);
         setSelectedSkills((prev) => [...prev, ...skillIds]);
       } else {
-        alert("You can select only 3 industries.");
+
+         Swal.fire({
+                icon: 'error',
+                title: 'Industries and skills Update',
+                text: "You can select only 3 industries.",
+                confirmButtonColor: '#f97316'
+        });
       }
     }
   };
 
   const handleSubmit = async () => {
     if (selectedIndustries.length === 0) {
-      alert("Please select at least one industry.");
+
+       Swal.fire({
+                icon: 'error',
+                title: 'Industries and skills Update',
+                text: "Please select at least one industry.",
+                confirmButtonColor: '#f97316'
+        });
       return;
     }
 
@@ -95,14 +107,33 @@ function Services() {
       console.log("Response:", data);
 
       if (data && data.status === "success!") {
-        alert("Industries and skills submitted successfully!");
+
+        Swal.fire({
+                icon: 'success',
+                title: 'Industries and skills Update',
+                text: 'Industries and skills submitted successfully!',
+                confirmButtonColor: '#f97316'
+        });
         window.location.href = 'hirer-dashboard';
       } else {
-        alert("Failed to submit.");
+       
+         Swal.fire({
+                icon: 'error',
+                title: 'Industries and skills Update',
+                text: "Failed to update Industries and Skills",
+                confirmButtonColor: '#f97316'
+        });
+
       }
     } catch (error) {
       console.error("Error submitting:", error);
-      alert("Something went wrong.");
+       Swal.fire({
+                icon: 'error',
+                title: 'Industries and skills Update',
+                text: "Failed to update Industries and Skills",
+                confirmButtonColor: '#f97316'
+        });
+
     } finally {
       setLoading(false);
     }

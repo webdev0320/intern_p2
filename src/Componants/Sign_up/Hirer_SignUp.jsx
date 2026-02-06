@@ -2,10 +2,12 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import Swal from "sweetalert2";
 const HirerSignUpPage = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
+        forenames: '',
+        surname: '',  
         name: '',
         u_type: '',
         email: '',
@@ -27,7 +29,12 @@ const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-        alert("Passwords do not match!");
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Passwords do not match!',
+            confirmButtonColor: '#f97316' // Matches your orange theme
+        });
         return;
     }
     setLoading(true); // 👈 start processing
@@ -83,43 +90,49 @@ const handleSubmit = async (e) => {
         }
 
         if (response.ok) {
-            alert(data.message || "Account created successfully!");
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: data.message || "Account created successfully!",
+                timer: 2000,
+                showConfirmButton: false
+            });
+
             navigate("/login/hirer");
         } else {
-            alert(data.message || data.error || "Registration failed!");
+            Swal.fire({
+                icon: 'error',
+                title: 'Registration Failed',
+                text: data.message || data.error || "Something went wrong on the server.",
+                confirmButtonColor: '#f97316'
+            });
         }
 
     } catch (err) {
         console.error(err);
-        alert(err.message || "Server Error 🚨");
+        Swal.fire({
+            icon: 'error',
+            title: 'Connection Error',
+            text: "Cannot reach the server. Please check your internet.",
+            confirmButtonColor: '#f97316'
+        });
     }
     finally {
         setLoading(false); // 👈 stop processing
     }
 };
 
+const getMinBirthDate = () => {
+    const today = new Date();
+    const eighteenYearsAgo = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    return eighteenYearsAgo.toISOString().split("T")[0]; // Returns YYYY-MM-DD
+};
 
 
     return (
         <div className="min-h-screen py-8 px-4">
 
             <div className=" max-w-2xl mx-auto">
-
-                <div className="flex justify-start  mb-8 md:mb-12">
-                    <button
-                        onClick={() => navigate('/')}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        <span className="font-medium">Back to Home</span>
-                    </button>
-
-
-                </div>
-                {/* Navigation Bar */}
-
 
                 <div className=" flex justify-center flex-col">
                     {/* Left Column - Form */}
@@ -247,11 +260,13 @@ const handleSubmit = async (e) => {
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
                                             Date of Birth
                                         </label>
-                                        <input
+                                       <input
                                             type="date"
                                             name="dateofbirth"
+                                            max={getMinBirthDate()} // 👈 This limits the calendar picker
                                             value={formData.dateofbirth}
                                             onChange={handleChange}
+                                            required
                                             className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                         />
                                     </div>

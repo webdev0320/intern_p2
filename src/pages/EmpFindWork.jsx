@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaWhatsapp, FaArrowLeft } from "react-icons/fa"; // Added Arrow icon
+import { FaWhatsapp, FaArrowLeft } from "react-icons/fa";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import Swal from "sweetalert2";
+import ProfileCompleteEmpAlert from '../Componants/ProfileCompleteEmpAlert';
+
 /* Fix Leaflet marker icon issue */
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -36,276 +37,146 @@ const EmpFindWork = () => {
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const userId = localStorage.getItem("user_id");
-  const alertShownRef = useRef(false);
-  // UI State
-  const [showForm, setShowForm] = useState(true); // Control visibility of the form
+  const email = localStorage.getItem("email");
+  const role = localStorage.getItem("role");
 
-  // State for Filters
+  // UI State
+  const [showForm, setShowForm] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  // Filters State
   const [payRate, setPayRate] = useState(10);
   const [distance, setDistance] = useState(50);
   const [isRemote, setRemote] = useState(false);
   const [selectedSkillId, setSelectedSkillId] = useState("");
 
-  // State for Data
+  // Data State
   const userProfile = localStorage.getItem("userProfile");
   const profile = userProfile ? JSON.parse(userProfile) : null;
-
   const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  // State for Location/Map
-  const [locationName, setLocationName] = useState("Detecting location...");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Location State
+
+  const [location, setLocation] = useState("Loading current location...");
   const [marker, setMarker] = useState({ lat: 33.6844, lng: 73.0479 });
-  const role = localStorage.getItem("role");
-  const currentPath = window.location.pathname; // just the path, e.g., "/hirer-dashboard"
 
+  const isFormDisabled = !profile || 
+    !profile.line_manager_name || 
+    (!profile.industries || profile.industries.length === 0) || 
+    !profile.stripe_account_id;
 
-    var email = localStorage.getItem("email");
-
-    const payload = new FormData();
-    payload.append("email", email);
-    payload.append("country", "GB");
-    payload.append("status", "test");
-    payload.append("user_id", userId);
-
-
-    const stripeConnect = async () => {
-  try {
-    // 1️⃣ Fetch user profile
-
-
-    // 2️⃣ Check stripe_account_id
-
-    if (profile?.stripe_account_id) {
-      // ✅ Already has Stripe account → call Stripe login API
-      console.log("Stripe account exists. Calling login API...");
-        const payload = new FormData();
-        payload.append("email", email);
-        payload.append("stripe_account_id", profile?.stripe_account_id);
-        payload.append("status", "test");
-        payload.append("user_id", userId);
-
-
-        const loginResponse = await fetch(
-              `${BASE_URL}/api/payment/stripe_login_link`,
-              {
-                method: "POST",
-                body: payload,
-              }
-            );
-
-            if (!loginResponse.ok) {
-              throw new Error(`Stripe login API error! Status: ${loginResponse.status}`);
-            }
-
-            const loginData = await loginResponse.json();
-
-
-            const stripeUrl = loginData?.chargerecord?.url;
-
-            if (stripeUrl) {
-             window.open(stripeUrl, "_blank", "noopener,noreferrer");
-
-            } else {
-              alert("Stripe login URL not found!");
-            }
-
-
-
-
-    } else {
-      // ❌ No Stripe account → create Stripe account
-      console.log("No Stripe account. Calling create Stripe account API...");
-
-
-      const createResponse = await fetch(`${BASE_URL}/api/payment/create_stripe_account`, {
-        method: "POST",
-        body: payload,
-      });
-
-      if (!createResponse.ok) {
-        throw new Error(`Create Stripe account error! Status: ${createResponse.status}`);
-      }
-
-      const createData = await createResponse.json();
-      console.log("Create Stripe response:", createData);
-
-      if (createData?.url) {
-        window.location.href = createData.url; // redirect to Stripe onboarding
-      } else {
-        alert("Stripe account creation URL not found!");
-      }
-    }
-  } catch (error) {
-    console.error("Stripe connect error:", error);
-    alert("Something went wrong while connecting to Stripe.");
-  }
-};
-
-
-
+  
+  // 3. Search Autocomplete Logic
   useEffect(() => {
-        if (!profile) return; // wait until profile is loaded
+    const fetchSuggestions = async () => {
+      if (searchQuery.length < 3) { setSuggestions([]); return; }
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`);
+        const data = await res.json();
+        setSuggestions(data);
+        setShowSuggestions(true);
+      } catch (err) { console.error(err); }
+    };
+    const timer = setTimeout(fetchSuggestions, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-        if(role=='emp'){
-            // Redirect to hirer-profile if business_name is empty and not already on that page
-            if (profile.business_name === "" && currentPath !== "hirer-profile") {
-                navigate("/hirer-profile"); // React Router redirect
-                return;
-            }
+  // 4. Map Components
+  const RecenterMap = ({ lat, lng }) => {
+    const map = useMapEvents({});
+    useEffect(() => { map.setView([lat, lng], map.getZoom(), { animate: true }); }, [lat, lng, map]);
+    return null;
+  };
 
-            if (!profile.industries || profile.industries.length === 0 && currentPath !== "services") {
-                navigate("/services");
-                return;
-            }
+  const MapClickHandler = ({ onSelect }) => {
+    useMapEvents({ click(e) { onSelect(e.latlng); } });
+    return null;
+  };
 
-            // Redirect to services if card_id is empty and not already on services page
-            if ((!profile.card_id || profile.card_id === "") && currentPath !== "stripe-card") {
-                navigate("/stripe-card");
-                return;
-            }            
-        }
-
-        if(role=='self-emp'){
-
-           if ((!profile.industries || profile.industries.length === 0) && currentPath !== "employee-services") {
-                navigate("/employee-services");
-                return;
-            }
-
-             // Only show alert once
-            if (
-              (!profile.stripe_account_id || profile.stripe_account_id === "") &&
-              currentPath !== "/stripe-card" &&
-              !alertShownRef.current
-            ) {
-              alertShownRef.current = true; // mark as shown
-              Swal.fire("Error", "Add Stripe Account", "error").then(() => {
-                  stripeConnect();
-              });
-            }          
-        }
-
-    }, [profile, currentPath, navigate,role]);
-
-// Move this inside a useEffect!
-useEffect(() => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const { latitude, longitude } = pos.coords;
-      // Only update if the position is actually different to avoid extra renders
-      setMarker({ lat: latitude, lng: longitude });
-      reverseGeocode(latitude, longitude);
-    }, (error) => {
-      console.error("Geolocation error:", error);
-      setLocationName("Location access denied.");
-    });
-  }
-}, []); // Empty array means this runs ONLY ONCE on mount
-
-  const reverseGeocode = async (lat, lng) => {
+  const handleMapSelect = async ({ lat, lng }) => {
+    setMarker({ lat, lng });
     try {
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
       const data = await res.json();
-      if (data?.display_name) setLocationName(data.display_name);
-    } catch (err) {}
-  };
+      if (data?.display_name) setLocation(data.display_name);
+    } catch {}
+  };  
 
 
-    const handleApply = async (job) => {
-    // Confirmation dialog
-    const confirmApply = window.confirm(`Are you sure you want to apply for ${job.skill_name}?`);
-    if (!confirmApply) return;
-
-    setLoading(true);
+  const stripeConnect = async () => {
     try {
-      // payload data from the job object and local storage
-      const payload = new FormData();
-      payload.append("status", "Accept");
-      payload.append("who_offer_job_user_id", job.user_id); // The person who posted the job
-      payload.append("worker_id", userId); // The logged-in user (you)
-      payload.append("job_id", job.offer_id); // Using offer_id as the unique job identifier
-      payload.append("job_name", job.skill_name);
+      if (profile?.stripe_account_id) {
+        const payload = new FormData();
+        payload.append("email", email);
+        payload.append("stripe_account_id", profile.stripe_account_id);
+        payload.append("status", "test");
+        payload.append("user_id", userId);
 
-      const url = `${BASE_URL}/api/jobs/status_update?job_offer_id=${job.offer_id}`;      
-      const response = await fetch(url, {
-        method: "POST",
-        body: payload
-      });
-
-      const result = await response.json();
-
-      if (result.status === "success!") {
-        alert("Application submitted successfully!");
-        
-        // Update local state to reflect the change immediately
-       /* setJobs((prevJobs) =>
-          prevJobs.map((j) =>
-            j.offer_id === job.offer_id ? { ...j, offer_status: "Accept" } : j
-          )
-        );*/
-
-        navigate('/employer-congrats-page', { 
-            state: { 
-                offerId: job.offer_id 
-            } 
+        const loginResponse = await fetch(`${BASE_URL}/api/payment/stripe_login_link`, {
+          method: "POST",
+          body: payload,
         });
+        const loginData = await loginResponse.json();
+        const stripeUrl = loginData?.chargerecord?.url;
 
+        if (stripeUrl) {
+          window.open(stripeUrl, "_blank", "noopener,noreferrer");
+        } else {
+          Swal.fire("Error", "Stripe login URL not found!", "error");
+        }
       } else {
-        alert(result.message || "Failed to update status.");
+        const payload = new FormData();
+        payload.append("email", email);
+        payload.append("country", "GB");
+        payload.append("status", "test");
+        payload.append("user_id", userId);
+
+        const createResponse = await fetch(`${BASE_URL}/api/payment/create_stripe_account`, {
+          method: "POST",
+          body: payload,
+        });
+        const createData = await createResponse.json();
+
+        if (createData?.url) {
+          window.location.href = createData.url;
+        } else {
+          Swal.fire("Error", "Stripe onboarding URL not found!", "error");
+        }
       }
     } catch (error) {
-      console.log("Apply error:", error);
-      alert("Something went wrong while applying.");
-    } finally {
-      setLoading(false);
+      console.error("Stripe error:", error);
     }
-  };
-
-
-
-
-  const handleMapSelect = (latlng) => {
-    setMarker(latlng);
-    reverseGeocode(latlng.lat, latlng.lng);
   };
 
   const handleSearch = async () => {
     if (!selectedSkillId) {
-      alert("Please select a skill first.");
+      Swal.fire("Note", "Please select a skill first.", "info");
       return;
     }
 
     setLoading(true);
     try {
       const url = `${BASE_URL}/api/jobs/search?worker_id=${userId}&skill_id=${selectedSkillId}`;
-      const remoteStatus = isRemote ? "Remote" : "Onsite";
-      
       const payload = new FormData();
       payload.append("miles", distance);
       payload.append("lat", marker.lat);
       payload.append("long", marker.lng);
       payload.append("pay_Rate", payRate);
-      payload.append("is_Remote", remoteStatus);
+      payload.append("is_Remote", isRemote ? "Remote" : "Onsite");
 
-      const response = await fetch(url, {
-        method: "POST",
-        body: payload
-      });
-
+      const response = await fetch(url, { method: "POST", body: payload });
       const result = await response.json();
-      if (result.status === "success!" && result.data && result.data.length > 0) {
+
+      if (result.status === "success!" && result.data?.length > 0) {
         setJobs(result.data);
-        setShowForm(false); 
-      } 
-      // Handle the "No Work Found" error response
-      else if (result.status === "error!" || result.message === "No Work Found") {
+        setShowForm(false);
+      } else {
         setJobs([]);
-        alert("No Work Found. Try adjusting your filters or location.");
-      }
-      else {
-        setJobs([]);
-        alert("Something went wrong. Please try again.");
+        Swal.fire("No Jobs", "Try adjusting your filters or location.", "warning");
       }
     } catch (error) {
       console.error("Search error:", error);
@@ -314,61 +185,106 @@ useEffect(() => {
     }
   };
 
-  const handleCancel = (id) => {
-    alert(`Cancelling offer ID: ${id}`);
+  const handleApply = async (job) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `Apply for ${job.skill_name}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, apply'
+    });
+
+    if (!result.isConfirmed) return;
+
+    setLoading(true);
+    try {
+      const payload = new FormData();
+      payload.append("status", "Accept");
+      payload.append("who_offer_job_user_id", job.user_id);
+      payload.append("worker_id", userId);
+      payload.append("job_id", job.offer_id);
+      payload.append("job_name", job.skill_name);
+
+      const response = await fetch(`${BASE_URL}/api/jobs/status_update?job_offer_id=${job.offer_id}`, {
+        method: "POST",
+        body: payload
+      });
+
+      const data = await response.json();
+      if (data.status === "success!") {
+        navigate('/employer-congrats-page', { state: { offerId: job.offer_id } });
+      } else {
+        Swal.fire("Failed", data.message || "Failed to apply.", "error");
+      }
+    } catch (error) {
+      Swal.fire("Error", "Something went wrong.", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      
-      {/* 1. CONDITIONAL FORM VIEW */}
       {showForm ? (
         <>
-          {/* Filters Section */}
-          <div className="bg-white p-6 rounded-xl shadow-md mb-6 transition-all">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 items-end">
-              <div>
-                <label className="block text-sm font-medium mb-2">Select Work</label>
-                <select 
-                  className="w-full border rounded-lg px-3 py-2"
-                  value={selectedSkillId}
-                  onChange={(e) => setSelectedSkillId(e.target.value)}
-                >
-                  <option value="">Select Skill</option>
-                  {profile?.skills?.map((s) => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
+          <ProfileCompleteEmpAlert profile={profile} role={role} navigate={navigate} />
+          <div className={isFormDisabled ? "opacity-40 pointer-events-none" : ""}>
+            <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 items-end">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Select Work</label>
+                  <select
+                    className="w-full border rounded-lg px-3 py-2"
+                    value={selectedSkillId}
+                    onChange={(e) => setSelectedSkillId(e.target.value)}
+                  >
+                    <option value="">Select Skill</option>
+                    {profile?.skills?.map((s) => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Pay: £{payRate}</label>
-                <input type="range" min="10" max="100" value={payRate} onChange={(e) => setPayRate(e.target.value)} className="w-full" />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Pay: £{payRate}</label>
+                  <input type="range" min="10" max="100" value={payRate} onChange={(e) => setPayRate(e.target.value)} className="w-full" />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Dist: {distance} mi</label>
-                <input type="range" min="1" max="100" value={distance} onChange={(e) => setDistance(e.target.value)} className="w-full" />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Dist: {distance} mi</label>
+                  <input type="range" min="1" max="100" value={distance} onChange={(e) => setDistance(e.target.value)} className="w-full" />
+                </div>
 
-              <div className="flex items-center gap-2 mb-3">
-                <input type="checkbox" checked={isRemote} onChange={() => setRemote(!isRemote)} className="w-5 h-5" />
-                <label className="text-sm font-medium">Remote</label>
-              </div>
+                <div className="flex items-center gap-2 mb-3">
+                  <input type="checkbox" id="remote" checked={isRemote} onChange={() => setRemote(!isRemote)} className="w-5 h-5" />
+                  <label htmlFor="remote" className="text-sm font-medium cursor-pointer">Remote</label>
+                </div>
 
-              <button onClick={handleSearch} className="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition">
-                {loading ? "Searching..." : "Find Work"}
-              </button>
+                <button onClick={handleSearch} disabled={loading} className="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 disabled:bg-gray-400">
+                  {loading ? "Searching..." : "Find Work"}
+                </button>
+              </div>
             </div>
+
+            {/* Location Search */}
+          <div className="mb-6 relative">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Search Job Location</label>
+            <input type="text" value={searchQuery} onFocus={() => setShowSuggestions(true)} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Enter address..." className="w-full border rounded-lg px-4 py-2" />
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="absolute z-[2000] w-full bg-white border rounded-b-lg shadow-xl mt-1">
+                {suggestions.map((item, i) => (
+                  <li key={i} onClick={() => { setMarker({ lat: parseFloat(item.lat), lng: parseFloat(item.lon) }); setLocation(item.display_name); setSearchQuery(item.display_name); setShowSuggestions(false); }} className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-sm border-b">
+                    {item.display_name}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          {/* Map Section */}
-          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-            <div className="p-4 border-b">
-              <p className="text-sm text-gray-500">📍 Search Location</p>
-              <h2 className="text-md font-semibold truncate">{locationName}</h2>
-            </div>
-            <div className="h-[400px]">
+          {/* Map */}
+          <div className="mb-8">
+            <p className="text-sm text-gray-500 mb-2 italic">Selected: {location}</p>
+            <div className="h-[400px] rounded-xl overflow-hidden border-2 border-gray-200 z-0 relative">
               <MapContainer center={[marker.lat, marker.lng]} zoom={13} style={{ height: "100%", width: "100%" }}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <RecenterMap lat={marker.lat} lng={marker.lng} />
@@ -377,15 +293,14 @@ useEffect(() => {
               </MapContainer>
             </div>
           </div>
+
+
+          </div>
         </>
       ) : (
-        /* 2. HEADER FOR RESULTS VIEW */
         <div className="flex items-center justify-between mb-6">
-          <button 
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 text-blue-600 font-medium hover:underline"
-          >
-            <FaArrowLeft /> Edit Search & Filters
+          <button onClick={() => setShowForm(true)} className="flex items-center gap-2 text-blue-600 font-medium hover:underline">
+            <FaArrowLeft /> Edit Search
           </button>
           <h2 className="text-xl font-bold">{jobs.length} Jobs Found</h2>
         </div>
@@ -393,65 +308,44 @@ useEffect(() => {
 
       {/* Jobs Listing */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {!loading && jobs.map((job) => (
-          <div key={job.offer_id} className="bg-white rounded-2xl shadow p-4 border border-gray-100">
-            <div className="flex justify-between items-center">
-              <h2 className="text-blue-600 font-semibold text-lg">{job.skill_name}</h2>
-              <div className="flex items-center gap-1 text-green-600 text-sm font-medium cursor-pointer" onClick={() => window.open("https://wa.me/44782345457", "_blank")}>
-                <FaWhatsapp className="w-4 h-4" /> Help?
+        {jobs.map((job) => (
+          <div key={job.offer_id} className="bg-white rounded-2xl shadow p-4 border border-gray-100 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center">
+                <h2 className="text-blue-600 font-semibold text-lg">{job.skill_name}</h2>
+                <div className="flex items-center gap-1 text-green-600 text-sm font-medium cursor-pointer" onClick={() => window.open("https://wa.me/44782345457", "_blank")}>
+                  <FaWhatsapp /> Help?
+                </div>
               </div>
+              <p className="text-blue-500 text-xs mt-1 italic">
+                {job.offer_status === "Waiting" ? "Awaiting worker" : job.offer_status}
+              </p>
+              <hr className="my-3" />
+              <p className="text-sm text-gray-600 line-clamp-3 mb-2">{job.jobdetail}</p>
+              <p className="text-xs text-gray-400">📍 {job.job_location}</p>
             </div>
 
-            <p className="text-blue-500 text-sm mt-2">
-              {job.offer_status === "Waiting" ? "No worker accepted yet." : job.offer_status}
-            </p>
-
-            <hr className="my-3" />
-            <p className="font-semibold text-sm">Work Description:</p>
-            <p className="text-sm text-gray-600 line-clamp-2">{job.jobdetail}</p>
-            <p className="text-xs mt-2 text-gray-500">📍 {job.job_location}</p>
-
-            <hr className="my-3" />
-            <div className="flex justify-between text-sm">
-              <div>
-                <p className="text-gray-500">💷 Rate</p>
-                <p className="text-blue-600 font-bold">£{job.offer_rate}</p>
+            <div className="mt-4">
+              <div className="flex justify-between text-sm mb-3">
+                <span>💷 <b className="text-blue-600">£{job.offer_rate}</b></span>
+                <span className="text-gray-400 text-xs">{job.job_post_date}</span>
               </div>
-              <div className="text-right">
-                <p className="text-gray-500">⏰ Posted</p>
-                <p className="text-blue-600 font-semibold">{job.job_post_date}</p>
-              </div>
-            </div>
-
-            <hr className="my-3" />
-            <div className="grid grid-cols-3 text-center text-[10px] text-gray-400 font-bold mb-2">
-              <div>DATE</div><div>DUR.</div><div>START</div>
-            </div>
-
-            {job.duration?.map((d) => (
-              <div key={d.duration_id} className="grid grid-cols-3 text-center text-xs font-semibold text-blue-600 mb-1">
-                <div>{d.start_date.split('-')[1]} {d.start_date.split('-')[2]}</div>
-                <div>{d.duration_in_hours}h</div>
-                <div>{d.start_time}</div>
-              </div>
-            ))}
-
-            {job.offer_status === "Waiting" && (
-              <button 
-                  onClick={() => handleApply(job)} 
-                  className="mt-5 w-full bg-blue-500 text-white py-2 rounded-xl font-medium hover:bg-blue-700 transition"
-                >
-                  Apply For Work
+              {job.offer_status === "Waiting" && (
+                <button onClick={() => handleApply(job)} className="w-full bg-blue-500 text-white py-2 rounded-xl hover:bg-blue-600 transition">
+                  Apply Now
                 </button>
-            )}
+              )}
+            </div>
           </div>
         ))}
       </div>
-      
+
       {jobs.length === 0 && !loading && !showForm && (
-        <div className="text-center py-10 text-gray-400">
-          No jobs match your criteria. 
-          <button onClick={() => setShowForm(true)} className="ml-2 text-blue-600 underline">Try again</button>
+        <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-gray-200">
+          <p className="text-gray-500">No jobs match your criteria.</p>
+          <button onClick={() => setShowForm(true)} className="mt-2 text-blue-600 font-bold hover:underline">
+            Try adjusting your search
+          </button>
         </div>
       )}
     </div>

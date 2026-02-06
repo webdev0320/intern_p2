@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaStar } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-
+import ProfileCompleteEmpAlert from '../Componants/ProfileCompleteEmpAlert';
 const EmpDashboard = () => {
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
@@ -14,6 +14,7 @@ const EmpDashboard = () => {
   // Refs to prevent duplicate API calls in React 18 StrictMode (dev)
   const profileFetched = useRef(false);
   const ratingFetched = useRef(false);
+  const role = localStorage.getItem("role");
   /* ======================
      Fetch Profile
   ====================== */
@@ -27,7 +28,7 @@ const EmpDashboard = () => {
         );
         const data = await response.json();
         setProfile(data);
-          localStorage.setItem("userProfile", JSON.stringify(data)); // store as string
+        localStorage.setItem("userProfile", JSON.stringify(data)); // store as string
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }
@@ -35,6 +36,7 @@ const EmpDashboard = () => {
 
     if (userId) fetchProfile();
   }, [userId, BASE_URL]);
+
 
   /* ======================
      Fetch Rating
@@ -107,6 +109,12 @@ const EmpDashboard = () => {
             </span>
           </div>
 
+          <ProfileCompleteEmpAlert 
+                profile={profile} 
+                role={role} 
+                navigate={navigate} 
+            /> 
+
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mt-6">
             <div
@@ -160,7 +168,7 @@ const EmpDashboard = () => {
               className="bg-white rounded-lg shadow text-center p-4 cursor-pointer"
             >
               <span className="block text-lg font-bold">
-                {profile.Accept}
+                {profile.Start}
               </span>
               <span className="text-sm text-gray-500 uppercase">
                 In-Progress

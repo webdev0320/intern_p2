@@ -79,6 +79,8 @@ import EmpJobFeedback from "./pages/EmpJobFeedback";
 import EmpJobFeedbackSuccess from "./pages/EmpJobFeedbackSuccess";
 
 import EmpBlockedHirer from "./pages/EmpBlockedHirer";
+import EmpChat from "./pages/EmpChat";
+import HirerChat from "./pages/HirerChat";
 
 
 
@@ -237,7 +239,8 @@ function App() {
             <Route path="/emp-invoice-detail/:id" element={<PrivateRoute><EmpInvoiceDetail /></PrivateRoute>} />
 
             <Route path="/blocked-hirer-list" element={<PrivateRoute><EmpBlockedHirer /></PrivateRoute>} />
-
+            <Route path="/emp-chat/:offerId" element={<PrivateRoute><EmpChat /></PrivateRoute>} />
+            <Route path="/hirer-chat/:offerId" element={<PrivateRoute><HirerChat /></PrivateRoute>} />  
           </Routes>
         </main>
 

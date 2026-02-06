@@ -48,5 +48,16 @@
     @apply transition hover:shadow-lg;
   }
 
+  /* This makes the calendar icon visible and clickable in Chrome/Edge/Safari */
+/* This targets both date and time input icons */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.5); /* Adjust this to change icon color (0 for black, 1 for white) */
+    padding: 5px;
+    display: block; /* Ensures it stays visible */
+}
+  
+
 }
 
