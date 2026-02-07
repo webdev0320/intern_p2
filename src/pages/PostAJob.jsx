@@ -10,7 +10,7 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import ProfileCompleteHirerAlert from '../Componants/ProfileCompleteHirerAlert';
+import ProfileCompleteHirerAlert from '../Componants/profileCompleteHirerAlert';
 
 /* Fix Leaflet marker icon issue */
 delete L.Icon.Default.prototype._getIconUrl;
