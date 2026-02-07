@@ -293,7 +293,7 @@ const handleFollow = async (followId) => {
                     <div>{d.start_date}</div>
                     <div>{d.duration_in_hours} hrs</div>
                     <div>{d.start_time}</div>
-                    <div>{job.job_status === 'Accept' ? 'Accepted' : ''}</div>
+                    <div>{job.job_status}</div>
                   </div>
                 ))}
 
@@ -327,6 +327,46 @@ const handleFollow = async (followId) => {
                     </button>
                   </div>
                 )}
+
+
+                    {type === "inprogress" && job.job_status === "Start" && (
+                    <>
+
+                         <div className="flex flex-wrap md:flex-nowrap gap-2 border-t pt-4">
+                              <button
+                              onClick={() =>
+                                navigate(`/emp-chat/${job.job_id}`)
+                              }
+                              className="flex-1 bg-green-500 text-white py-2 rounded-lg shadow text-sm font-medium hover:bg-green-600 transition-colors"
+                              >
+                              Contact Hirer
+                              </button>
+                              <button
+                              onClick={() => handleFollow(job.user_id)}
+                              className="flex-1 bg-yellow-500 text-white py-2 rounded-lg shadow text-sm font-medium hover:bg-yellow-600 transition-colors"
+                              >
+                              Follow Hirer
+                              </button>
+                            </div>
+
+                    </>
+                    )}
+
+                    {type === "completed" && job.job_status === "Complete" && (
+                    <>
+
+                         <div className="flex flex-wrap md:flex-nowrap gap-2 border-t pt-4">
+                              <button
+                              onClick={() => navigate(`/emp/work-leave-feedback/${job.job_id}`)}
+                              className="flex-1 bg-blue-500 text-white py-2 rounded-lg shadow text-sm font-medium hover:bg-blue-600 transition-colors"
+                              >
+                              Leave Feedback
+                              </button>
+                      
+                            </div>
+
+                    </>
+                    )}
               </div>
             ))}
         </div>

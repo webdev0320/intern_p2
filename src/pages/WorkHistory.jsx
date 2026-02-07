@@ -269,6 +269,123 @@ const handleFollow = async (followId) => {
 };
 
 
+const handleStartWork = async (job, worker) => {
+
+  // ⛔ Time-window validation (Android logic applied)
+  if (!canStartJob(job)) {
+    Swal.fire({
+      title: "Not Allowed",
+      text: "You can only start the job within 15 minutes of its scheduled time.",
+      icon: "warning",
+    });
+    return;
+  }
+
+  const confirm = await Swal.fire({
+    title: 'Start Work?',
+    text: "Are you ready to start this job?",
+    icon: 'info',
+    showCancelButton: true,
+    confirmButtonColor: '#ea580c',
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  setLoading(true);
+
+  try {
+    const formData = new FormData();
+    formData.append("who_offer_job_user_id", userId);
+    formData.append("job_name", job.job_name);
+    formData.append("status", "start");
+    formData.append("worker_id", worker.user_id);
+
+    const response = await fetch(
+      `${BASE_URL}/api/jobs/status_update?job_offer_id=${job.job_id}`,
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      Swal.fire("Started!", "Job is now in progress.", "success");
+    } else {
+      Swal.fire("Failed!", data.message, "error");
+    }
+
+  } catch (error) {
+    Swal.fire("Failed!", "Job Start Failed", "error");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+const handleEndWork = async (job, worker) => {
+
+  const confirm = await Swal.fire({
+    title: "Hang On!",
+    text: "You will still be charged for the original amount of work even you end this work before/after time. Do you still want to end this work?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes",
+    cancelButtonText: "Cancel",
+    confirmButtonColor: "#ea580c",
+    allowOutsideClick: false, // same as setCanceledOnTouchOutside(false)
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  // ✅ Same as Android: updateJobStatusCall(..., COMPLETE)
+  setLoading(true);
+
+  try {
+    const formData = new FormData();
+    formData.append("who_offer_job_user_id", userId);
+    formData.append("job_name", job.job_name);
+    formData.append("status", "Complete"); // JOB_STATUS_COMPLETE
+    formData.append("worker_id", worker.user_id);
+
+    const response = await fetch(
+      `${BASE_URL}/api/jobs/status_update?job_offer_id=${job.job_id}`,
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.status=='success!') {
+      Swal.fire("Completed!", "Job has been marked as completed.", "success");
+    } else {
+      Swal.fire("Failed!", data.message, "error");
+    }
+
+  } catch (error) {
+    Swal.fire("Failed!", "Job End Failed", "error");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+const canStartJob = (job) => {
+  const now = Date.now(); // current time in ms
+
+  return job.duration.some(d => {
+    const jobStart = new Date(`${d.startDate} ${d.startTime}`).getTime();
+    const diff = jobStart - now;
+
+    console.log("Job start:", jobStart, "Now:", now, "Diff:", diff);
+
+    return diff >= 0 && diff <= 900000; // 15 minutes
+  });
+};
+
 
   const formatTitle = (t) =>
     t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
@@ -389,18 +506,20 @@ const handleFollow = async (followId) => {
                   <div>Status</div>
                 </div>
 
-                {/* TABLE ROW */}
-                {job.duration?.map((d) => (
-                  <div
-                    key={d.duration_id}
-                    className="grid grid-cols-4 text-center text-sm font-semibold text-orange-600"
-                  >
-                    <div>{d.start_date}</div>
-                    <div>{d.duration_in_hours} hrs</div>
-                    <div>{d.start_time}</div>
-                    <div>{job.job_status}</div>
-                  </div>
-                ))}
+               {/* TABLE ROW */}
+                  {job.duration?.map((d) => (
+                    <div
+                      key={d.duration_id}
+                      className="grid grid-cols-4 text-center text-sm font-semibold text-orange-600"
+                    >
+                      <div>{d.start_date}</div>
+                      <div>{d.duration_in_hours} hrs</div>
+                      <div>{d.start_time}</div>
+                      <div>
+                        {job.job_status}
+                      </div>
+                    </div>
+                  ))}
 
                 {/* CANCEL BUTTON */}
                 {type=='inprogress'  && job.job_status === "Waiting" && (
@@ -445,12 +564,12 @@ const handleFollow = async (followId) => {
                     </div>
                   ))}
 
-                  {type === "inprogress" && job.job_status === "approve" && (
+  {type === "inprogress" && job.job_status === "approve" && (
   <>
     <div className="mt-5 mb-2">
       <h3 className="text-lg font-bold text-gray-700">Accepted By</h3>
     </div>
-    
+
     {job.Workers?.map((worker, idx) => (
       <div key={idx} className="mt-2 p-4 border border-gray-100 rounded-xl bg-gray-50 flex flex-col shadow-sm">
         
@@ -491,10 +610,95 @@ const handleFollow = async (followId) => {
           </button>
         </div>
 
+        {/* NEW: Row 3: Start Work Button */}
+        <button
+          onClick={() => handleStartWork(job, worker)}
+          className="mt-3 w-full bg-orange-600 text-white py-2.5 rounded-lg shadow-md text-sm font-bold hover:bg-orange-700 active:scale-95 transition-all"
+        >
+          Start Work
+        </button>
+
+      </div>
+    ))}
+  </>
+
+)}
+
+  {type === "inprogress" && job.job_status === "Start" && (
+  <>
+    <div className="mt-5 mb-2">
+      <h3 className="text-lg font-bold text-gray-700">Accepted By</h3>
+    </div>
+
+    {job.Workers?.map((worker, idx) => (
+      <div key={idx} className="mt-2 p-4 border border-gray-100 rounded-xl bg-gray-50 flex flex-col shadow-sm">
+        
+        {/* Row 1: Worker Info */}
+        <div className="flex items-center gap-3 mb-4">
+          <img 
+            src={worker.image || logo} 
+            alt={worker.name} 
+            className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+          />
+          <div>
+            <p className="font-bold text-gray-800">{worker.name}</p>
+            <p className="text-xs text-gray-500">Professional Worker</p>
+          </div>
+        </div>
+
+
+        {/* NEW: Row 3: Start Work Button */}
+        <button
+            onClick={() => handleEndWork(job, worker)}
+            className="mt-3 w-full bg-orange-600 text-white py-2.5 rounded-lg shadow-md text-sm font-bold hover:bg-orange-700 active:scale-95 transition-all"
+          >
+            End Work
+          </button>
+
+
       </div>
     ))}
   </>
 )}
+
+
+    {type === "finished" && job.job_status === "Complete" && (
+  <>
+    <div className="mt-5 mb-2">
+      <h3 className="text-lg font-bold text-gray-700">Accepted By</h3>
+    </div>
+
+    {job.Workers?.map((worker, idx) => (
+      <div key={idx} className="mt-2 p-4 border border-gray-100 rounded-xl bg-gray-50 flex flex-col shadow-sm">
+        
+        {/* Row 1: Worker Info */}
+        <div className="flex items-center gap-3 mb-4">
+          <img 
+            src={worker.image || logo} 
+            alt={worker.name} 
+            className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+          />
+          <div>
+            <p className="font-bold text-gray-800">{worker.name}</p>
+            <p className="text-xs text-gray-500">Professional Worker</p>
+          </div>
+        </div>
+
+
+        {/* NEW: Row 3: Start Work Button */}
+        <button
+            onClick={() => navigate(`/hirer/work-leave-feedback/${job.job_id}`)}
+            className="mt-3 w-full bg-orange-600 text-white py-2.5 rounded-lg shadow-md text-sm font-bold hover:bg-orange-700 active:scale-95 transition-all"
+          >
+            Leave Feedback
+          </button>
+
+
+      </div>
+    ))}
+  </>
+)}
+
 
               </div>
             ))}
