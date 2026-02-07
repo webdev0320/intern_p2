@@ -89,7 +89,6 @@ const EmpChat = () => {
         receiverId: jobData.user_id.toString(),
         message: tempMsg,
         timestamp: serverTimestamp(),
-        timestamp: serverTimestamp(),
       });
       await setDoc(doc(db, "conversations", chatId), {
         lastMessage: tempMsg,
