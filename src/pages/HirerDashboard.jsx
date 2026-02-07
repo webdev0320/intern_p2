@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaStar } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import ProfileCompleteHirerAlert from '../Componants/ProfileCompleteHirerAlert';
+import ProfileCompleteHirerAlert from '../Componants/profileCompleteHirerAlert';
 const HirerDashboard = () => {
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
