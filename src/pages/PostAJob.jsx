@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
 import { FaTrash, FaCamera } from "react-icons/fa"; // Added icons
+import ProfileCompleteHirerAlert from '../Componants/profileCompleteHirerAlert';
 import {
   MapContainer,
   TileLayer,
@@ -10,7 +11,7 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import ProfileCompleteHirerAlert from '../Componants/profileCompleteHirerAlert';
+
 
 /* Fix Leaflet marker icon issue */
 delete L.Icon.Default.prototype._getIconUrl;
