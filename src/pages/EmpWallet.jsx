@@ -237,7 +237,7 @@ const EmpWallet = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+  <div className="p-6">
       <h1 className="text-xl font-bold mb-4 px-4">Wallet</h1>
 
       {/* ================= BALANCE CARD ================= */}
