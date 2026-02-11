@@ -42,7 +42,8 @@ const EmpChat = () => {
           setJobData(job);
 
           // 2. Generate Chat ID (Matching Android Logic: smallerID-largerID)
-          const receiverId = job.worker_id; // The Employer/Worker ID
+          const receiverId = 39;//job.worker_id; // The Employer/Worker ID
+
           const generatedId = parseInt(currentUserId) < parseInt(receiverId) 
             ? `${currentUserId}-${receiverId}` 
             : `${receiverId}-${currentUserId}`;
