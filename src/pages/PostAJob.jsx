@@ -31,7 +31,7 @@ const PostAJob = () => {
 
   // Form States
   const [loading, setLoading] = useState(false);
-  const [payRate, setPayRate] = useState(20);
+  const [payRate, setPayRate] = useState(50);
   const [is_Remote, setRemote] = useState(false);
   const [numWorkers, setNumWorkers] = useState(1);
   const [skillId, setSkillId] = useState("");
@@ -370,7 +370,7 @@ const PostAJob = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Rate (£/hr): <span className="text-orange-600">£{payRate}</span></label>
-              <input type="range" min="10" max="100" value={payRate} onChange={(e) => setPayRate(e.target.value)} className="w-full accent-orange-500" />
+              <input type="range" min="11" max="100" value={payRate} onChange={(e) => setPayRate(e.target.value)} className="w-full accent-orange-500" />
             </div>
 
             <div>

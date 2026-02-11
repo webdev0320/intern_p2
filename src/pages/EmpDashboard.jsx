@@ -168,7 +168,7 @@ const EmpDashboard = () => {
               className="bg-white rounded-lg shadow text-center p-4 cursor-pointer"
             >
               <span className="block text-lg font-bold">
-                {profile.Start}
+                {profile.Approve}
               </span>
               <span className="text-sm text-gray-500 uppercase">
                 In-Progress

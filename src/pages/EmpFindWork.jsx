@@ -45,7 +45,7 @@ const EmpFindWork = () => {
   const [loading, setLoading] = useState(false);
 
   // Filters State
-  const [payRate, setPayRate] = useState(10);
+  const [payRate, setPayRate] = useState(11);
   const [distance, setDistance] = useState(50);
   const [isRemote, setRemote] = useState(false);
   const [selectedSkillId, setSelectedSkillId] = useState("");
@@ -247,7 +247,7 @@ const EmpFindWork = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Pay: £{payRate}</label>
-                  <input type="range" min="10" max="100" value={payRate} onChange={(e) => setPayRate(e.target.value)} className="w-full" />
+                  <input type="range" min="11" max="100" value={payRate} onChange={(e) => setPayRate(e.target.value)} className="w-full" />
                 </div>
 
                 <div>

@@ -123,13 +123,13 @@ function EmpServices() {
                   {/* Industry checkbox */}
                   <label className="flex flex-col cursor-pointer">
                     <div className="flex items-center space-x-2 font-medium">
-                      <input
+                      {/*<input
                         type="checkbox"
                         value={industryId}
                         checked={isIndustryChecked}
                         onChange={() => handleIndustryChange(industry)}
                         className="form-checkbox h-4 w-4 text-orange-500"
-                      />
+                      />*/}
                       <span className="text-gray-800">{industry.name}</span>
                     </div>
 
