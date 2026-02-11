@@ -9,13 +9,17 @@ import { IoSearch } from "react-icons/io5";
 import { MdHistory, MdOutlineMarkEmailUnread } from "react-icons/md";
 import { LuLogOut, LuWallet } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
-
+import { useState, useEffect } from "react";
 const Sidebar = ({ openSidebar, setOpenSidebar }) => {
   const navigate = useNavigate();
   var userId = localStorage.getItem("user_id");
   var email = localStorage.getItem("email");
   var name = localStorage.getItem("name");
   var role = localStorage.getItem("role");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+ useEffect(() => {
+  setIsLoggedIn(!!userId);
+}, [userId]);
   const phoneNumber = "+447823454547"; // WhatsApp number with country code
   const message = "Hello! I need support."; // Optional prefilled message
   return (
@@ -253,9 +257,15 @@ const Sidebar = ({ openSidebar, setOpenSidebar }) => {
 
         <button
           onClick={() => {
-            // handle logout logic
-            setOpenSidebar(false);
-          }}
+                                                        console.log('a');
+                                                        localStorage.removeItem("token");
+                                                        localStorage.removeItem("user");
+                                                        localStorage.removeItem("user_id");
+                                                        localStorage.removeItem("userData");
+                                                        setIsLoggedIn(false);
+                                                        window.location.href = "logout";
+                                                        setOpen(false);
+            }}
           className="menu-btn"
         >
           <LuLogOut /> Log out
