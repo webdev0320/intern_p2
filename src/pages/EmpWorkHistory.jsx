@@ -298,7 +298,7 @@ const handleFollow = async (followId) => {
                 ))}
 
                 {/* BUTTON */}
-               {job.job_status === "Accept" && (
+               {(job.job_status === "Accept" || job.job_status === "approve") && (
                   <div className="mt-5 flex gap-3">
                     
 
