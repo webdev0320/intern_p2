@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 const BottomNavigation = ({ setProfileOpen }) => {
   const navigate = useNavigate();
-
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   // 🔥 keep role in state
   const [role, setRole] = useState(localStorage.getItem("role"));
 
@@ -23,17 +23,92 @@ const BottomNavigation = ({ setProfileOpen }) => {
     }
   };
   console.log(role)
-  const handleSwitch = () => {
-    if (role === "emp") {
-      localStorage.setItem("role", "self-emp");
-      setRole("self-emp");               // update UI
+  const handleSwitch = async () => {
+  try {
+    const userEmail = localStorage.getItem("email");
+
+    // ------------------- 1️⃣ SwitchButtonMode API -------------------
+    const switchPayload = new FormData();
+    switchPayload.append("user_email", userEmail);
+
+    const switchRes = await fetch(
+      `${BASE_URL}/api/users/SwitchButtonMode/`,
+      {
+        method: "POST",
+        body: switchPayload,
+      }
+    );
+    const switchData = await switchRes.json();
+
+    if (!switchData.SwitchAllowed) {
+      alert("Role switch not allowed.");
+      return;
+    }
+
+    // ------------------- 2️⃣ Fetch Password -------------------
+    const currentRole = role; // emp or self-emp
+    const passwordPayload = new FormData();
+    passwordPayload.append("user_email", userEmail);
+    passwordPayload.append("user_type", currentRole);
+
+    const passwordRes = await fetch(
+      `${BASE_URL}/api/users/userPasswordFetch/`,
+      {
+        method: "POST",
+        body: passwordPayload,
+      }
+    );
+    const passwordData = await passwordRes.json();
+
+    if (!passwordData.Password) {
+      alert("Failed to fetch password.");
+      return;
+    }
+
+    // ------------------- 3️⃣ Login API -------------------
+    const loginPayload = new FormData();
+    loginPayload.append("password", passwordData.Password);
+    loginPayload.append("user_type", currentRole === "emp" ? "self-emp" : "emp");
+    loginPayload.append("device_token", "");
+    loginPayload.append("device_type", "ANDROID");
+    loginPayload.append("email", userEmail);
+
+    const loginRes = await fetch(
+      `${BASE_URL}/api/users/login/`,
+      {
+        method: "POST",
+        body: loginPayload,
+      }
+    );
+    const loginData = await loginRes.json();
+
+    if (loginData.status !== "success!") {
+      alert("Login failed after switching role.");
+      return;
+    }
+
+    // ------------------- 4️⃣ Update LocalStorage & UI -------------------
+    const newRole = currentRole === "emp" ? "self-emp" : "emp";
+    localStorage.setItem("role", newRole);
+    setRole(newRole); // update UI
+
+    // Optionally update other localStorage items from loginData
+    localStorage.setItem("user_id", loginData.user_id);
+    localStorage.setItem("name", loginData.name);
+    localStorage.setItem("User_type", loginData.User_type);
+
+    // ------------------- 5️⃣ Redirect -------------------
+    if (newRole === "self-emp") {
       navigate("/emp-dashboard");
     } else {
-      localStorage.setItem("role", "emp");
-      setRole("emp");                    // update UI
       navigate("/hirer-dashboard");
     }
-  };
+  } catch (error) {
+    console.error("Role switch error:", error);
+    alert("An error occurred while switching roles.");
+  }
+};
+
 
   return (
 <div className="fixed bottom-0 left-0 w-full bg-white shadow-t py-2 z-100-h">
