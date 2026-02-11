@@ -67,7 +67,7 @@ const handleSubmit = async (e) => {
           localStorage.setItem("token", data.token);
           localStorage.setItem("role", 'emp');
           localStorage.setItem("user_id", data.user_id);
-          localStorage.setItem("email", data.name);
+          localStorage.setItem("email", data.email);
           localStorage.setItem("name", data.name);
           localStorage.setItem("phone", data.mobile_number);
           localStorage.setItem("userData", JSON.stringify(data));

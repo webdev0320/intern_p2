@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 
 const EmpWallet = () => {
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const userId = localStorage.getItem("user_id") || 30;
+  const email = localStorage.getItem("email");
+  const role = localStorage.getItem("role");
 
   const [balance, setBalance] = useState(0);
   const [history, setHistory] = useState([]);
@@ -14,9 +16,16 @@ const EmpWallet = () => {
   const [topUpAmount, setTopUpAmount] = useState("");
   const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [otpInput, setOtpInput] = useState("");
-  const [otpVerified, setOtpVerified] = useState(false);
-  const DEFAULT_OTP = "1234";
   const [processing, setProcessing] = useState(false);
+
+  // Transfer states
+  const [showTransfer, setShowTransfer] = useState(false);
+  const [transferAmount, setTransferAmount] = useState("");
+  const [transferEmail, setTransferEmail] = useState(email);
+  const [transferOtpScreen, setTransferOtpScreen] = useState(false);
+  const [transferId, setTransferId] = useState(null);
+  const [fromId, setFromId] = useState(null);
+  const [toId, setToId] = useState(null);
 
   useEffect(() => {
     fetchBalance();
@@ -77,7 +86,6 @@ const EmpWallet = () => {
 
     setProcessing(true);
     try {
-      // Call Send_Otp API
       const response = await fetch(`${BASE_URL}/api/payment/Send_Otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -86,7 +94,6 @@ const EmpWallet = () => {
       const data = await response.json();
       console.log("OTP sent response:", data);
 
-      // Show OTP screen
       setShowTopUp(false);
       setShowOtpScreen(true);
     } catch (error) {
@@ -99,19 +106,17 @@ const EmpWallet = () => {
 
   /* ---------------- HANDLE OTP VERIFICATION ---------------- */
   const handleVerifyOtp = async () => {
-    if (otpInput !== DEFAULT_OTP) {
-      alert("Invalid OTP");
+    if (!otpInput) {
+      alert("Enter OTP");
       return;
     }
 
     setProcessing(true);
     try {
-
-       const payload = new FormData();
+      const payload = new FormData();
       payload.append("user_id", userId);
       payload.append("amount", Number(topUpAmount));
       payload.append("otp", otpInput);
-
 
       const response = await fetch(`${BASE_URL}/api/payment/walletCharge`, {
         method: "POST",
@@ -127,7 +132,6 @@ const EmpWallet = () => {
         setOtpInput("");
         fetchBalance();
         fetchWalletHistory();
-        window.location.reload();
       } else {
         alert("Wallet top-up failed");
       }
@@ -139,9 +143,101 @@ const EmpWallet = () => {
     }
   };
 
+  /* ---------------- HANDLE TRANSFER REQUEST ---------------- */
+  const handleTransferRequest = async () => {
+    if (!transferAmount || Number(transferAmount) <= 0) {
+      alert("Enter valid amount");
+      return;
+    }
+    if (!transferEmail) {
+      alert("Enter receiver email");
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const payloadRequest = new FormData();
+      payloadRequest.append("FromEmail", email);
+      payloadRequest.append("FromType", role);
+      payloadRequest.append("RecieverEmail", transferEmail);
+      payloadRequest.append("RecieverType", "emp");
+      payloadRequest.append("amount", Number(transferAmount));
+
+      const response = await fetch(`${BASE_URL}/api/payment/Balance_Transfer_Request`, {
+        method: "POST",
+        body: payloadRequest,
+      });
+      const data = await response.json();
+      console.log("Transfer OTP response:", data);
+
+      if (data.status === "success") {
+        setShowTransfer(false);
+        setTransferId(data.transferId);
+        setFromId(data.From);
+        setToId(data.To);
+        setTransferOtpScreen(true);
+      } else {
+        alert(data.message || "Failed to request transfer");
+      }
+    } catch (error) {
+      console.error("Transfer request error:", error);
+      alert("Transfer request failed");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  /* ---------------- HANDLE TRANSFER OTP VERIFICATION ---------------- */
+  const handleTransferOtpVerify = async () => {
+    if (!otpInput) {
+      alert("Enter OTP");
+      return;
+    }
+    if (!transferId) {
+      alert("Transfer ID not found. Please try again.");
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const payloadTransfer = new FormData();
+      payloadTransfer.append("From", fromId);
+      payloadTransfer.append("To", toId);
+      payloadTransfer.append("FromType", role);
+      payloadTransfer.append("RecieverEmail", transferEmail);
+      payloadTransfer.append("RecieverType", "emp");
+      payloadTransfer.append("amount", Number(transferAmount));
+      payloadTransfer.append("Code", otpInput);
+      payloadTransfer.append("transferId", transferId);
+
+      const response = await fetch(`${BASE_URL}/api/payment/Balance_Transfer`, {
+        method: "POST",
+        body: payloadTransfer,
+      });
+      const data = await response.json();
+      console.log("Transfer result:", data);
+
+      if (data.status === "success") {
+        alert("Transfer successful!");
+        setTransferOtpScreen(false);
+        setTransferAmount("");
+        setTransferEmail(email);
+        setOtpInput("");
+        fetchBalance();
+        fetchWalletHistory();
+      } else {
+        alert(data.message || "Transfer failed");
+      }
+    } catch (error) {
+      console.error("Transfer OTP verification error:", error);
+      alert("Transfer failed");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* ================= HEADER ================= */}
       <h1 className="text-xl font-bold mb-4 px-4">Wallet</h1>
 
       {/* ================= BALANCE CARD ================= */}
@@ -159,7 +255,10 @@ const EmpWallet = () => {
             <span className="text-sm mt-1">Withdraw</span>
           </button>
 
-          <button className="flex flex-col items-center text-blue-500">
+          <button
+            onClick={() => setShowTransfer(true)}
+            className="flex flex-col items-center text-blue-500"
+          >
             <ArrowUpRight />
             <span className="text-sm mt-1">Transfer</span>
           </button>
@@ -176,8 +275,7 @@ const EmpWallet = () => {
 
         <div className="space-y-3">
           {history.map((item, index) => {
-            const isCredit =
-              item.TransactionType?.toLowerCase() === "credit";
+            const isCredit = item.TransactionType?.toLowerCase() === "credit";
             return (
               <div
                 key={index}
@@ -213,8 +311,8 @@ const EmpWallet = () => {
         </div>
       </div>
 
-      {/* ================= TOP UP MODAL ================= */}
-      {(showTopUp || showOtpScreen) && (
+      {/* ================= MODALS ================= */}
+      {(showTopUp || showOtpScreen || showTransfer || transferOtpScreen) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white w-full max-w-md rounded-3xl p-6 relative animate-slideUp">
             {/* Close button */}
@@ -222,6 +320,8 @@ const EmpWallet = () => {
               onClick={() => {
                 setShowTopUp(false);
                 setShowOtpScreen(false);
+                setShowTransfer(false);
+                setTransferOtpScreen(false);
               }}
               className="absolute top-4 right-4 text-gray-400 text-xl"
             >
@@ -256,7 +356,7 @@ const EmpWallet = () => {
               </>
             )}
 
-            {/* OTP Verification */}
+            {/* Top Up OTP */}
             {showOtpScreen && (
               <>
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">
@@ -280,6 +380,74 @@ const EmpWallet = () => {
                   className="w-full bg-blue-500 text-white py-4 rounded-xl text-lg font-semibold shadow-lg"
                 >
                   {processing ? "Processing..." : "Verify OTP & Topup"}
+                </button>
+              </>
+            )}
+
+            {/* Transfer Form */}
+            {showTransfer && (
+              <>
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                  Wallet Transfer
+                </h2>
+                <div className="mb-4">
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Receiver Email
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="Receiver Email"
+                    value={transferEmail}
+                    readOnly
+                    className="w-full border rounded-xl px-4 py-3 text-lg bg-gray-100 cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Amount
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="£ 0.00"
+                    value={transferAmount}
+                    onChange={(e) => setTransferAmount(e.target.value)}
+                    className="w-full border rounded-xl px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <button
+                  disabled={processing}
+                  onClick={handleTransferRequest}
+                  className="w-full bg-blue-500 text-white py-4 rounded-xl text-lg font-semibold shadow-lg"
+                >
+                  {processing ? "Processing..." : "Send OTP"}
+                </button>
+              </>
+            )}
+
+            {/* Transfer OTP */}
+            {transferOtpScreen && (
+              <>
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                  Verify Transfer OTP
+                </h2>
+                <div className="mb-4">
+                  <label className="text-sm text-gray-600 mb-1 block">
+                    Enter OTP
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter OTP"
+                    value={otpInput}
+                    onChange={(e) => setOtpInput(e.target.value)}
+                    className="w-full border rounded-xl px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+                <button
+                  disabled={processing}
+                  onClick={handleTransferOtpVerify}
+                  className="w-full bg-blue-500 text-white py-4 rounded-xl text-lg font-semibold shadow-lg"
+                >
+                  {processing ? "Processing..." : "Verify OTP & Transfer"}
                 </button>
               </>
             )}

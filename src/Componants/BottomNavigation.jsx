@@ -49,7 +49,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
         </button>
 
         {/* Messages */}
-        <button className="flex flex-col items-center text-gray-500 text-sm">
+        <button onClick={() => navigate("/messages")} className="flex flex-col items-center text-gray-500 text-sm">
           <FaEnvelope className="text-xl mb-1" />
           Messages
         </button>

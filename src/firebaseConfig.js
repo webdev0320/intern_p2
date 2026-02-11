@@ -1,19 +1,22 @@
-// 1. Import initializeApp
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-
-// 2. Add this line to import getFirestore
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 import { getFirestore } from "firebase/firestore";
-
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyBF_QQqORoGRIn6Xp6C6g4NaaiYOKU8LDA",
-  authDomain: "iyouwork-test.firebaseapp.com",
-  projectId: "iyouwork-test",
-  storageBucket: "iyouwork-test.firebasestorage.app",
-  messagingSenderId: "96010877831",
-  appId: "1:96010877831:web:83d7b5dd540f1b61bb3122",
-  measurementId: "G-6LBKP1PFBB"
+  apiKey: "AIzaSyBGqi4S0mdX_K6CqtqHQprslvZyR8esHBY",
+  authDomain: "iyouwork-bb3f4.firebaseapp.com",
+  databaseURL: "https://iyouwork-bb3f4-default-rtdb.firebaseio.com",
+  projectId: "iyouwork-bb3f4",
+  storageBucket: "iyouwork-bb3f4.appspot.com", // FIXED
+  messagingSenderId: "272027709842",
+  appId: "1:272027709842:web:760dc7117aa3d4264c914b",
+  measurementId: "G-1ZGNQGH6Z9"
 };
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

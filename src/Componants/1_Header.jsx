@@ -25,7 +25,7 @@ const Header = ({ open, setOpen }) => {
     const [signInOpen, setSignInOpen] = useState(false);
 
     const [openSidebar, setOpenSidebar] = useState(false);
-    const [stripeEnabled, setStripeEnabled] = useState(false);
+    const [stripeEnabled, setStripeEnabledForUser] = useState(false);
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     // Sign Up modal
@@ -33,6 +33,17 @@ const Header = ({ open, setOpen }) => {
     
     const profile = userProfile ? JSON.parse(userProfile) : null;
 
+
+        useEffect(() => {
+          if (profile) {
+            try {
+
+              setStripeEnabledForUser(profile?.stripe_auth || false);
+            } catch (e) {
+              console.error("Invalid userProfile JSON", e);
+            }
+          }
+        }, [profile]);
 
     const navigate = useNavigate();
     const role = localStorage.getItem("role");

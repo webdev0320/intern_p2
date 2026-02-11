@@ -190,7 +190,7 @@ function App() {
             <Route path="/post-job" element={<PrivateRoute><PostAJob /></PrivateRoute>} />
             <Route path="/sidebar" element={<Sidebar />} />
             <Route path="/find-worker" element={<FindWork />} />
-            <Route path="/messages" element={<Messages />} />
+
             <Route path="/spendings" element={<Spendings />} />
             
 

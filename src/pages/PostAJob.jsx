@@ -245,10 +245,6 @@ const PostAJob = () => {
     formData.append("worker_id", "1");
     formData.append("work_type", is_Remote ? "Remote" : "Onsite");
 
-    selectedImages.forEach((file) => {
-      formData.append(`job_images[]`, file);
-    });
-
     const response = await fetch(`${BASE_URL}/api/jobs/offer?user_id=${userId}`, { 
       method: "POST", 
       body: formData 
@@ -290,6 +286,37 @@ const PostAJob = () => {
 
 
 
+          //call image api to pass images
+
+
+
+
+          // Call image upload API
+              const imageFormData = new FormData();
+
+              // IMPORTANT: backend expects `jobId`
+              imageFormData.append("jobId", jobData.job_id);
+
+              // Attach images exactly as backend expects
+              if (selectedImages[0]) imageFormData.append("image1", selectedImages[0]);
+              if (selectedImages[1]) imageFormData.append("image2", selectedImages[1]);
+              if (selectedImages[2]) imageFormData.append("image3", selectedImages[2]);
+
+              const imageResponse = await fetch(
+                `${BASE_URL}/api/jobs/job_uploads?user_id=${userId}`,
+                {
+                  method: "POST",
+                  body: imageFormData
+                }
+              );
+
+              const imageData = await imageResponse.json();
+
+              console.log("Image upload response:", imageData);
+
+              if (imageData.status !== "success!") {
+                throw new Error(imageData.message || "Image upload failed");
+              }
 
 
 
@@ -297,9 +324,7 @@ const PostAJob = () => {
 
 
 
-
-
-
+          //call image api to pass images
 
 
       navigate('/hirer-dashboard');

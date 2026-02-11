@@ -223,7 +223,7 @@ const handleFollow = async (followId) => {
                 <div className="flex justify-between items-center">
                   <div className="space-y-2">
                     <h6 className="text-blue-600">
-                      {job.address}
+                      {job.name}
                     </h6>
 
                     <h2 className="text-blue-600 font-semibold text-lg">
@@ -304,7 +304,7 @@ const handleFollow = async (followId) => {
 
                     <button
                         onClick={() =>
-                          navigate(`/emp-chat/${job.job_id}`)
+                          navigate(`/emp-chat/${job.user_id}`)
                         }
                         className="flex-1 bg-green-500 text-white py-3 rounded-xl shadow-lg text-sm font-medium"
                       >
@@ -335,7 +335,7 @@ const handleFollow = async (followId) => {
                          <div className="flex flex-wrap md:flex-nowrap gap-2 border-t pt-4">
                               <button
                               onClick={() =>
-                                navigate(`/emp-chat/${job.job_id}`)
+                                navigate(`/emp-chat/${job.user_id}`)
                               }
                               className="flex-1 bg-green-500 text-white py-2 rounded-lg shadow text-sm font-medium hover:bg-green-600 transition-colors"
                               >
