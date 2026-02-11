@@ -272,14 +272,14 @@ const handleFollow = async (followId) => {
 const handleStartWork = async (job, worker) => {
 
   // ⛔ Time-window validation (Android logic applied)
-  if (!canStartJob(job)) {
+/*  if (!canStartJob(job)) {
     Swal.fire({
       title: "Not Allowed",
       text: "You can only start the job within 15 minutes of its scheduled time.",
       icon: "warning",
     });
     return;
-  }
+  }*/
 
   const confirm = await Swal.fire({
     title: 'Start Work?',
@@ -377,7 +377,7 @@ const canStartJob = (job) => {
   const now = Date.now(); // current time in ms
 const date = new Date(now);
 
-alert(date.toString());
+
   return job.duration.some(d => {
     const jobStart = new Date(`${d.startDate} ${d.startTime}`).getTime();
     const diff = jobStart - now;
