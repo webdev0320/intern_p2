@@ -1,6 +1,7 @@
 import Swal from "sweetalert2";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 const EditHirerProfile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState({
@@ -21,7 +22,6 @@ const EditHirerProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Replace this with dynamic user ID if you have authentication
   const userId = localStorage.getItem("user_id");
 
   // Fetch profile
@@ -74,6 +74,18 @@ const EditHirerProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Frontend validation for required fields
+    if (!user.name || !user.mobile_number || !user.hourly_rate) {
+      Swal.fire({
+        icon: "error",
+        title: "Missing Required Fields",
+        text: "Please fill all required fields.",
+        confirmButtonColor: "#f97316",
+      });
+      return;
+    }
+
     try {
       const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -82,47 +94,39 @@ const EditHirerProfile = () => {
       Object.keys(user).forEach((key) => {
         payload.append(key, user[key] || "");
       });
-      payload.append("user_id", userId); // API expects user_id
+      payload.append("user_id", userId);
 
-      const response = await fetch(
-        `${BASE_URL}/api/users/profile_update/`,
-        {
-          method: "POST",
-          body: payload,
-        }
-      );
+      const response = await fetch(`${BASE_URL}/api/users/profile_update/`, {
+        method: "POST",
+        body: payload,
+      });
 
       const data = await response.json();
 
       if (response.ok && data.status === "success!") {
-
         Swal.fire({
-                icon: 'success',
-                title: 'Profile Update',
-                text: data.message || "Profile updated successfully!",
-                confirmButtonColor: '#f97316'
+          icon: "success",
+          title: "Profile Update",
+          text: data.message || "Profile updated successfully!",
+          confirmButtonColor: "#f97316",
         });
-
         navigate("/hirer-dashboard");
       } else {
-
         Swal.fire({
-                icon: 'error',
-                title: 'Profile Update',
-                text: data.message || "Failed to update profile",
-                confirmButtonColor: '#f97316'
+          icon: "error",
+          title: "Profile Update",
+          text: data.message || "Failed to update profile",
+          confirmButtonColor: "#f97316",
         });
-
       }
     } catch (err) {
       console.error(err);
-      alert(err.message || "Server error");
       Swal.fire({
-                icon: 'error',
-                title: 'Profile Update',
-                text: data.message || "Failed to update profile",
-                confirmButtonColor: '#f97316'
-        });
+        icon: "error",
+        title: "Profile Update",
+        text: err.message || "Failed to update profile",
+        confirmButtonColor: "#f97316",
+      });
     }
   };
 
@@ -148,18 +152,22 @@ const EditHirerProfile = () => {
         <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Name *</label>
+            <label className="block text-sm text-gray-600 mb-1">
+              Name <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               name="name"
               value={user.name}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          {/* About Me */}
           <div>
             <label className="block text-sm text-gray-600 mb-1">About Me</label>
             <textarea
@@ -171,8 +179,11 @@ const EditHirerProfile = () => {
             />
           </div>
 
+          {/* Business Name */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Business Name</label>
+            <label className="block text-sm text-gray-600 mb-1">
+              Business Name
+            </label>
             <input
               type="text"
               name="business_name"
@@ -182,8 +193,11 @@ const EditHirerProfile = () => {
             />
           </div>
 
+          {/* Line Manager */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Line Manager</label>
+            <label className="block text-sm text-gray-600 mb-1">
+              Line Manager
+            </label>
             <input
               type="text"
               name="line_manager_name"
@@ -193,8 +207,11 @@ const EditHirerProfile = () => {
             />
           </div>
 
+          {/* Business Telephone Number */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Business Telephone Number</label>
+            <label className="block text-sm text-gray-600 mb-1">
+              Business Telephone Number
+            </label>
             <input
               type="text"
               name="business_number"
@@ -204,6 +221,7 @@ const EditHirerProfile = () => {
             />
           </div>
 
+          {/* Address */}
           <div>
             <label className="block text-sm text-gray-600 mb-1">Address</label>
             <input
@@ -215,9 +233,12 @@ const EditHirerProfile = () => {
             />
           </div>
 
+          {/* City / Country */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-600 mb-1">City / Region</label>
+              <label className="block text-sm text-gray-600 mb-1">
+                City / Region
+              </label>
               <input
                 type="text"
                 name="city"
@@ -239,8 +260,11 @@ const EditHirerProfile = () => {
             </div>
           </div>
 
+          {/* Post Code / Zip Code */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Post Code / Zip Code</label>
+            <label className="block text-sm text-gray-600 mb-1">
+              Post Code / Zip Code
+            </label>
             <input
               type="text"
               name="post_code"
@@ -250,8 +274,11 @@ const EditHirerProfile = () => {
             />
           </div>
 
+          {/* Insurance Number */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Insurance Number</label>
+            <label className="block text-sm text-gray-600 mb-1">
+              Insurance Number
+            </label>
             <input
               type="text"
               name="insurance_number"
@@ -261,6 +288,7 @@ const EditHirerProfile = () => {
             />
           </div>
 
+          {/* Personal UTR */}
           <div>
             <label className="block text-sm text-gray-600 mb-1">Personal UTR</label>
             <input
@@ -272,29 +300,38 @@ const EditHirerProfile = () => {
             />
           </div>
 
+          {/* Mobile Number (Required) */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Mobile Number</label>
+            <label className="block text-sm text-gray-600 mb-1">
+              Mobile Number <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               name="mobile_number"
               value={user.mobile_number}
               onChange={handleChange}
+              required
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          {/* Hourly Rate (Required) */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Hourly Rate</label>
+            <label className="block text-sm text-gray-600 mb-1">
+              Hourly Rate <span className="text-red-500">*</span>
+            </label>
             <input
               type="number"
               name="hourly_rate"
               value={user.hourly_rate}
               onChange={handleChange}
+              required
+              min="0"
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
-
+          {/* Submit Button */}
           <div className="flex justify-center mt-4">
             <button
               type="submit"
@@ -304,7 +341,6 @@ const EditHirerProfile = () => {
             </button>
           </div>
         </form>
-
       </div>
     </div>
   );
