@@ -22,16 +22,16 @@ const BottomNavigation = ({ setProfileOpen }) => {
       navigate("/hirer-dashboard");
     }
   };
-
+  console.log(role)
   const handleSwitch = () => {
     if (role === "emp") {
       localStorage.setItem("role", "self-emp");
       setRole("self-emp");               // update UI
-      navigate("/hirer-dashboard");
+      navigate("/emp-dashboard");
     } else {
       localStorage.setItem("role", "emp");
       setRole("emp");                    // update UI
-      navigate("/emp-dashboard");
+      navigate("/hirer-dashboard");
     }
   };
 
