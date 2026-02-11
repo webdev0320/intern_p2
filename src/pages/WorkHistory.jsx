@@ -375,7 +375,7 @@ const handleEndWork = async (job, worker) => {
 
 const canStartJob = (job) => {
   const now = Date.now(); // current time in ms
-
+  alert(now);
   return job.duration.some(d => {
     const jobStart = new Date(`${d.startDate} ${d.startTime}`).getTime();
     const diff = jobStart - now;

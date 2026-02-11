@@ -44,7 +44,7 @@ const EmpChat = () => {
         const job = result.data[0];
         setJobData(job);
 
-        const receiverFirebaseChatId = job.user_id;
+        const receiverFirebaseChatId = 45;//job.user_id;
 
         const generatedChatId =
           senderFirebaseChatId > receiverFirebaseChatId
