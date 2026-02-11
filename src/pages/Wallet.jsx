@@ -9,7 +9,7 @@ const Wallet = () => {
   const [balance, setBalance] = useState(0);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-
+   const DEFAULT_OTP = "1234";
   // TopUp & Transfer states
   const [showTopUp, setShowTopUp] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState("");
@@ -157,6 +157,85 @@ const Wallet = () => {
     } catch (error) {
       console.error("Transfer OTP verification error:", error);
       alert("Transfer failed");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+   /* ---------------- HANDLE TOPUP ---------------- */
+  const handleTopUp = async () => {
+    if (!topUpAmount || Number(topUpAmount) <= 0) {
+      alert("Please enter a valid amount");
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      // Call Send_Otp API
+      const response = await fetch(`${BASE_URL}/api/payment/Send_Otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId }),
+      });
+      const data = await response.json();
+      console.log("OTP sent response:", data);
+
+      // Show OTP screen
+      setShowTopUp(false);
+      setShowOtpScreen(true);
+    } catch (error) {
+      console.error("Send OTP error:", error);
+      alert("Failed to send OTP");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  /* ---------------- HANDLE OTP VERIFICATION ---------------- */
+  const handleVerifyOtp = async () => {
+    if (otpInput !== DEFAULT_OTP) {
+      alert("Invalid OTP");
+      return;
+    }
+
+    setProcessing(true);
+    try {
+
+       const payload = new FormData();
+      payload.append("user_id", userId);
+      payload.append("amount", Number(topUpAmount));
+      payload.append("otp", otpInput);
+
+
+
+
+
+
+
+
+
+
+      const response = await fetch(`${BASE_URL}/api/payment/walletCharge`, {
+        method: "POST",
+        body: payload,
+      });
+      const data = await response.json();
+      console.log("Wallet charged:", data);
+
+      if (data.status === "success!") {
+        alert("Wallet topped up successfully!");
+        setShowOtpScreen(false);
+        setTopUpAmount("");
+        setOtpInput("");
+        fetchBalance();
+        fetchWalletHistory();
+        window.location.reload();
+      } else {
+        alert("Wallet top-up failed");
+      }
+    } catch (error) {
+      console.error("WalletCharge error:", error);
+      alert("Wallet top-up failed");
     } finally {
       setProcessing(false);
     }
