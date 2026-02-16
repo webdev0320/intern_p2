@@ -80,7 +80,7 @@ const HirerMessages = () => {
           conversations.map((conv) => (
             <div
               key={conv.id}
-              onClick={() => navigate(`/emp-chat/${conv.id}`, {
+              onClick={() => navigate(`/hirer-chat/${conv.id}`, {
                 state: {
                   receiverData: {
                     name: conv.name,

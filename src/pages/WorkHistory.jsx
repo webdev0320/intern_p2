@@ -573,6 +573,7 @@ const date = new Date(now);
     </div>
 
     {job.Workers?.map((worker, idx) => (
+      
       <div key={idx} className="mt-2 p-4 border border-gray-100 rounded-xl bg-gray-50 flex flex-col shadow-sm">
         
         {/* Row 1: Worker Info */}
@@ -591,7 +592,7 @@ const date = new Date(now);
         {/* Row 2: Action Buttons */}
         <div className="flex flex-wrap md:flex-nowrap gap-2 border-t pt-4"> 
           <button
-            onClick={() => navigate(`/hirer-chat/${job.job_id}`)}
+            onClick={() => navigate(`/hirer-chat/${worker.user_id}`)}
             className="flex-1 bg-green-500 text-white py-2 rounded-lg shadow text-sm font-medium hover:bg-green-600 transition-colors"
           >
             Contact Worker

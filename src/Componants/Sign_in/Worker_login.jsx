@@ -1,6 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, LogIn } from 'lucide-react';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+import { COLLECTIONS } from "../../firebaseConstants";
+
+const generateRandomToken = (length = 140) => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_:';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -65,6 +77,59 @@ useEffect(() => {
           localStorage.setItem("name", data.name);          
           localStorage.setItem("phone", data.mobile_number);
           localStorage.setItem("userData", JSON.stringify(data));
+
+          // 1. Store the key immediately
+            const firestoreId = data.user_id.toString();
+            localStorage.setItem("firebase_key", firestoreId);
+
+            /*try {
+                  const deviceFormData = new FormData();
+                  const randomToken = generateRandomToken(150);
+                  // You can replace this hardcoded string with an actual FCM token if you have one
+                  deviceFormData.append("Device_Token", randomToken);
+                  deviceFormData.append("device_type", "web"); // Changed to web as it's a web app
+
+                  await fetch(`${BASE_URL}/api/users/deviceToken?user_id=${data.user_id}`, {
+                    method: "POST",
+                    body: deviceFormData,
+                  });
+                  console.log("Device token registered successfully");
+                } catch (deviceErr) {
+                  console.error("Device token registration failed:", deviceErr);
+                  // We usually don't block the login flow if just the notification token fails
+                }*/
+
+            try {
+                    // 1. Point to the nested collection: users/StoredUsers/Worker
+                    // Ensure this path matches your segments (3 segments = Collection)
+                    const workerRef = collection(db, "usersStaging/StoredUsers/Worker");
+
+                    // 2. Query for the document where the "userId" field matches our DB ID
+                    const q = query(workerRef, where("userId", "==", firestoreId));
+                    const querySnapshot = await getDocs(q);
+
+                    if (!querySnapshot.empty) {
+                        // 3. The 'key' you want is the Document ID (the random string)
+                        const firebaseDoc = querySnapshot.docs[0];
+                        const firebaseKey = firebaseDoc.id; 
+                        
+                        console.log("Found Firebase Key:", firebaseKey);
+                        localStorage.setItem("firebase_key", firebaseKey);
+
+                        // Optional: Store the profile image from Firestore too
+                        const fbData = firebaseDoc.data();
+                        if (fbData.profileImage) {
+                            localStorage.setItem("profile_image", fbData.profileImage);
+                        }
+                    } else {
+                        console.warn("No Firebase document found with userId:", firestoreId);
+                        // If it doesn't exist, you might want to use the DB ID as a fallback
+                        localStorage.setItem("firebase_key", firestoreId);
+                    }
+                } catch (fbError) {
+                    console.error("Error fetching Firebase key:", fbError);
+                }
+
           setIsLoggedIn(true);      
             window.location.href = "/emp-dashboard";
 

@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, LogIn, Building2, Briefcase, Users } from 'lucide-react';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+import { COLLECTIONS } from "../../firebaseConstants";
 
 import Swal from "sweetalert2";
 const HirerLoginPage = () => {
@@ -71,7 +74,43 @@ const handleSubmit = async (e) => {
           localStorage.setItem("name", data.name);
           localStorage.setItem("phone", data.mobile_number);
           localStorage.setItem("userData", JSON.stringify(data));
-          setIsLoggedIn(true);
+
+          // 1. Store the key immediately
+            const firestoreId = data.user_id.toString();
+            localStorage.setItem("firebase_key", firestoreId);
+
+            try {
+                    // 1. Point to the nested collection: users/StoredUsers/Hirer
+                    // Ensure this path matches your segments (3 segments = Collection)
+                    const hirerRef = collection(db, "usersStaging/StoredUsers/Hirer");
+
+                    // 2. Query for the document where the "userId" field matches our DB ID
+                    const q = query(hirerRef, where("userId", "==", firestoreId));
+                    const querySnapshot = await getDocs(q);
+
+                    if (!querySnapshot.empty) {
+                        // 3. The 'key' you want is the Document ID (the random string)
+                        const firebaseDoc = querySnapshot.docs[0];
+                        const firebaseKey = firebaseDoc.id; 
+                        
+                        console.log("Found Firebase Key:", firebaseKey);
+                        localStorage.setItem("firebase_key", firebaseKey);
+                        
+                        // Optional: Store the profile image from Firestore too
+                        const fbData = firebaseDoc.data();
+                        if (fbData.profileImage) {
+                            localStorage.setItem("profile_image", fbData.profileImage);
+                        }
+                    } else {
+                        console.warn("No Firebase document found with userId:", firestoreId);
+                        // If it doesn't exist, you might want to use the DB ID as a fallback
+                        localStorage.setItem("firebase_key", firestoreId);
+                    }
+                } catch (fbError) {
+                    console.error("Error fetching Firebase key:", fbError);
+                }
+
+            setIsLoggedIn(true);
             window.location.href = "/hirer-dashboard";
       } else {
          Swal.fire({

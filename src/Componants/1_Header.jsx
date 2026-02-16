@@ -139,24 +139,34 @@ const Header = ({ open, setOpen }) => {
       // ❌ No Stripe account → create Stripe account
       console.log("No Stripe account. Calling create Stripe account API...");
 
-
-      const createResponse = await fetch(`${BASE_URL}/api/payment/create_stripe_account`, {
+      const checkResponse = await fetch(`${BASE_URL}/api/payment/is_stripe_charge_enable`, {
         method: "POST",
         body: payload,
       });
 
-      if (!createResponse.ok) {
-        throw new Error(`Create Stripe account error! Status: ${createResponse.status}`);
-      }
+      if (!checkResponse.ok) {
+          const createResponse = await fetch(`${BASE_URL}/api/payment/create_stripe_account`, {
+            method: "POST",
+            body: payload,
+          });
 
-      const createData = await createResponse.json();
-      console.log("Create Stripe response:", createData);
+          if (!createResponse.ok) {
+            throw new Error(`Create Stripe account error! Status: ${createResponse.status}`);
+          }
 
-      if (createData?.url) {
-        window.location.href = createData.url; // redirect to Stripe onboarding
-      } else {
-        alert("Stripe account creation URL not found!");
-      }
+          const createData = await createResponse.json();
+          console.log("Create Stripe response:", createData);
+
+          if (createData?.url) {
+            window.location.href = createData.url; // redirect to Stripe onboarding
+          } else {
+            alert("Stripe account creation URL not found!");
+          }
+      }else{
+
+      }  
+
+
     }
   } catch (error) {
     console.error("Stripe connect error:", error);

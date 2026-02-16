@@ -124,10 +124,19 @@ const BottomNavigation = ({ setProfileOpen }) => {
         </button>
 
         {/* Messages */}
+        {role === "emp" && (
+        <button onClick={() => navigate("/hirer-messages")} className="flex flex-col items-center text-gray-500 text-sm">
+          <FaEnvelope className="text-xl mb-1" />
+          Messages
+        </button>
+        )}
+
+        {role === "self-emp" && (
         <button onClick={() => navigate("/messages")} className="flex flex-col items-center text-gray-500 text-sm">
           <FaEnvelope className="text-xl mb-1" />
           Messages
         </button>
+        )}
 
         {/* Center Action */}
         {role === "emp" && (

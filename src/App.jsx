@@ -81,7 +81,7 @@ import EmpJobFeedbackSuccess from "./pages/EmpJobFeedbackSuccess";
 import EmpBlockedHirer from "./pages/EmpBlockedHirer";
 import EmpChat from "./pages/EmpChat";
 import HirerChat from "./pages/HirerChat";
-
+import HirerMessages from "./pages/HirerMessages";
 
 
 import StripeCard from "./pages/StripeCard.jsx";
@@ -206,6 +206,7 @@ function App() {
             <Route path="/find-worker" element={<PrivateRoute><FindWork /></PrivateRoute>} />
             <Route path="/history" element={<PrivateRoute><History /></PrivateRoute>} />
             <Route path="/messages" element={<PrivateRoute><Messages /></PrivateRoute>} />
+            <Route path="/hirer-messages" element={<PrivateRoute><HirerMessages /></PrivateRoute>} />
             <Route path="/my-spendings" element={<PrivateRoute><Spendings /></PrivateRoute>} />
             <Route path="/invoices" element={<PrivateRoute><Invoices /></PrivateRoute>} />
             <Route path="/invoice-detail/:id" element={<PrivateRoute><InvoiceDetail /></PrivateRoute>} />
