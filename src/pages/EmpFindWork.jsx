@@ -14,7 +14,8 @@ L.Icon.Default.mergeOptions({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
-
+const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 /* Map Helper Components */
 const RecenterMap = ({ lat, lng }) => {
   const map = useMapEvents({});
@@ -33,9 +34,11 @@ const MapClickHandler = ({ onSelect }) => {
   return null;
 };
 
+
+
 const EmpFindWork = () => {
   const navigate = useNavigate();
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
   const userId = localStorage.getItem("user_id");
   const email = localStorage.getItem("email");
   const role = localStorage.getItem("role");
@@ -96,6 +99,16 @@ const EmpFindWork = () => {
     useMapEvents({ click(e) { onSelect(e.latlng); } });
     return null;
   };
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setMarker(coords);
+        handleMapSelect(coords); // Re-use your existing logic to get address
+      });
+    }
+  }, []);
 
   const handleMapSelect = async ({ lat, lng }) => {
     setMarker({ lat, lng });
@@ -307,7 +320,7 @@ const EmpFindWork = () => {
       )}
 
       {/* Jobs Listing */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {jobs.map((job) => (
           <div key={job.offer_id} className="bg-white rounded-2xl shadow p-4 border border-gray-100 flex flex-col justify-between">
             <div>
@@ -317,22 +330,63 @@ const EmpFindWork = () => {
                   <FaWhatsapp /> Help?
                 </div>
               </div>
+              <p className="text-xs mt-1">
+                {job.jobdetail}
+              </p>
+              <p className="text-xs mt-1">
+                📍 {job.job_location}
+              </p>
               <p className="text-blue-500 text-xs mt-1 italic">
                 {job.offer_status === "Waiting" ? "Awaiting worker" : job.offer_status}
               </p>
+              
               <hr className="my-3" />
-              <p className="text-sm text-gray-600 line-clamp-3 mb-2">{job.jobdetail}</p>
-              <p className="text-xs text-gray-400">📍 {job.job_location}</p>
             </div>
 
             <div className="mt-4">
               <div className="flex justify-between text-sm mb-3">
-                <span>💷 <b className="text-blue-600">£{job.offer_rate}</b></span>
-                <span className="text-gray-400 text-xs">{job.job_post_date}</span>
+                <span><b className="text-blue-600">Pay Rate : £{job.offer_rate}</b></span>
+                <span><b className="text-blue-600">Remote : {job.job_type!='Onsite'?'Yes':'No'}</b></span>
               </div>
+              <hr className="my-3" />
+              {job.duration?.map((duration, index) => (
+                  <div key={index} className="flex justify-between text-sm mb-3 text-center">
+  
+                      <span className="flex-1">
+                        Work Date : <br />{duration.start_date}
+                      </span>
+
+                      <span className="flex-1">
+                        Work Duration : <br />{duration.duration_in_hours} hr
+                      </span>
+
+                      <span className="flex-1">
+                        Work Time (24hr) : <br />{duration.start_time}
+                      </span>
+
+                    </div>
+                ))}
+              <hr className="my-3" />
+             <div className="flex items-center justify-between text-sm mb-3">
+                <div className="flex items-center gap-3">
+                  
+                  <img
+                    src={`${IMAGE_BASE_URL}/${job.image}`}
+                    alt={job.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+
+                  <span>
+                    <b className="text-blue-600">{job.name}</b>
+                  </span>
+
+                </div>
+
+              </div>
+               
               {job.offer_status === "Waiting" && (
                 <button onClick={() => handleApply(job)} className="w-full bg-blue-500 text-white py-2 rounded-xl hover:bg-blue-600 transition">
-                  Apply Now
+                  Apply For Work
                 </button>
               )}
             </div>

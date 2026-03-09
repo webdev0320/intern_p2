@@ -1,17 +1,26 @@
 // pages/EmpProfileEdit.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  FaArrowLeft, FaUser, FaPoundSign, FaBriefcase, 
-  FaPhone, FaMapMarkerAlt, FaGlobe, FaMap, 
-  FaInfoCircle, FaBell, FaCamera 
+import {
+  FaUser,
+  FaPoundSign,
+  FaBriefcase,
+  FaPhone,
+  FaMapMarkerAlt,
+  FaGlobe,
+  FaMap,
+  FaInfoCircle,
+  FaCamera
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 const EmpProfileEdit = () => {
+
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
   const userId = localStorage.getItem("user_id");
 
   const [user, setUser] = useState({
@@ -26,7 +35,6 @@ const EmpProfileEdit = () => {
     post_code: "",
     aboutme: "",
     u_image: null,
-    // Including hidden fields for payload completeness
     lat: "",
     lon: "",
     insurance_number: "",
@@ -41,12 +49,14 @@ const EmpProfileEdit = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/users/profile/?id=${userId}`);
-        const data = await response.json();
+
+        const res = await fetch(`${BASE_URL}/api/users/profile/?id=${userId}`);
+        const data = await res.json();
+
         if (data) {
+
           setUser({
             ...data,
-            // Ensure values are strings to avoid controlled/uncontrolled input warnings
             name: data.name || "",
             hourly_rate: data.hourly_rate || "",
             business_name: data.business_name || "",
@@ -56,23 +66,31 @@ const EmpProfileEdit = () => {
             city: data.city || "",
             country: data.country || "",
             post_code: data.post_code || "",
-            aboutme: data.aboutme || "",
+            aboutme: data.aboutme || ""
           });
-          setImagePreview(data.u_image);
+
+          setImagePreview(IMAGE_BASE_URL + data.u_image);
+
         }
+
       } catch (err) {
         console.error("Fetch error:", err);
       } finally {
         setLoading(false);
       }
     };
+
     fetchProfile();
   }, [BASE_URL, userId]);
 
-  const handleChange = (e) => setUser({ ...user, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
 
   const handleImageChange = (e) => {
+
     const file = e.target.files[0];
+
     if (file) {
       setUser({ ...user, u_image: file });
       setImagePreview(URL.createObjectURL(file));
@@ -80,13 +98,14 @@ const EmpProfileEdit = () => {
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
     setSaving(true);
 
     try {
+
       const formData = new FormData();
-      
-      // Build payload exactly as shown in your curl
+
       formData.append("user_id", userId);
       formData.append("name", user.name);
       formData.append("hourly_rate", user.hourly_rate);
@@ -98,125 +117,186 @@ const EmpProfileEdit = () => {
       formData.append("country", user.country);
       formData.append("post_code", user.post_code);
       formData.append("aboutme", user.aboutme);
-      
-      // Coordinates and additional fields
+
       formData.append("lat", user.lat || "0.0");
       formData.append("lon", user.lon || "0.0");
       formData.append("insurance_number", user.insurance_number || "");
       formData.append("personal_utr", user.personal_utr || "");
       formData.append("mobile_number", user.mobile_number || "");
 
-      // Handle Image: Only append if it's a new File object
       if (user.u_image instanceof File) {
         formData.append("u_image", user.u_image);
-      } else {
-        // Append empty string/null if no new image as per curl length 0
-        formData.append("u_image", "");
       }
 
       const response = await fetch(`${BASE_URL}/api/users/profile_update/`, {
         method: "POST",
-        body: formData,
+        body: formData
       });
 
       const result = await response.json();
 
       if (result.status === "success!") {
-        // Update local storage so other pages see the new data
 
-        
         Swal.fire({
           icon: "success",
           title: "Profile Updated",
           text: "Your changes have been saved successfully!",
           confirmButtonColor: "#1e73be"
         });
-        window.location.href = 'emp-dashboard';
+
+        navigate("/emp-dashboard");
+
       } else {
         throw new Error(result.message || "Update failed");
       }
+
     } catch (err) {
+
       Swal.fire("Error", err.message, "error");
+
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1565C0]"></div>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-white font-sans pb-10">
-      {/* HEADER SECTION */}
-    
 
-      {/* PROFILE IMAGE */}
-      <div className="flex justify-center relative z-20">
-        <div className="relative">
-          <div className="w-32 h-32 rounded-full border-[6px] border-white shadow-2xl overflow-hidden bg-gray-50">
-            {imagePreview ? (
-              <img src={imagePreview} className="w-full h-full object-cover" alt="Profile" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center"><FaUser className="text-5xl text-gray-300" /></div>
-            )}
+    <div className="min-h-screen bg-gray-50 p-6 flex justify-center">
+
+      <div className="w-full bg-white rounded-2xl shadow-lg p-8">
+
+        <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
+
+        {/* PROFILE IMAGE */}
+        <div className="flex justify-center mb-8">
+          <div className="relative">
+
+            <div className="w-32 h-32 rounded-full border-4 border-gray-200 overflow-hidden">
+
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center w-full h-full bg-gray-100">
+                  <FaUser className="text-4xl text-gray-400" />
+                </div>
+              )}
+
+            </div>
+
+            <button
+              type="button"
+              onClick={() => fileInputRef.current.click()}
+              className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full"
+            >
+              <FaCamera size={14} />
+            </button>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+
           </div>
-          <button 
-            onClick={() => fileInputRef.current.click()}
-            className="absolute bottom-1 right-1 bg-blue-600 p-3 rounded-full text-white border-4 border-white shadow-lg"
-          >
-            <FaCamera size={14} />
-          </button>
-          <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
         </div>
+
+        {/* FORM */}
+       {/* FORM */}
+<form onSubmit={handleSubmit} className="space-y-6">
+
+  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+
+    <InputField label="Forenames*" name="name" value={user.name} icon={<FaUser />} onChange={handleChange} required />
+    <InputField label="Business name (if any)" name="business_name" value={user.business_name} icon={<FaBriefcase />} onChange={handleChange} />
+    <InputField label="Line Manager" name="line_manager_name" value={user.line_manager_name} icon={<FaUser />} onChange={handleChange} />
+    <InputField label="Hourly Rate" name="hourly_rate" value={user.hourly_rate} icon={<FaPoundSign />} onChange={handleChange} type="number" />
+    <InputField label="Business Telephone Number" name="business_number" value={user.business_number} icon={<FaPhone />} onChange={handleChange} />
+    <InputField label="Mobile Number" name="mobile_number" value={user.mobile_number} icon={<FaPhone />} onChange={handleChange} />
+    <InputField label="Address" name="address" value={user.address} icon={<FaMapMarkerAlt />} onChange={handleChange} />
+    <InputField label="City/Region" name="city" value={user.city} icon={<FaGlobe />} onChange={handleChange} />
+    <InputField label="Country" name="country" value={user.country} icon={<FaGlobe />} onChange={handleChange} />
+    <InputField label="Post Code / Zip Code" name="post_code" value={user.post_code} icon={<FaMap />} onChange={handleChange} />
+    <InputField label="Insurance Number" name="insurance_number" value={user.insurance_number} icon={<FaMap />} onChange={handleChange} />
+    <InputField label="Personal UTR" name="personal_utr" value={user.personal_utr} icon={<FaMap />} onChange={handleChange} />
+
+    {/* FULL WIDTH FIELD */}
+    <div className="lg:col-span-3">
+      <InputField
+        label="About Me"
+        name="aboutme"
+        value={user.aboutme}
+        icon={<FaInfoCircle />}
+        onChange={handleChange}
+        textarea
+      />
+    </div>
+
+  </div>
+
+  <button
+    type="submit"
+    disabled={saving}
+    className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold disabled:bg-gray-400"
+  >
+    {saving ? "Saving..." : "Save Changes"}
+  </button>
+
+</form>
+
       </div>
 
-      {/* FORM SECTION */}
-      <form onSubmit={handleSubmit} className="px-8 mt-10 space-y-7 max-w-2xl mx-auto">
-        <InputField label="Forenames*" name="name" value={user.name} icon={<FaUser />} onChange={handleChange} required />
-        <InputField label="Hourly Rate" name="hourly_rate" value={user.hourly_rate} icon={<FaPoundSign />} onChange={handleChange} />
-        <InputField label="Business name (if any)" name="business_name" value={user.business_name} icon={<FaBriefcase />} onChange={handleChange} />
-        <InputField label="Line Manager" name="line_manager_name" value={user.line_manager_name} icon={<FaUser />} onChange={handleChange} />
-        <InputField label="Business Telephone Number" name="business_number" value={user.business_number} icon={<FaPhone />} onChange={handleChange} />
-        <InputField label="Address" name="address" value={user.address} icon={<FaMapMarkerAlt />} onChange={handleChange} />
-        <InputField label="City/Region" name="city" value={user.city} icon={<FaGlobe />} onChange={handleChange} />
-        <InputField label="Country" name="country" value={user.country} icon={<FaGlobe />} onChange={handleChange} />
-        <InputField label="Post Code / Zip Code" name="post_code" value={user.post_code} icon={<FaMap />} onChange={handleChange} />
-        <InputField label="About Me" name="aboutme" value={user.aboutme} icon={<FaInfoCircle />} onChange={handleChange} />
-
-        <button 
-          type="submit"
-          disabled={saving}
-          className="w-full bg-[#1e73be] text-white font-bold py-5 rounded-xl shadow-xl active:scale-95 disabled:bg-gray-400 transition-all uppercase tracking-widest text-sm mt-12"
-        >
-          {saving ? "Saving Changes..." : "Save Changes"}
-        </button>
-      </form>
     </div>
+
   );
 };
 
-const InputField = ({ label, name, value, icon, onChange, required = false }) => (
-  <div className="group border-b border-gray-100 pb-2 focus-within:border-blue-400 transition-colors">
-    <label className="block text-[10px] text-gray-400 font-bold uppercase tracking-[0.15em] mb-1 ml-10">
-      {label}
-    </label>
-    <div className="flex items-center">
-      <div className="w-10 text-gray-300 text-lg flex justify-center group-focus-within:text-blue-500 transition-colors">
-        {icon}
-      </div>
-      <input 
-        name={name} 
-        value={value} 
-        onChange={onChange} 
-        required={required}
-        className="flex-1 bg-transparent outline-none text-gray-700 font-semibold placeholder-gray-300 text-[15px]"
-        placeholder={label.replace('*', '')}
-      />
+const InputField = ({ label, name, value, icon, onChange, required = false, type = "text", textarea = false }) => (
+
+  <div>
+
+    <label className="block text-sm text-gray-500 mb-1">{label}</label>
+
+    <div className="flex items-center border rounded-lg px-3 py-2">
+
+      <div className="mr-2 text-gray-400">{icon}</div>
+
+      {textarea ? (
+        <textarea
+          name={name}
+          value={value}
+          onChange={onChange}
+          required={required}
+          className="w-full outline-none"
+        />
+      ) : (
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          required={required}
+          className="w-full outline-none"
+        />
+      )}
+
     </div>
+
   </div>
+
 );
 
 export default EmpProfileEdit;

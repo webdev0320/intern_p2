@@ -8,7 +8,7 @@ function EmpWorkHistory() {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
   const getApiType = () => {
     if (type === "new") return 1;
     if (type === "inprogress") return 2;
@@ -215,20 +215,29 @@ const handleFollow = async (followId) => {
 
       {/* JOBS GRID */}
       <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {!loading &&
             jobs.map((job) => (
               <div key={job.job_id} className="bg-white rounded-2xl shadow p-4">
                 {/* HEADER */}
                 <div className="flex justify-between items-center">
-                  <div className="space-y-2">
-                    <h6 className="text-blue-600">
-                      {job.name}
-                    </h6>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={`${IMAGE_BASE_URL}/${job.image}`}
+                      alt={job.name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
 
-                    <h2 className="text-blue-600 font-semibold text-lg">
-                      {job.job_name}, {job.job_id}
-                    </h2>
+                    <div className="space-y-2">
+                      <h6 className="text-blue-600">
+                        {job.name}
+                      </h6>
+
+                      <h2 className="text-blue-600 font-semibold text-lg">
+                        {job.job_name}, {job.job_id}
+                      </h2>
+                    </div>
+
                   </div>
                   <div
                     className="flex items-center gap-1 text-green-600 text-sm font-medium cursor-pointer"
@@ -246,7 +255,7 @@ const handleFollow = async (followId) => {
                 {/* DESCRIPTION */}
                 <p className="font-semibold">Work Description:</p>
                 <p className="text-sm text-gray-600">{job.jobdetail}</p>
-
+                <hr/>
                 {/* LOCATION */}
                 <p className="text-sm mt-2 text-gray-500 flex items-center gap-1">
                   📍 {job.job_location}

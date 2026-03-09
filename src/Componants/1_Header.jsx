@@ -86,7 +86,7 @@ const Header = ({ open, setOpen }) => {
 
     const payload = new FormData();
     payload.append("email", email);
-    payload.append("country", "GB");
+    payload.append("country", profile?.country);
     payload.append("status", "test");
     payload.append("user_id", userId);
 

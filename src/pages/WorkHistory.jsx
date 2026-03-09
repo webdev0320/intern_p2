@@ -8,7 +8,7 @@ function WorkHistory() {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const userId = localStorage.getItem("user_id");
   const getApiType = () => {
@@ -522,6 +522,33 @@ const date = new Date(now);
                       </div>
                     </div>
                   ))}
+
+                {/* Images */}
+                    <div className="flex gap-3 mt-3 justify-center">
+                      {job.Image1 && (
+                        <img
+                          src={`${IMAGE_BASE_URL}/${job.Image1}`}
+                          alt="Job Image 1"
+                          className="w-20 h-20 object-cover rounded border"
+                        />
+                      )}
+
+                      {job.Image2 && (
+                        <img
+                          src={`${IMAGE_BASE_URL}/${job.Image2}`}
+                          alt="Job Image 2"
+                          className="w-20 h-20 object-cover rounded border"
+                        />
+                      )}
+
+                      {job.Image3 && (
+                        <img
+                          src={`${IMAGE_BASE_URL}/${job.Image3}`}
+                          alt="Job Image 3"
+                          className="w-20 h-20 object-cover rounded border"
+                        />
+                      )}
+                    </div>  
 
                 {/* CANCEL BUTTON */}
                 {type=='inprogress'  && job.job_status === "Waiting" && (

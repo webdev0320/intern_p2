@@ -5,7 +5,7 @@ import ProfileCompleteHirerAlert from '../Componants/profileCompleteHirerAlert';
 const HirerDashboard = () => {
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+  const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
   const [profile, setProfile] = useState(null);
   const [rating, setRating] = useState(0);
   const [totalFeedback, setTotalFeedback] = useState(0);
@@ -86,7 +86,9 @@ const HirerDashboard = () => {
       <div className="relative bg-white shadow-sm pb-20">
         <div className="relative z-10 container mx-auto gap-2 px-4 pt-6">
           {/* Profile Info */}
-          <div className="flex items-center">
+          <div className="flex items-center justify-between">
+  
+            {/* Left Section */}
             <div className="flex-1">
               <h1 className="text-2xl font-bold">{profile.name}</h1>
               <p className="text-gray-500 mb-1">{profile.business_name}</p>
@@ -98,11 +100,26 @@ const HirerDashboard = () => {
                     className={star <= rating ? "text-yellow-400" : "text-gray-300"}
                   />
                 ))}
+
                 <span className="ml-2 text-gray-800 font-medium">
                   {rating ? rating.toFixed(1) : 0}/5
                 </span>
               </div>
             </div>
+
+            {/* Right Section - Profile Image */}
+            <div className="ml-4">
+                <img
+                  src={
+                    profile?.u_image
+                      ? `${IMAGE_BASE_URL}${profile.u_image}`
+                      : "/default-avatar.png"
+                  }
+                  alt={profile?.name || "User"}
+                  className="w-20 h-20 rounded-full object-cover border"
+                />
+            </div>
+
           </div>
 
           <ProfileCompleteHirerAlert 

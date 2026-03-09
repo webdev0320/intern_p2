@@ -2,6 +2,96 @@ import React from 'react';
 
 const ProfileCompleteEmpAlert = ({ profile, role, navigate }) => {
 
+ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+ const stripeConnect = async () => {
+  try {
+        console.log(profile);
+    // 1️⃣ Fetch user profile
+        var userId = localStorage.getItem("user_id");
+        var email = localStorage.getItem("email");
+        const payload = new FormData();
+        payload.append("email", email);
+        payload.append("country", profile?.country);
+        payload.append("stripe_account_id", profile?.stripe_account_id);
+        payload.append("status", "test");
+        payload.append("user_id", userId);
+
+
+    // 2️⃣ Check stripe_account_id
+
+    if (profile?.stripe_account_id && profile?.stripe_auth!='not auth') {
+      // ✅ Already has Stripe account → call Stripe login API
+      console.log("Stripe account exists. Calling login API...");
+        
+
+
+        const loginResponse = await fetch(
+              `${BASE_URL}/api/payment/stripe_login_link`,
+              {
+                method: "POST",
+                body: payload,
+              }
+            );
+
+            if (!loginResponse.ok) {
+              throw new Error(`Stripe login API error! Status: ${loginResponse.status}`);
+            }
+
+            const loginData = await loginResponse.json();
+
+
+            const stripeUrl = loginData?.chargerecord?.url;
+
+            if (stripeUrl) {
+             window.open(stripeUrl, "_blank", "noopener,noreferrer");
+
+            } else {
+              alert("Stripe login URL not found!");
+            }
+
+
+
+
+    } else {
+      // ❌ No Stripe account → create Stripe account
+      console.log("No Stripe account. Calling create Stripe account API...");
+
+      const checkResponse = await fetch(`${BASE_URL}/api/payment/is_stripe_charge_enable`, {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!checkResponse.ok) {
+          const createResponse = await fetch(`${BASE_URL}/api/payment/create_stripe_account`, {
+            method: "POST",
+            body: payload,
+          });
+
+          if (!createResponse.ok) {
+            throw new Error(`Create Stripe account error! Status: ${createResponse.status}`);
+          }
+
+          const createData = await createResponse.json();
+          console.log("Create Stripe response:", createData);
+
+          if (createData?.url) {
+            window.location.href = createData.url; // redirect to Stripe onboarding
+          } else {
+            alert("Stripe account creation URL not found!");
+          }
+      }else{
+
+      }  
+
+
+    }
+  } catch (error) {
+    console.error("Stripe connect error:", error);
+    alert("Something went wrong while connecting to Stripe.");
+  }
+};
+
+
     // Return the JSX
     return (
         <>
@@ -55,7 +145,9 @@ const ProfileCompleteEmpAlert = ({ profile, role, navigate }) => {
                                 </p>
                             </div>
                             <button 
-                                onClick={() => navigate("/stripe-card")}
+                                onClick={() => {
+                                                        stripeConnect();
+                                }}
                                 className="text-sm font-bold text-blue-600 hover:text-blue-800 underline px-3"
                             >
                                 Connect Stripe

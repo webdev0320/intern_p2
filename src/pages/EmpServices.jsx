@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+
 function EmpServices() {
   const [industries, setIndustries] = useState([]);
   const [selectedIndustries, setSelectedIndustries] = useState([]);
@@ -10,10 +11,10 @@ function EmpServices() {
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const userId = localStorage.getItem("user_id");
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchIndustries = async () => {
       try {
-        // 1️⃣ Fetch all industries
         const resIndustries = await fetch(`${BASE_URL}/api/industry/list/`);
         const industriesData = await resIndustries.json();
 
@@ -21,18 +22,19 @@ function EmpServices() {
           setIndustries(industriesData.data);
         }
 
-        // 2️⃣ Fetch user profile
-        const resProfile = await fetch(`${BASE_URL}/api/users/profile/?id=${userId}`);
+        const resProfile = await fetch(
+          `${BASE_URL}/api/users/profile/?id=${userId}`
+        );
         const profileData = await resProfile.json();
 
         if (profileData) {
-          // Preselect industries
           if (Array.isArray(profileData.industries)) {
-            const userIndustryIds = profileData.industries.map((i) => String(i.id));
+            const userIndustryIds = profileData.industries.map((i) =>
+              String(i.id)
+            );
             setSelectedIndustries(userIndustryIds);
           }
 
-          // Preselect skills ONLY from profile
           if (Array.isArray(profileData.skills)) {
             const userSkillIds = profileData.skills.map((s) => String(s.id));
             setSelectedSkills(userSkillIds);
@@ -46,43 +48,48 @@ function EmpServices() {
     fetchIndustries();
   }, [BASE_URL, userId]);
 
-  // Toggle industry selection
-  const handleIndustryChange = (industry) => {
-    const id = String(industry.bid);
+  // Skill selection
+const handleSkillChange = (skillId, industryId) => {
+  const skillSelected = selectedSkills.includes(skillId);
 
-    if (selectedIndustries.includes(id)) {
-      // Remove industry (do NOT remove skills automatically, user decides)
-      setSelectedIndustries((prev) => prev.filter((x) => x !== id));
-    } else {
-      if (selectedIndustries.length >= 3) {
-        alert("You can select only 3 industries.");
-        return;
-      }
-
-      setSelectedIndustries((prev) => [...prev, id]);
+  if (skillSelected) {
+    // Remove skill
+    setSelectedSkills((prev) => prev.filter((s) => s !== skillId));
+  } else {
+    // Limit skills to 3
+    if (selectedSkills.length >= 3) {
+      Swal.fire("Limit reached", "You can select only 3 skills.", "warning");
+      return;
     }
-  };
 
-  // Toggle individual skill selection
-  const handleSkillChange = (skillId) => {
-    if (selectedSkills.includes(skillId)) {
-      setSelectedSkills((prev) => prev.filter((s) => s !== skillId));
-    } else {
-      setSelectedSkills((prev) => [...prev, skillId]);
+    setSelectedSkills((prev) => [...prev, skillId]);
+
+    // Auto add industry if not already selected
+    if (!selectedIndustries.includes(industryId)) {
+      setSelectedIndustries((prev) => [...prev, industryId]);
     }
-  };
+  }
+};
 
   const handleSubmit = async () => {
     if (selectedIndustries.length === 0) {
-      alert("Please select at least one industry.");
+      Swal.fire("Required", "Please select at least one skill.", "warning");
       return;
     }
 
     setLoading(true);
+
     try {
       const formData = new FormData();
-      selectedIndustries.forEach((id) => formData.append("industry_id[]", id));
-      selectedSkills.forEach((sid) => formData.append("skill_id[]", sid));
+
+      selectedIndustries.forEach((id) =>
+        formData.append("industry_id[]", id)
+      );
+
+      selectedSkills.forEach((sid) =>
+        formData.append("skill_id[]", sid)
+      );
+
       formData.append("user_id", userId);
 
       const response = await fetch(`${BASE_URL}/api/users/industry/`, {
@@ -91,15 +98,16 @@ function EmpServices() {
       });
 
       const data = await response.json();
+
       if (data && data.status === "success!") {
-        alert("Industries and skills submitted successfully!");
-        navigate('/emp-dashboard');
+        Swal.fire("Success", "Industries and skills saved!", "success");
+        navigate("/emp-dashboard");
       } else {
-        alert("Failed to submit.");
+        Swal.fire("Error", "Failed to submit.", "error");
       }
     } catch (error) {
       console.error("Error submitting:", error);
-      alert("Something went wrong.");
+      Swal.fire("Error", "Something went wrong.", "error");
     } finally {
       setLoading(false);
     }
@@ -111,54 +119,57 @@ function EmpServices() {
 
       {industries.length > 0 ? (
         <div className="mt-6 mb-6 bg-white rounded shadow p-4">
-          <p className="text-sm font-medium mb-2">Select your industries (max 3):</p>
+          <p className="text-sm font-medium mb-4">
+            Select your skills (Maximum 3 industries allowed)
+          </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {industries.map((industry) => {
               const industryId = String(industry.bid);
-              const isIndustryChecked = selectedIndustries.includes(industryId);
+              const isIndustrySelected =
+                selectedIndustries.includes(industryId);
 
               return (
-                <div key={industryId} className="border rounded p-3">
-                  {/* Industry checkbox */}
-                  <label className="flex flex-col cursor-pointer">
-                    <div className="flex items-center space-x-2 font-medium">
-                      {/*<input
-                        type="checkbox"
-                        value={industryId}
-                        checked={isIndustryChecked}
-                        onChange={() => handleIndustryChange(industry)}
-                        className="form-checkbox h-4 w-4 text-orange-500"
-                      />*/}
-                      <span className="text-gray-800">{industry.name}</span>
+                <div
+                  key={industryId}
+                  className={`border rounded p-3 transition ${
+                    isIndustrySelected
+                      ? "border-green-500 bg-green-50"
+                      : "border-gray-200"
+                  }`}
+                >
+                  {/* Industry Name */}
+                  <div className="font-medium text-gray-800 mb-2">
+                    {industry.name}
+                  </div>
+
+                  {/* Skills */}
+                  {industry.skills.length > 0 && (
+                    <div className="space-y-1">
+                      {industry.skills.map((skill) => {
+                        const skillId = String(skill.sid);
+                        const isChecked =
+                          selectedSkills.includes(skillId);
+
+                        return (
+                          <label
+                            key={skillId}
+                            className="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() =>
+                                handleSkillChange(skillId, industryId)
+                              }
+                              className="h-3 w-3 text-green-500"
+                            />
+                            <span>{skill.title}</span>
+                          </label>
+                        );
+                      })}
                     </div>
-
-                    {/* Skills checkboxes */}
-                    {industry.skills.length > 0 && (
-                      <div className="ml-6 mt-2 space-y-1">
-                        {industry.skills.map((skill) => {
-                          const skillId = String(skill.sid);
-                          const isSkillChecked = selectedSkills.includes(skillId);
-
-                          return (
-                            <label
-                              key={skillId}
-                              className="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer"
-                            >
-                              <input
-                                type="checkbox"
-                                value={skillId}
-                                checked={isSkillChecked}
-                                onChange={() => handleSkillChange(skillId)}
-                                className="form-checkbox h-3 w-3 text-green-500"
-                              />
-                              <span>{skill.title}</span>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </label>
+                  )}
                 </div>
               );
             })}
@@ -167,14 +178,16 @@ function EmpServices() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+            className="mt-6 px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
           >
             {loading ? "Submitting..." : "Submit"}
           </button>
         </div>
       ) : (
         <div className="mt-6 bg-white rounded shadow p-4">
-          <p className="text-sm text-gray-500">You have not added any services yet.</p>
+          <p className="text-sm text-gray-500">
+            You have not added any services yet.
+          </p>
         </div>
       )}
     </div>

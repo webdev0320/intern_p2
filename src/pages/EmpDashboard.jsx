@@ -5,7 +5,7 @@ import ProfileCompleteEmpAlert from '../Componants/ProfileCompleteEmpAlert';
 const EmpDashboard = () => {
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
-
+  const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
   const userId = localStorage.getItem("user_id");
 
   const [profile, setProfile] = useState(null);
@@ -89,25 +89,42 @@ const EmpDashboard = () => {
         <div className="container mx-auto px-4 pt-6">
 
           {/* Profile Info */}
-          <h1 className="text-2xl font-bold">{profile.name}</h1>
-          <p className="text-gray-500 mb-1">{profile.business_name}</p>
+         {/* Profile Info */}
+<div className="flex justify-between items-start">
 
-          {/* ⭐ Dynamic Rating */}
-          <div className="flex items-center mt-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <FaStar
-                key={star}
-                className={
-                  star <= rating
-                    ? "text-yellow-400"
-                    : "text-gray-300"
-                }
-              />
-            ))}
-            <span className="ml-2 text-gray-800 font-medium">
-              {rating?rating.toFixed(1):0}/5
-            </span>
-          </div>
+  {/* Left Side (Text Info) */}
+  <div>
+    <h1 className="text-2xl font-bold">{profile.name}</h1>
+    <p className="text-gray-500 mb-1">{profile.business_name}</p>
+
+    {/* ⭐ Dynamic Rating */}
+    <div className="flex items-center mt-2">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <FaStar
+          key={star}
+          className={star <= rating ? "text-yellow-400" : "text-gray-300"}
+        />
+      ))}
+      <span className="ml-2 text-gray-800 font-medium">
+        {rating ? rating.toFixed(1) : 0}/5
+      </span>
+    </div>
+  </div>
+
+  {/* Right Side (Image) */}
+  <div>
+    <img
+      src={
+        profile?.u_image
+          ? `${IMAGE_BASE_URL}${profile.u_image}`
+          : "/default-avatar.png"
+      }
+      alt={profile?.name || "User"}
+      className="w-20 h-20 rounded-full object-cover border"
+    />
+  </div>
+
+</div>
 
           <ProfileCompleteEmpAlert 
                 profile={profile} 
@@ -197,12 +214,12 @@ const EmpDashboard = () => {
         <div className="bg-blue-500 text-white rounded-xl p-6 shadow">
           <h4 className="font-bold mb-4">My Industry & Skills</h4>
           <div className="flex flex-wrap gap-2">
-            {profile.industries?.map((industry) => (
+            {profile.skills?.map((skills) => (
               <div
-                key={industry.id}
+                key={skills.id}
                 className="bg-white text-gray-800 rounded-lg px-4 py-2 font-medium"
               >
-                {industry.name}
+                {skills.name}
               </div>
             ))}
           </div>

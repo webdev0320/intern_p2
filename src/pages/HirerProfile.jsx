@@ -18,17 +18,20 @@ const EditHirerProfile = () => {
     personal_utr: "",
     mobile_number: "",
     hourly_rate: "",
+    u_image: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [imageFile, setImageFile] = useState(null);
   const userId = localStorage.getItem("user_id");
-
+  const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   // Fetch profile
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
         const response = await fetch(
           `${BASE_URL}/api/users/profile/?id=${userId}`
@@ -53,6 +56,7 @@ const EditHirerProfile = () => {
             personal_utr: data.personal_utr || "",
             mobile_number: data.mobile_number || "",
             hourly_rate: data.hourly_rate || "",
+            u_image: IMAGE_BASE_URL+''+data.u_image,
           });
         } else {
           throw new Error(data.message || "Profile data not found");
@@ -68,10 +72,16 @@ const EditHirerProfile = () => {
     fetchProfile();
   }, []);
 
-  const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
+    const handleChange = (e) => {
+      const { name, value, files } = e.target;
 
+      if (name === "u_image") {
+        setImageFile(files[0]);
+        setUser({ ...user, u_image: URL.createObjectURL(files[0]) }); // preview
+      } else {
+        setUser({ ...user, [name]: value });
+      }
+    };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -87,13 +97,18 @@ const EditHirerProfile = () => {
     }
 
     try {
-      const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+      
       // Prepare payload
       const payload = new FormData();
       Object.keys(user).forEach((key) => {
+      if (key === "u_image") return; // skip URL preview
         payload.append(key, user[key] || "");
       });
+
+      if (imageFile) {
+        payload.append("u_image", imageFile);
+      }
+
       payload.append("user_id", userId);
 
       const response = await fetch(`${BASE_URL}/api/users/profile_update/`, {
@@ -152,6 +167,27 @@ const EditHirerProfile = () => {
         <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex justify-center mb-6">
+            <img
+              src={user?.u_image || "/default-avatar.png"}
+              alt={user?.name || "User"}
+              className="w-28 h-28 rounded-full object-cover border-4 border-gray-200 shadow-md"
+              onError={(e) => (e.target.src = "/default-avatar.png")}
+            />
+          </div>  
+          <div className="flex justify-center mb-4">
+            <label className="cursor-pointer text-sm text-blue-600 underline">
+              Change Image
+              <input
+                type="file"
+                name="u_image"
+                accept="image/*"
+                onChange={handleChange}
+                className="hidden"
+              />
+            </label>
+          </div>
+
           {/* Name */}
           <div>
             <label className="block text-sm text-gray-600 mb-1">

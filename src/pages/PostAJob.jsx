@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
-import { FaTrash, FaCamera } from "react-icons/fa"; // Added icons
+import { FaTrash, FaCamera, FaPlus } from "react-icons/fa";
 import ProfileCompleteHirerAlert from '../Componants/profileCompleteHirerAlert';
 import {
   MapContainer,
@@ -140,6 +140,16 @@ const PostAJob = () => {
     return null;
   };
 
+    useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setMarker(coords);
+        handleMapSelect(coords); // Re-use your existing logic to get address
+      });
+    }
+  }, []);
+    
   const handleMapSelect = async ({ lat, lng }) => {
     setMarker({ lat, lng });
     try {
@@ -149,21 +159,72 @@ const PostAJob = () => {
     } catch {}
   };
 
+  const [schedules, setSchedules] = useState([
+    { duration: 2, startDate: "", startTime: "09:00" },
+  ]);
+
+  const addSchedule = () => {
+    setSchedules([
+      ...schedules,
+      { duration: 2, startDate: "", startTime: "09:00" },
+    ]);
+  };
+
+  const removeSchedule = (index) => {
+    const updated = schedules.filter((_, i) => i !== index);
+    setSchedules(updated);
+  };
+
+  const updateSchedule = (index, field, value) => {
+    const updated = [...schedules];
+    updated[index][field] = value;
+    setSchedules(updated);
+  };
+
   const handleSubmit = async () => {
   // 1. Basic Validations
-  if (!industryId || !skillId || !startDate || !startTime) {
+  if (!industryId || !skillId) {
     Swal.fire({ icon: 'error', title: 'Missing Info', text: 'Please fill in all required fields.' });
     return;
   }
 
-  const selectedDateTime = new Date(`${startDate}T${startTime}`);
-  if (selectedDateTime <= new Date()) {
-    Swal.fire({ icon: 'error', title: 'Invalid Time', text: 'Please select a future time.' });
-    return;
-  }
+  const duplicateSchedule = schedules.some((s, idx) =>
+      schedules.findIndex(
+        (other) => other.startDate === s.startDate && other.startTime === s.startTime
+      ) !== idx
+    );
 
+    if (duplicateSchedule) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Duplicate Schedule',
+        text: 'Each schedule must have a unique date and time. Please adjust duplicates.'
+      });
+      setLoading(false);
+      return;
+    }
+
+    // 2. Check future date & time (no past or current)
+    const selectedDateTime = new Date(`${startDate}T${startTime}`);
+
+    if (selectedDateTime <= new Date()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Time',
+        text: 'Please select a future date and time.'
+      });
+      setLoading(false);
+      return;
+    }
   // 2. Initial Payment Confirmation
-  const totalPayment = payRate * duration * numWorkers;
+
+    const totalHours = schedules.reduce(
+      (sum, s) => sum + Number(s.duration || 0),
+      0
+    );
+
+    const totalPayment = payRate * totalHours * numWorkers;
+
   const confirmColor = useWallet ? '#f97316' : '#3b82f6';
   const confirmRes = await Swal.fire({ 
     title: 'Confirm Payment', 
@@ -224,15 +285,22 @@ const PostAJob = () => {
     }
 
     // 6. Final Job Submission (Original Logic)
-    const dateObj = new Date(startDate);
-    const formattedDate = `${dateObj.getFullYear()}-${dateObj.toLocaleString("default", { month: "long" })}-${String(dateObj.getDate()).padStart(2, "0")}`;
+
 
     const formData = new FormData();
     formData.append("skill_id", skillId);
     formData.append("industry_id", industryId);
-    formData.append("duration_in_hours[]", duration);
-    formData.append("start_time[]", startTime);
-    formData.append("start_date[]", formattedDate);
+
+
+     schedules.forEach((s) => {
+        let dateObj = new Date(s.startDate);
+        let formattedDate = `${dateObj.getFullYear()}-${dateObj.toLocaleString("default", { month: "long" })}-${String(dateObj.getDate()).padStart(2, "0")}`;
+        formData.append("duration_in_hours[]", s.duration);
+        formData.append("start_time[]", s.startTime);
+        formData.append("start_date[]", formattedDate);
+      });
+
+
     formData.append("offer_rate", `${payRate}`);
     formData.append("lat", marker.lat);
     formData.append("lon", marker.lng);
@@ -240,7 +308,7 @@ const PostAJob = () => {
     formData.append("description", description || "No comments added");
     formData.append("job_location", location);
     formData.append("job_id", "1");
-    formData.append("job_type", "1");
+    formData.append("job_type", "Onsite");
     formData.append("platform", "web");
     formData.append("worker_id", "1");
     formData.append("work_type", is_Remote ? "Remote" : "Onsite");
@@ -254,7 +322,7 @@ const PostAJob = () => {
     console.log(jobData);
 
     if (jobData.status === "success!") {
-      await Swal.fire({ icon: 'success', title: 'Success', text: 'Job Posted Successfully!', timer: 2000, showConfirmButton: false });
+      //await Swal.fire({ icon: 'success', title: 'Success', text: 'Job Posted Successfully!', timer: 2000, showConfirmButton: false });
 
 
 
@@ -278,7 +346,7 @@ const PostAJob = () => {
           const chargeData = await chargeResponse.json();
 
           if (chargeData.status === "success!") {
-            await Swal.fire({ icon: 'success', title: 'Success', text: 'Job Posted & Payment Charged!', timer: 2000, showConfirmButton: false });
+            //await Swal.fire({ icon: 'success', title: 'Success', text: 'Job Posted & Payment Charged!', timer: 2000, showConfirmButton: false });
             //navigate('/hirer-dashboard');
           } else {
             throw new Error(chargeData.message || "Payment processing failed.");
@@ -298,9 +366,9 @@ const PostAJob = () => {
               imageFormData.append("jobId", jobData.job_id);
 
               // Attach images exactly as backend expects
-              if (selectedImages[0]) imageFormData.append("image1", selectedImages[0]);
-              if (selectedImages[1]) imageFormData.append("image2", selectedImages[1]);
-              if (selectedImages[2]) imageFormData.append("image3", selectedImages[2]);
+              if (selectedImages[0]) imageFormData.append("Image0", selectedImages[0]);
+              if (selectedImages[1]) imageFormData.append("Image1", selectedImages[1]);
+              if (selectedImages[2]) imageFormData.append("Image2", selectedImages[2]);
 
               const imageResponse = await fetch(
                 `${BASE_URL}/api/jobs/job_uploads?user_id=${userId}`,
@@ -316,6 +384,8 @@ const PostAJob = () => {
 
               if (imageData.status !== "success!") {
                 throw new Error(imageData.message || "Image upload failed");
+              }else{
+                 await Swal.fire({ icon: 'success', title: 'Success', text: 'Job Posted & Payment Charged!', timer: 2000, showConfirmButton: false });
               }
 
 
@@ -372,21 +442,74 @@ const PostAJob = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Rate (£/hr): <span className="text-orange-600">£{payRate}</span></label>
               <input type="range" min="11" max="100" value={payRate} onChange={(e) => setPayRate(e.target.value)} className="w-full accent-orange-500" />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Duration (Hours)</label>
-              <input type="number" value={duration} min="2" onChange={(e) => setDuration(e.target.value)} className="w-full border rounded-lg px-3 py-2" />
-            </div>
+           <div className="mt-8">
+            <div className="flex justify-between mb-3">
+            <h3 className="font-semibold">Job Schedule</h3>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-              <input type="date" min={getTodayDate()} value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full border rounded-lg px-3 py-2" />
-            </div>
+            <button
+              type="button"
+              onClick={addSchedule}
+              className="text-blue-600 flex items-center gap-1"
+            >
+              <FaPlus /> Add
+            </button>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-              <input type="time" min={startDate === getTodayDate() ? getCurrentTime() : "00:00"} value={startTime} onChange={(e) => setStartTime(e.target.value)} className="w-full border rounded-lg px-3 py-2" />
-            </div>
+
+            {schedules.map((item, index) => (
+            <div
+                key={index}
+                className="grid md:grid-cols-3 gap-4 mb-4 border p-4 rounded-lg items-end"
+              >
+                {/* Duration */}
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium mb-1">Work Duration (Hr)</label>
+                  <input
+                    type="number"
+                    min="2"
+                    value={item.duration}
+                    onChange={(e) => updateSchedule(index, "duration", e.target.value)}
+                    className="border rounded-lg p-2"
+                    placeholder="Duration"
+                  />
+                </div>
+
+                {/* Date */}
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium mb-1">Work Date</label>
+                  <input
+                    type="date"
+                    min={getTodayDate()}
+                    value={item.startDate}
+                    onChange={(e) => updateSchedule(index, "startDate", e.target.value)}
+                    className="border rounded-lg p-2"
+                  />
+                </div>
+
+                {/* Time + Delete */}
+                <div className="flex flex-col">
+                  <label className="text-sm font-medium mb-1">Work Time</label>
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="time"
+                      value={item.startTime}
+                      onChange={(e) => updateSchedule(index, "startTime", e.target.value)}
+                      className="border rounded-lg p-2 w-full"
+                    />
+                    {schedules.length > 1 && (
+                      <button
+                        onClick={() => removeSchedule(index)}
+                        className="text-red-500 p-2 hover:bg-red-100 rounded"
+                      >
+                        <FaTrash />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+          ))}
           </div>
 
           <div className="mb-6">
