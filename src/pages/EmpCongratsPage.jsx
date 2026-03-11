@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaBriefcase, FaHome } from "react-icons/fa";
 
@@ -13,6 +13,31 @@ const EmpCongratsPage = () => {
         offerId: null
     };
 
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+      const [jobData, setJobData] = useState(null);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        const fetchJobDetail = async () => {
+          try {
+            const response = await fetch(
+              `${BASE_URL}/api/jobs/detail?offer_id=${offerId}`
+            );
+            const result = await response.json();
+
+            if (result.status === "success!" && result.data?.length > 0) {
+              setJobData(result.data[0]);
+            }
+          } catch (error) {
+            console.error("Error fetching job details:", error);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        fetchJobDetail();
+      }, [offerId, BASE_URL]);
+      console.log(jobData);
     return (
         <div className="min-h-screen bg-[#248fcb] flex flex-col items-center text-white relative font-sans">
             
@@ -57,7 +82,9 @@ const EmpCongratsPage = () => {
 
                     {/* Contact Hirer Button */}
                     <button 
-                        onClick={() => window.open("https://wa.me/44782345457", "_blank")}
+                        onClick={() =>
+                          navigate(`/emp-chat/${jobData.worker_id}-${jobData.user_id}`)
+                        }
                         className="flex-1 py-4 bg-gradient-to-r from-[#248fcb] to-[#1a6b99] text-white rounded-2xl font-bold text-lg shadow-lg hover:opacity-90 transition"
                     >
                         Contact Hirer

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
 import { FaTrash, FaCamera, FaPlus } from "react-icons/fa";
 import ProfileCompleteHirerAlert from '../Componants/profileCompleteHirerAlert';
+import dayjs from "dayjs";
 import {
   MapContainer,
   TileLayer,
@@ -188,34 +189,59 @@ const PostAJob = () => {
     return;
   }
 
-  const duplicateSchedule = schedules.some((s, idx) =>
+  // 1. Duplicate Check (Logic remains the same)
+    const hasDuplicate = schedules.some((s, idx) =>
       schedules.findIndex(
         (other) => other.startDate === s.startDate && other.startTime === s.startTime
       ) !== idx
     );
 
-    if (duplicateSchedule) {
+    const hasInvalidDuration = schedules.some((s) => Number(s.duration) < 2);
+
+    if (hasDuplicate) {
       Swal.fire({
         icon: 'error',
         title: 'Duplicate Schedule',
-        text: 'Each schedule must have a unique date and time. Please adjust duplicates.'
+        text: 'Each schedule must have a unique date and time.'
       });
       setLoading(false);
       return;
     }
 
-    // 2. Check future date & time (no past or current)
-    const selectedDateTime = new Date(`${startDate}T${startTime}`);
+    if (hasInvalidDuration) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Duration',
+        text: 'Each schedule must have duration more than or equals to 2 Hr.'
+      });
+      setLoading(false);
+      return;
+    }
 
-    if (selectedDateTime <= new Date()) {
+   // 1. Get "Now" by forcing UTC first, then shifting to London
+    const nowInLondon = dayjs.utc().tz("Europe/London");
+
+    const hasPastSchedule = schedules.some((s) => {
+      // 2. Tell dayjs: "This string is a London time"
+      // This prevents it from assuming the user's local timezone
+      const scheduleDateTime = dayjs.tz(`${s.startDate}T${s.startTime}`, "Europe/London");
+      
+      // 3. Compare the two London-based objects
+      // isBefore(nowInLondon) ensures we are comparing 07:00 London vs 07:00 London
+      return scheduleDateTime.isBefore(nowInLondon) || scheduleDateTime.isSame(nowInLondon);
+    });
+
+
+    if (hasPastSchedule) {
       Swal.fire({
         icon: 'error',
         title: 'Invalid Time',
-        text: 'Please select a future date and time.'
+        text: 'One or more schedules are in the past. Please ensure all times are in the future.'
       });
       setLoading(false);
       return;
     }
+
   // 2. Initial Payment Confirmation
 
     const totalHours = schedules.reduce(

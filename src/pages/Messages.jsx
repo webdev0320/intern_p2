@@ -10,7 +10,7 @@ const HirerMessages = () => {
 
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
   useEffect(() => {
     if (!firebaseKey) {
       setLoading(false);
@@ -87,7 +87,8 @@ const HirerMessages = () => {
                     u_image: conv.image || null
                   }
                 }
-              })}
+              })
+            }
               className="flex items-center px-6 py-5 border-b border-gray-50 hover:bg-gray-50/80 active:bg-gray-100 transition-all cursor-pointer group"
             >
               <div className="relative">

@@ -18,15 +18,47 @@ const HirerChat = () => {
   const { offerId } = useParams(); 
   const location = useLocation();
   const navigate = useNavigate();
+  let recieverData = offerId.split('-');
+  
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
+  const [receiver, setReceiver] = useState(null);
+  const receiverId = recieverData[1];
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchReceiverProfile = async () => {
+      // If receiverId isn't in the URL, try getting it from localStorage as a fallback
+      const targetId = receiverId;
+      
+      if (!targetId) {
+        setLoading(false);
+        return;
+      }
 
-  const [receiver, setReceiver] = useState(() => {
-    if (location.state?.receiverData) {
-      localStorage.setItem(`cached_user_${offerId}`, JSON.stringify(location.state.receiverData));
-      return location.state.receiverData;
-    }
-    const saved = localStorage.getItem(`cached_user_${offerId}`);
-    return saved ? JSON.parse(saved) : null;
-  });
+      try {
+        const res = await fetch(`${BASE_URL}/api/users/profile/?id=${targetId}`);
+        const data = await res.json();
+
+        if (data) {
+          const profile = {
+            ...data,
+            name: data.name || "User",
+            u_image: data.u_image ? IMAGE_BASE_URL + data.u_image : null,
+          };
+          
+          setReceiver(profile);
+          // Backup the ID so if they refresh a URL that doesn't have the ID, we remember who it was
+          localStorage.setItem(`last_chat_user_${offerId}`, targetId);
+        }
+      } catch (err) {
+        console.error("API Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReceiverProfile();
+  }, [offerId, receiverId]); // Re-run if the ID in the URL changes
 
   const myNumericId = localStorage.getItem("user_id");
   const myFirebaseKey = localStorage.getItem("firebase_key");

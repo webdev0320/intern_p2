@@ -182,6 +182,17 @@ const handleFollow = async (followId) => {
   }
 };
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  
+  // PadStart ensures 3 becomes 03
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
 
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
@@ -299,10 +310,10 @@ const handleFollow = async (followId) => {
                     key={d.duration_id}
                     className="grid grid-cols-4 text-center text-sm font-semibold text-blue-600"
                   >
-                    <div>{d.start_date}</div>
+                    <div>{formatDate(d.start_date)}</div>
                     <div>{d.duration_in_hours} hrs</div>
                     <div>{d.start_time}</div>
-                    <div>{job.job_status}</div>
+                    <div className="capitalize">{job.job_status}</div>
                   </div>
                 ))}
 
@@ -313,7 +324,7 @@ const handleFollow = async (followId) => {
 
                     <button
                         onClick={() =>
-                          navigate(`/emp-chat/${job.job_id}`)
+                          navigate(`/emp-chat/${userId}-${job.user_id}`)
                         }
                         className="flex-1 bg-green-500 text-white py-3 rounded-xl shadow-lg text-sm font-medium"
                       >

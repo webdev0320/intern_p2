@@ -68,7 +68,7 @@ function WorkHistory() {
 
       if (response.status!=400) {
         Swal.fire("Cancelled", data.message, "success");
-        //window.location.reload();
+        window.location.reload();
       } else {
         Swal.fire("Error", data.message || "Failed to cancel job", "error");
       }
@@ -389,6 +389,19 @@ const date = new Date(now);
 };
 
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  
+  // PadStart ensures 3 becomes 03
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+
   const formatTitle = (t) =>
     t ? t.charAt(0).toUpperCase() + t.slice(1) : "";
 
@@ -514,10 +527,10 @@ const date = new Date(now);
                       key={d.duration_id}
                       className="grid grid-cols-4 text-center text-sm font-semibold text-orange-600"
                     >
-                      <div>{d.start_date}</div>
+                      <div>{formatDate(d.start_date)}</div>
                       <div>{d.duration_in_hours} hrs</div>
                       <div>{d.start_time}</div>
-                      <div>
+                      <div className="capitalize">
                         {job.job_status}
                       </div>
                     </div>
@@ -574,7 +587,7 @@ const date = new Date(now);
                       {/* Worker Info Side */}
                       <div className="flex items-center gap-3">
                         <img 
-                          src={worker.image || logo} 
+                          src={worker.image ? `${IMAGE_BASE_URL}/${worker.image}` : logo}
                           alt={worker.name} 
                           className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
                         />
@@ -606,7 +619,7 @@ const date = new Date(now);
         {/* Row 1: Worker Info */}
         <div className="flex items-center gap-3 mb-4">
           <img 
-            src={worker.image || logo} 
+            src={worker.image ? `${IMAGE_BASE_URL}/${worker.image}` : logo}
             alt={worker.name} 
             className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
           />
@@ -666,7 +679,7 @@ const date = new Date(now);
         {/* Row 1: Worker Info */}
         <div className="flex items-center gap-3 mb-4">
           <img 
-            src={worker.image || logo} 
+            src={worker.image ? `${IMAGE_BASE_URL}/${worker.image}` : logo}
             alt={worker.name} 
             className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
           />
@@ -704,7 +717,7 @@ const date = new Date(now);
         {/* Row 1: Worker Info */}
         <div className="flex items-center gap-3 mb-4">
           <img 
-            src={worker.image || logo} 
+           src={worker.image ? `${IMAGE_BASE_URL}/${worker.image}` : logo}
             alt={worker.name} 
             className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
           />
