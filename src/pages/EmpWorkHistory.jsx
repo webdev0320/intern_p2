@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa6";
 import Swal from "sweetalert2";
-
+import { getStatusTerm } from "../constants/statuses";
 function EmpWorkHistory() {
   const { type } = useParams();
   const navigate = useNavigate();
@@ -313,7 +313,7 @@ const formatDate = (dateStr) => {
                     <div>{formatDate(d.start_date)}</div>
                     <div>{d.duration_in_hours} hrs</div>
                     <div>{d.start_time}</div>
-                    <div className="capitalize">{job.job_status}</div>
+                    <div className="capitalize">{getStatusTerm(d.offer_status)}</div>
                   </div>
                 ))}
 

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa6";
 import Swal from "sweetalert2";
 import logo from '../assets/logo_p2.png'
+import { getStatusTerm } from "../constants/statuses";
 function WorkHistory() {
   const { type } = useParams();
   const navigate = useNavigate();
@@ -532,7 +533,7 @@ const formatDate = (dateStr) => {
                       <div>{d.duration_in_hours} hrs</div>
                       <div>{d.start_time}</div>
                       <div className="capitalize">
-                        {d.offer_status}
+                        {getStatusTerm(d.offer_status)}
                       </div>
                     </div>
                   ))}
