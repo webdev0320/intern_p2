@@ -261,7 +261,7 @@ const PostAJob = () => {
       0
     );
 
-    const totalPayment = payRate * totalHours * numWorkers;
+    const totalPayment = payRate * totalHoursCal * numWorkers;
     setTotalHours(totalPayment);
   const confirmColor = useWallet ? '#f97316' : '#3b82f6';
   const confirmRes = await Swal.fire({ 
