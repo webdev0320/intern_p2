@@ -516,7 +516,7 @@ const PostAJob = () => {
 
                 {/* Time + Delete */}
                 <div className="flex flex-col">
-                  <label className="text-sm font-medium mb-1">Work Time (Uk Time GMT + 00:00)</label>
+                  <label className="text-sm font-medium mb-1">Work Time (UK Time GMT+0)</label>
                   <div className="flex gap-2 items-center">
                     <input
                       type="time"
