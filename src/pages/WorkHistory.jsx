@@ -532,7 +532,7 @@ const formatDate = (dateStr) => {
                       <div>{d.duration_in_hours} hrs</div>
                       <div>{d.start_time}</div>
                       <div className="capitalize">
-                        {job.job_status}
+                        {d.offer_status}
                       </div>
                     </div>
                   ))}
