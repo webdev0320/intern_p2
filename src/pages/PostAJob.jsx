@@ -190,19 +190,30 @@ const PostAJob = () => {
   }
 
   // 1. Duplicate Check (Logic remains the same)
-    const hasDuplicate = schedules.some((s, idx) =>
-      schedules.findIndex(
-        (other) => other.startDate === s.startDate && other.startTime === s.startTime
-      ) !== idx
-    );
+    const MIN_GAP_HOURS = 2;
+
+    const hasConflict = schedules.some((s, idx) => {
+      const current = new Date(`${s.startDate} ${s.startTime}`);
+
+      return schedules.some((other, j) => {
+        if (idx === j) return false;
+        if (s.startDate !== other.startDate) return false;
+
+        const otherTime = new Date(`${other.startDate} ${other.startTime}`);
+
+        const diffHours = Math.abs(current - otherTime) / (1000 * 60 * 60);
+
+        return diffHours < MIN_GAP_HOURS;
+      });
+    });
 
     const hasInvalidDuration = schedules.some((s) => Number(s.duration) < 2);
 
-    if (hasDuplicate) {
+    if (hasConflict) {
       Swal.fire({
         icon: 'error',
         title: 'Duplicate Schedule',
-        text: 'Each schedule must have a unique date and time.'
+        text: 'Each schedule must have a unique date and time and minimum time difference should be 2 Hrz'
       });
       setLoading(false);
       return;
