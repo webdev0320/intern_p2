@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import { FaTrash, FaCamera, FaPlus } from "react-icons/fa";
 import ProfileCompleteHirerAlert from '../Componants/profileCompleteHirerAlert';
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import {
   MapContainer,
   TileLayer,
@@ -29,6 +31,11 @@ const PostAJob = () => {
   const role = localStorage.getItem("role");
   const userProfile = localStorage.getItem("userProfile");
   const profile = userProfile ? JSON.parse(userProfile) : null;
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+  const london = dayjs.utc().tz("Europe/London");
+  
+  const currentTime = london.format("HH:mm");
 
   // Form States
   const [loading, setLoading] = useState(false);
@@ -40,13 +47,18 @@ const PostAJob = () => {
   const [skillId, setSkillId] = useState("");
   const [industryId, setIndustryId] = useState("");
   const [duration, setDuration] = useState(2);
-  const [startTime, setStartTime] = useState("09:00");
-  const [startDate, setStartDate] = useState("");
+  const [startTime, setStartTime] = useState(currentTime);
+  const [startDate, setStartDate] = useState(
+      dayjs().tz("Europe/London").format("YYYY-MM-DD")
+    );
   const [description, setDescription] = useState("");
 
   // --- IMAGE STATES ---
   const [selectedImages, setSelectedImages] = useState([]); // Array of File objects
   const [previews, setPreviews] = useState([]); // Array of Blob URLs
+  useEffect(() => {
+    handlePayRateChange();
+  }, [payRate]);
 
   // Search & Map States
   const [searchQuery, setSearchQuery] = useState("");
@@ -163,13 +175,13 @@ const PostAJob = () => {
   };
 
   const [schedules, setSchedules] = useState([
-    { duration: 2, startDate: "", startTime: "09:00" },
+    { duration: 2, startDate: startDate, startTime: currentTime },
   ]);
 
   const addSchedule = () => {
     setSchedules([
       ...schedules,
-      { duration: 2, startDate: "", startTime: "09:00" },
+      { duration: 2, startDate: startDate, startTime: currentTime },
     ]);
   };
 
@@ -178,10 +190,23 @@ const PostAJob = () => {
     setSchedules(updated);
   };
 
+  const handlePayRateChange = () => {
+    const totalHoursCal = schedules.reduce(
+      (sum, s) => sum + Number(s.duration || 0),
+      0
+    );
+
+    const totalPayment = payRate * totalHoursCal * numWorkers;
+    setTotalHours(totalPayment);
+  };
+
   const updateSchedule = (index, field, value) => {
     const updated = [...schedules];
     updated[index][field] = value;
     setSchedules(updated);
+
+    handlePayRateChange();
+
   };
 
   const handleSubmit = async () => {
