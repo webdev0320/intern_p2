@@ -212,7 +212,7 @@ const PostAJob = () => {
       Swal.fire({
         icon: 'error',
         title: 'Invalid / Duplicate Schedule',
-        text: 'Each schedule must have a unique date & time'
+        text: 'Each schedule must have a unique Date & Time'
       });
       setLoading(false);
       return;
