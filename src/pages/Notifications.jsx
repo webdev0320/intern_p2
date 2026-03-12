@@ -8,6 +8,18 @@ const Notifications = () => {
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const userId = localStorage.getItem("user_id");
 
+  const format12Hour = (datetime) => {
+    if (!datetime) return "";
+    return new Date(datetime).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+  
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -31,56 +43,55 @@ const Notifications = () => {
 
   if (loading) {
     return (
-      <div className="text-center mt-5">
-        <div className="spinner-border text-primary" />
-        <p className="mt-3 text-muted">Loading notifications…</p>
+      <div className="flex flex-col items-center justify-center mt-20">
+        <div className="spinner-border text-primary"></div>
+        <p className="mt-3 text-gray-500">Loading notifications…</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto my-10 px-4">
-      {/* Using Tailwind Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
-        {/* Notifications Card */}
-        <div className="w-full card border-0 shadow-sm">
-          {/* Empty State */}
-          {notifications.length === 0 ? (
-            <div className="card-body text-center py-10">
-              <div className="mx-auto mb-4 flex items-center justify-center w-18 h-18 rounded-full bg-gray-100 text-2xl">
-                🔔
+    <div className="w-full max-w-5xl mx-auto my-10 px-4">
+
+      <h2 className="text-xl font-semibold mb-6">Notifications</h2>
+
+      {notifications.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-xl shadow-sm border">
+          <div className="mx-auto mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 text-2xl">
+            🔔
+          </div>
+
+          <h5 className="font-semibold mb-2">You're all caught up!</h5>
+          <p className="text-gray-500">No new notifications right now.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {notifications.map((item) => (
+            <div
+              key={item.nid}
+              className={`flex justify-between items-center p-4 rounded-lg border shadow-sm transition hover:shadow-md ${
+                item.isSeen === null ? "bg-blue-50 border-blue-200" : "bg-white"
+              }`}
+            >
+              <div>
+                <p className="font-medium text-gray-800">{item.title}</p>
+
+                {item.created_at && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    {format12Hour(item.created_at)}
+                  </p>
+                )}
               </div>
 
-              <h5 className="font-semibold mb-2">You’re all caught up!</h5>
-              <p className="text-gray-500 mb-0">No new notifications right now.</p>
+              {item.isSeen === null && (
+                <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  New
+                </span>
+              )}
             </div>
-          ) : (
-            <div className="list-group list-group-flush">
-              {notifications.map((item) => (
-                <div
-                  key={item.nid}
-                  className={`flex justify-between items-start py-3 mb-2 border rounded shadow-sm px-4 ${
-                    item.isSeen === null ? "bg-gray-100" : ""
-                  }`}
-                >
-                  <div>
-                    <p className="font-semibold mb-1">{item.title}</p>
-                    {item.added_date && (
-                      <small className="text-gray-500">{item.added_date}</small>
-                    )}
-                  </div>
-
-                  {item.isSeen === null && (
-                    <span className="bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
-                      New
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 };
