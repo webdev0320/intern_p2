@@ -312,6 +312,7 @@ const handleStartWork = async (job, worker) => {
 
     if (response.ok) {
       Swal.fire("Started!", "Job is now in progress.", "success");
+      window.location.reload();
     } else {
       Swal.fire("Warning!", data.message, "warning");
     }
