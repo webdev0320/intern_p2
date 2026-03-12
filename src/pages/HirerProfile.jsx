@@ -222,7 +222,7 @@ const EditHirerProfile = () => {
               <input
                 type="file"
                 name="u_image"
-                accept="image/*"
+                accept="image/png, image/jpeg, image/jpg, image/webp"
                 onChange={handleChange}
                 className="hidden"
               />

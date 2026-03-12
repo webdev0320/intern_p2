@@ -166,7 +166,7 @@ const Header = ({ open, setOpen }) => {
                     {isLoggedIn ? (
                         <div className="bg-gray-50 px-5 py-2 rounded-full border border-gray-100 shadow-inner">
                             <span className="font-mono text-sm md:text-base font-bold text-gray-700 tracking-wider">
-                                {currentTime}
+                                {currentTime} (GMT + 00:00)
                             </span>
                         </div>
                     ) : (

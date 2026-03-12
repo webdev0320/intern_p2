@@ -207,7 +207,7 @@ const EmpProfileEdit = () => {
               ref={fileInputRef}
               type="file"
               className="hidden"
-              accept="image/*"
+              accept="image/png, image/jpeg, image/jpg, image/webp"
               onChange={handleImageChange}
             />
 
