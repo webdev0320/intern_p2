@@ -33,7 +33,7 @@ const Header = ({ open, setOpen }) => {
                 // 2. Explicitly convert that UTC time to London
                 const london = dayjs.utc().tz("Europe/London");
                 
-                setCurrentTime(london.format("HH:mm:ss · MMM DD, YYYY"));
+                setCurrentTime(london.format("MMM DD, YYYY - HH:mm:ss") + " (GMT+0)");
             };
 
             updateClock();
@@ -166,7 +166,7 @@ const Header = ({ open, setOpen }) => {
                     {isLoggedIn ? (
                         <div className="bg-gray-50 px-5 py-2 rounded-full border border-gray-100 shadow-inner">
                             <span className="font-mono text-sm md:text-base font-bold text-gray-700 tracking-wider">
-                                {currentTime} (GMT + 00:00)
+                                {currentTime}
                             </span>
                         </div>
                     ) : (
