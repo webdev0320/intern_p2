@@ -375,7 +375,7 @@ const PostAJob = () => {
     formData.append("description", description || "No comments added");
     formData.append("job_location", location);
     formData.append("job_id", "1");
-    formData.append("job_type", "Onsite");
+    formData.append("job_type", is_Remote ? "remote" : "Onsite");
     formData.append("platform", "web");
     formData.append("worker_id", "1");
     formData.append("work_type", is_Remote ? "Remote" : "Onsite");
