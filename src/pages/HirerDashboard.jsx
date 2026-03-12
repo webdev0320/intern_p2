@@ -155,7 +155,7 @@ const HirerDashboard = () => {
               onClick={() => navigate("/work-history/new")}
               className="bg-white rounded-lg shadow text-center p-4 links"
             >
-              <span className="block text-lg font-bold">{profile.Waiting || 0}</span>
+              <span className="block text-lg font-bold">{profile.Waiting +  profile.Accept}</span>
               <span className="text-sm text-gray-500 uppercase">New Work</span>
             </div>
             <div
