@@ -77,7 +77,7 @@ import EmpFilterJobsByLocation from "./pages/EmpFilterJobsByLocation";
 
 import EmpJobFeedback from "./pages/EmpJobFeedback";
 import EmpJobFeedbackSuccess from "./pages/EmpJobFeedbackSuccess";
-
+import HirerBlockedEmp from "./pages/HirerBlockedEmp";
 import EmpBlockedHirer from "./pages/EmpBlockedHirer";
 import EmpChat from "./pages/EmpChat";
 import HirerChat from "./pages/HirerChat";
@@ -199,7 +199,6 @@ function App() {
             <Route path="/faqs" element={<FAQs />} />
             <Route path="/support" element={<Support />} />
             <Route path="/about" element={<About />} />
-            <Route path="/invite" element={<Invite />} />
             <Route path="/stripe-card" element={<StripeCard />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/sidebar" element={<PrivateRoute><Sidebar /></PrivateRoute>} />
@@ -240,6 +239,8 @@ function App() {
             <Route path="/emp-invoice-detail/:id" element={<PrivateRoute><EmpInvoiceDetail /></PrivateRoute>} />
 
             <Route path="/blocked-hirer-list" element={<PrivateRoute><EmpBlockedHirer /></PrivateRoute>} />
+            <Route path="/blocked-emp-list" element={<PrivateRoute><EmpBlockedHirer /></PrivateRoute>} />
+
             <Route path="/emp-chat/:offerId" element={<PrivateRoute><EmpChat /></PrivateRoute>} />
             <Route path="/hirer-chat/:offerId" element={<PrivateRoute><HirerChat /></PrivateRoute>} />  
           </Routes>

@@ -22,7 +22,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
       navigate("/hirer-dashboard");
     }
   };
-  console.log(role)
+  //console.log(role)
   const handleSwitch = async () => {
   try {
     const userEmail = localStorage.getItem("email");

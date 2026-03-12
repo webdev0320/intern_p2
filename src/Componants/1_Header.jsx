@@ -217,11 +217,11 @@ const Header = ({ open, setOpen }) => {
                                         <button onClick={() => { navigate(role === 'emp' ? "/services" : "/employee-services"); setOpen(false); }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Services</button>
                                         
                                         {/* Action Items Logic */}
-                                        <button onClick={() => setOpen(false)} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Invite Friends</button>
+                                        <button onClick={() => { navigate("/invite"); setOpen(false); }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Invite Friends</button>
                                         
                                         {/* Role-Specific Lists */}
                                         {role === "emp" && (
-                                            <button onClick={() => { console.log("Blocked Worker List"); setOpen(false); }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Blocked Worker List</button>
+                                            <button onClick={() => { navigate("/blocked-emp-list"); setOpen(false); }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Blocked Worker List</button>
                                         )}
                                         {role === "self-emp" && (
                                             <button onClick={() => { navigate("/blocked-hirer-list"); setOpen(false); }} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Blocked Hirer List</button>

@@ -46,7 +46,6 @@ const HirerMessages = () => {
 
     const qSender = query(conversationsRef, where(FIELDS.SENDER_ID, "==", firebaseKey));
     const qReceiver = query(conversationsRef, where(FIELDS.RECEIVER_ID, "==", firebaseKey));
-
     const unsubSender = onSnapshot(qSender, updateState);
     const unsubReceiver = onSnapshot(qReceiver, updateState);
 

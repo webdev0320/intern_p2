@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-function EmpBlockedHirer() {
+function HirerBlockedEmp() {
   const [followers, setFollowers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unblockingId, setUnblockingId] = useState(null);
@@ -69,14 +69,14 @@ function EmpBlockedHirer() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Blocked Workers</h1>
+      <h1 className="text-2xl font-bold mb-4">Blocked Hirer</h1>
 
       {loading && <p className="text-sm text-gray-500">Loading...</p>}
 
       {!loading && followers.length === 0 && (
         <div className="mt-6 bg-white rounded shadow p-4">
           <p className="text-sm text-gray-500">
-            You do not have any blocked workers as of yet.
+            You do not have any blocked hirer as of yet.
           </p>
         </div>
       )}
@@ -120,4 +120,4 @@ function EmpBlockedHirer() {
   );
 }
 
-export default EmpBlockedHirer;
+export default HirerBlockedEmp;

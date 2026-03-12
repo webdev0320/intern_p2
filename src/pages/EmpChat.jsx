@@ -11,56 +11,140 @@ import {
   doc,
   setDoc,
   orderBy,
+  where,
+  getDocs
 } from "firebase/firestore";
 import { COLLECTIONS, FIELDS } from "../firebaseConstants";
 
 const EmpChat = () => {
   const { offerId } = useParams(); 
   let recieverData = offerId.split('-');
-
+  const userId = localStorage.getItem("user_id"); // current employee ID
   const location = useLocation();
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
   const [receiver, setReceiver] = useState(null);
-  const receiverId = recieverData[1];
+  const [sender, setSender] = useState(null);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const fetchReceiverProfile = async () => {
-      // If receiverId isn't in the URL, try getting it from localStorage as a fallback
-      const targetId = receiverId;
-      
-      if (!targetId) {
-        setLoading(false);
-        return;
+
+
+  let receiverId = recieverData[1];
+  let senderId = recieverData[0];  
+
+    if(userId==recieverData[0]){
+      senderId = recieverData[0];
+      receiverId = recieverData[1];
+    }
+    if(userId==recieverData[1]){
+      senderId = recieverData[1];
+      receiverId = recieverData[0];
+    }  
+
+
+console.log(receiverId);
+
+  
+const [recFirebaseId, setRecFirebaseId] = useState('');
+const [senderFirebaseId, setSenderFirebaseId] = useState('');
+useEffect(() => {
+  const fetchReceiverProfile = async () => {
+    // 1. Capture the current value of receiverId
+    const targetId = receiverId;
+    //console.log(receiverId);
+    
+    //console.log("Starting fetch for ID:", targetId); // Should show 83
+
+    if (!targetId) {
+      console.log("No targetId found, skipping fetch.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // 2. Reference the collection
+      // IMPORTANT: Double check if COLLECTIONS.USERS is "Users" or "users"
+      const usersRef = collection(db, COLLECTIONS.USERS, "StoredUsers", "Hirer");
+
+      // 3. Create the query using targetId (stringified just in case)
+      const q = query(usersRef, where("userId", "==", targetId.toString()));
+
+      // 4. Execute the query
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+         
+        setRecFirebaseId(querySnapshot.docs[0].id); // Save to state
+/*        console.log(recFirebaseId); */
+        const userData = querySnapshot.docs[0].data();
+        //console.log("Success! User Found:", userData);
+        
+        // Update your state here so the UI can use the data
+        setReceiver(userData); 
+      } else {
+        console.warn("Query ran but no document matches userId:", targetId);
       }
+    } catch (err) {
+      console.error("Firestore Query Failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      try {
-        const res = await fetch(`${BASE_URL}/api/users/profile/?id=${targetId}`);
-        const data = await res.json();
+  fetchReceiverProfile();
+}, [receiverId]); // Only need receiverId here to trigger the fetch
 
-        if (data) {
-          const profile = {
-            ...data,
-            name: data.name || "User",
-            u_image: data.u_image ? IMAGE_BASE_URL + data.u_image : null,
-          };
-          
-          setReceiver(profile);
-          // Backup the ID so if they refresh a URL that doesn't have the ID, we remember who it was
-          localStorage.setItem(`last_chat_user_${offerId}`, targetId);
-        }
-      } catch (err) {
-        console.error("API Fetch error:", err);
-      } finally {
-        setLoading(false);
+
+//console.log(receiver);
+  
+
+useEffect(() => {
+  const fetchSenderProfile = async () => {
+    // 1. Capture the current value of senderId
+    const targetId = senderId;
+    //console.log(senderId);
+    
+    //console.log("Starting fetch for ID:", targetId); // Should show 83
+
+    if (!targetId) {
+      console.log("No targetId found, skipping fetch.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // 2. Reference the collection
+      // IMPORTANT: Double check if COLLECTIONS.USERS is "Users" or "users"
+      const usersRef = collection(db, COLLECTIONS.USERS, "StoredUsers", "Worker");
+
+      // 3. Create the query using targetId (stringified just in case)
+      const q = query(usersRef, where("userId", "==", targetId.toString()));
+
+      // 4. Execute the query
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setSenderFirebaseId(querySnapshot.docs[0].id); // Save to state
+        const userData = querySnapshot.docs[0].data();
+        //console.log("Success! User Found:", userData);
+        
+        // Update your state here so the UI can use the data
+        setSender(userData); 
+      } else {
+        console.warn("Query ran but no document matches userId:", targetId);
       }
-    };
+    } catch (err) {
+      console.error("Firestore Query Failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchReceiverProfile();
-  }, [offerId, receiverId]); // Re-run if the ID in the URL changes
+  fetchSenderProfile();
+}, [senderId]); // Only need receiverId here to trigger the fetch
 
 
+  //console.log(sender);
   const myNumericId = localStorage.getItem("user_id");
   const myFirebaseKey = localStorage.getItem("firebase_key");
 
@@ -90,6 +174,7 @@ const EmpChat = () => {
   }, [offerId, myFirebaseKey]);
 
   const handleSendMessage = async (e) => {
+    console.log(recFirebaseId);
     e.preventDefault();
     if (!newMessage.trim() || !offerId) return;
 
@@ -104,12 +189,36 @@ const EmpChat = () => {
         senderNumericId: myNumericId,
       });
 
-      await setDoc(doc(db, COLLECTIONS.CONVERSATIONS, offerId), {
-        [FIELDS.LAST_MESSAGE]: messageText,
-        [FIELDS.TIMESTAMP]: serverTimestamp(),
-        [FIELDS.CHAT_ID]: offerId,
-        [myFirebaseKey]: 0,
-      }, { merge: true });
+   await setDoc(doc(db, COLLECTIONS.CONVERSATIONS, offerId), {
+      // 1. Basic Chat Info
+      [FIELDS.LAST_MESSAGE]: messageText,
+      [FIELDS.TIMESTAMP]: serverTimestamp(),
+      [FIELDS.CHAT_ID]: offerId,
+
+      // 2. Participant IDs (Crucial for the 'Hirer' query we discussed)
+      //participantIds: [senderFirebaseId, recFirebaseId],
+
+      // 3. Sender Metadata (Matches Android Structure)
+      senderId: senderFirebaseId,
+      senderName: sender.name,
+      senderImage: sender.image || "",
+
+      // 4. Receiver Metadata (Matches Android Structure)
+      receiverId: recFirebaseId,
+      receiverName: receiver.name,
+      receiverImage: receiver.image || "",
+
+      // 5. The Dynamic Key (The '0' or '1' your Android app uses)
+      [senderFirebaseId]: 0, 
+      [recFirebaseId]: 1, // Usually, the other person gets '1' for unread status
+      
+    }, { merge: true });
+
+
+
+
+
+
     } catch (err) {
       console.error("Error sending message:", err);
     }

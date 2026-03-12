@@ -105,9 +105,50 @@ const EditHirerProfile = () => {
         payload.append(key, user[key] || "");
       });
 
+/*      const userDocRef = doc(
+        db, 
+        COLLECTIONS.USERS, 
+        data.user_id.toString() // Pointing directly to the User's ID
+      );
+
+      try {
+        await setDoc(userDocRef, {
+          email: formData.email,
+          name: fullName,
+          profileImage: data.u_image || formData.image_preview || "",
+          userType: "Hirer",
+          updatedAt: new Date(), // Track when the update happened
+        }, { merge: true }); // <--- Crucial: prevent overwriting other fields
+        
+        console.log("User updated successfully!");
+      } catch (err) {
+        console.error("Update error:", err);
+      }*/
+      
       if (imageFile) {
         payload.append("u_image", imageFile);
       }
+
+
+      const userDocRef = doc(
+          db, 
+          COLLECTIONS.USERS, 
+          data.user_id.toString() // Pointing directly to the User's ID
+        );
+
+        try {
+          await setDoc(userDocRef, {
+            email: formData.email,
+            name: fullName,
+            profileImage: data.u_image || formData.image_preview || "",
+            userType: "Hirer",
+            updatedAt: new Date(), // Track when the update happened
+          }, { merge: true }); // <--- Crucial: prevent overwriting other fields
+          
+          console.log("User updated successfully!");
+        } catch (err) {
+          console.error("Update error:", err);
+        }
 
       payload.append("user_id", userId);
 

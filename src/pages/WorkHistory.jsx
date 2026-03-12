@@ -632,7 +632,7 @@ const formatDate = (dateStr) => {
         {/* Row 2: Action Buttons */}
         <div className="flex flex-wrap md:flex-nowrap gap-2 border-t pt-4"> 
           <button
-            onClick={() => navigate(`/hirer-chat/${worker.user_id}`)}
+            onClick={() => navigate(`/hirer-chat/${job.user_id}-${worker.user_id}`)}
             className="flex-1 bg-green-500 text-white py-2 rounded-lg shadow text-sm font-medium hover:bg-green-600 transition-colors"
           >
             Contact Worker
