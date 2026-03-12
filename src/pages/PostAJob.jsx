@@ -512,12 +512,14 @@ const PostAJob = () => {
 
             <div>
             <label>
-              <input
-                type="checkbox"
-                checked={is_Remote}
-                onChange={handleRemoteChange}
-              />
-              Is Remote
+              <label style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <input
+                  type="checkbox"
+                  checked={is_Remote}
+                  onChange={handleRemoteChange}
+                />
+                <span>Is Remote</span>
+              </label>
             </label>
 
           </div>
