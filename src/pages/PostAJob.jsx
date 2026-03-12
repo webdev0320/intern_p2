@@ -33,6 +33,8 @@ const PostAJob = () => {
   // Form States
   const [loading, setLoading] = useState(false);
   const [payRate, setPayRate] = useState(50);
+  const [totalHours, setTotalHours] = useState(50);
+
   const [is_Remote, setRemote] = useState(false);
   const [numWorkers, setNumWorkers] = useState(1);
   const [skillId, setSkillId] = useState("");
@@ -254,13 +256,13 @@ const PostAJob = () => {
 
   // 2. Initial Payment Confirmation
 
-    const totalHours = schedules.reduce(
+    const totalHoursCal = schedules.reduce(
       (sum, s) => sum + Number(s.duration || 0),
       0
     );
 
     const totalPayment = payRate * totalHours * numWorkers;
-
+    setTotalHours(totalPayment);
   const confirmColor = useWallet ? '#f97316' : '#3b82f6';
   const confirmRes = await Swal.fire({ 
     title: 'Confirm Payment', 
@@ -614,7 +616,7 @@ const PostAJob = () => {
                 <span className="text-sm">Pay from wallet</span>
               </label>
             </div>
-            <div className="text-xl font-bold text-gray-800">Total: £{payRate * duration * numWorkers}</div>
+            <div className="text-xl font-bold text-gray-800">Total: £{totalHours}</div>
           </div>
 
           <button onClick={handleSubmit} disabled={loading} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] disabled:bg-gray-400">
