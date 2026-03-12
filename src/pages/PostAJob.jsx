@@ -192,20 +192,20 @@ const PostAJob = () => {
   // 1. Duplicate Check (Logic remains the same)
     const MIN_GAP_HOURS = 2;
 
-    const hasConflict = schedules.some((s, idx) => {
-      const start = new Date(`${s.startDate} ${s.startTime}`);
-      const end = new Date(start.getTime() + s.duration * 60 * 60 * 1000);
+   const hasConflict = schedules.some((s, idx) => {
+  const startA = new Date(`${s.startDate} ${s.startTime}`);
+  const endA = new Date(startA.getTime() + s.duration * 60 * 60 * 1000);
 
-      return schedules.some((other, j) => {
-        if (idx === j) return false;
-        if (s.startDate !== other.startDate) return false;
+  return schedules.some((other, j) => {
+    if (idx === j) return false;
+    if (s.startDate !== other.startDate) return false;
 
-        const otherStart = new Date(`${other.startDate} ${other.startTime}`);
+    const startB = new Date(`${other.startDate} ${other.startTime}`);
+    const endB = new Date(startB.getTime() + other.duration * 60 * 60 * 1000);
 
-        return otherStart < end && otherStart > start;
-      });
-    });
-
+    return startA < endB && startB < endA;
+  });
+});
     const hasInvalidDuration = schedules.some((s) => Number(s.duration) < 2);
 
     if (hasConflict) {
