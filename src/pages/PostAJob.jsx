@@ -193,17 +193,16 @@ const PostAJob = () => {
     const MIN_GAP_HOURS = 2;
 
     const hasConflict = schedules.some((s, idx) => {
-      const current = new Date(`${s.startDate} ${s.startTime}`);
+      const start = new Date(`${s.startDate} ${s.startTime}`);
+      const end = new Date(start.getTime() + s.duration * 60 * 60 * 1000);
 
       return schedules.some((other, j) => {
         if (idx === j) return false;
         if (s.startDate !== other.startDate) return false;
 
-        const otherTime = new Date(`${other.startDate} ${other.startTime}`);
+        const otherStart = new Date(`${other.startDate} ${other.startTime}`);
 
-        const diffHours = Math.abs(current - otherTime) / (1000 * 60 * 60);
-
-        return diffHours < MIN_GAP_HOURS;
+        return otherStart < end && otherStart > start;
       });
     });
 
@@ -213,7 +212,7 @@ const PostAJob = () => {
       Swal.fire({
         icon: 'error',
         title: 'Duplicate Schedule',
-        text: 'Each schedule must have a unique date and time and minimum time difference should be 2 Hrz'
+        text: 'Each schedule must have a unique date & time'
       });
       setLoading(false);
       return;
