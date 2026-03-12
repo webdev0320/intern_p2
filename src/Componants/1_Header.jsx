@@ -33,7 +33,7 @@ const Header = ({ open, setOpen }) => {
                 // 2. Explicitly convert that UTC time to London
                 const london = dayjs.utc().tz("Europe/London");
                 
-                setCurrentTime(london.format("MMM DD,YYYY - HH:mm:ss") + " (GMT+0)");
+                setCurrentTime(london.format("MMM DD,YYYY - hh:mm:ss A") + " (GMT+0)");
             };
 
             updateClock();
