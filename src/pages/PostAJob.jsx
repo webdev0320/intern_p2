@@ -164,7 +164,11 @@ const PostAJob = () => {
       });
     }
   }, []);
-    
+  
+  const handleRemoteChange = (e) => {
+    setRemote(e.target.checked);
+  };
+
   const handleMapSelect = async ({ lat, lng }) => {
     setMarker({ lat, lng });
     try {
@@ -505,6 +509,18 @@ const PostAJob = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Rate (£/hr): <span className="text-orange-600">£{payRate}</span></label>
               <input type="range" min="11" max="100" value={payRate} onChange={(e) => setPayRate(e.target.value)} className="w-full accent-orange-500" />
             </div>
+
+            <div>
+            <label>
+              <input
+                type="checkbox"
+                checked={is_Remote}
+                onChange={handleRemoteChange}
+              />
+              Is Remote
+            </label>
+
+          </div>
           </div>
 
            <div className="mt-8">
