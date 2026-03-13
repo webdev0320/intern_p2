@@ -162,7 +162,7 @@ function WorkHistory() {
       Swal.fire("Error", "Something went wrong", "error");
     }
 
-    Swal.fire("Cancelled", "Job cancelled successfully", "success");
+    
 
   } catch (error) {
     console.error("API Error:", error);
