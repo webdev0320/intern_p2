@@ -13,6 +13,16 @@ import {
   FaCamera
 } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { db } from "../firebaseConfig";
+import { COLLECTIONS } from "../firebaseConstants";
+import { 
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  updateDoc, 
+  serverTimestamp 
+} from "firebase/firestore";
 
 const EmpProfileEdit = () => {
 
@@ -136,6 +146,29 @@ const EmpProfileEdit = () => {
       const result = await response.json();
 
       if (result.status === "success!") {
+        // --- Firebase Sync Fix ---
+        try {
+          const usersRef = collection(db, COLLECTIONS.USERS, "StoredUsers", "Worker");
+          const q = query(usersRef, where("userId", "==", userId.toString()));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            const docRef = querySnapshot.docs[0].ref;
+            const updatedImage = result.u_image ? (IMAGE_BASE_URL + result.u_image) : user.u_image;
+            
+            await updateDoc(docRef, {
+              name: user.name,
+              profileImage: updatedImage,
+              updatedAt: serverTimestamp()
+            });
+            console.log("Firebase profile updated successfully!");
+          } else {
+            console.warn("No matching Firebase document found for userId:", userId);
+          }
+        } catch (fbError) {
+          console.error("Firebase Sync Error:", fbError);
+        }
+        // -------------------------
 
         Swal.fire({
           icon: "success",

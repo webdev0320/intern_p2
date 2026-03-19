@@ -1,6 +1,16 @@
 import Swal from "sweetalert2";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebaseConfig";
+import { COLLECTIONS } from "../firebaseConstants";
+import { 
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  updateDoc, 
+  serverTimestamp 
+} from "firebase/firestore";
 
 const EditHirerProfile = () => {
   const navigate = useNavigate();
@@ -104,51 +114,10 @@ const EditHirerProfile = () => {
       if (key === "u_image") return; // skip URL preview
         payload.append(key, user[key] || "");
       });
-
-/*      const userDocRef = doc(
-        db, 
-        COLLECTIONS.USERS, 
-        data.user_id.toString() // Pointing directly to the User's ID
-      );
-
-      try {
-        await setDoc(userDocRef, {
-          email: formData.email,
-          name: fullName,
-          profileImage: data.u_image || formData.image_preview || "",
-          userType: "Hirer",
-          updatedAt: new Date(), // Track when the update happened
-        }, { merge: true }); // <--- Crucial: prevent overwriting other fields
-        
-        console.log("User updated successfully!");
-      } catch (err) {
-        console.error("Update error:", err);
-      }*/
       
       if (imageFile) {
         payload.append("u_image", imageFile);
       }
-
-
-      const userDocRef = doc(
-          db, 
-          COLLECTIONS.USERS, 
-          data.user_id.toString() // Pointing directly to the User's ID
-        );
-
-        try {
-          await setDoc(userDocRef, {
-            email: formData.email,
-            name: fullName,
-            profileImage: data.u_image || formData.image_preview || "",
-            userType: "Hirer",
-            updatedAt: new Date(), // Track when the update happened
-          }, { merge: true }); // <--- Crucial: prevent overwriting other fields
-          
-          console.log("User updated successfully!");
-        } catch (err) {
-          console.error("Update error:", err);
-        }
 
       payload.append("user_id", userId);
 
@@ -157,13 +126,37 @@ const EditHirerProfile = () => {
         body: payload,
       });
 
-      const data = await response.json();
+      const resultData = await response.json();
 
-      if (response.ok && data.status === "success!") {
+      if (response.ok && resultData.status === "success!") {
+        // --- Firebase Sync Fix ---
+        try {
+          const usersRef = collection(db, COLLECTIONS.USERS, "StoredUsers", "Hirer");
+          const q = query(usersRef, where("userId", "==", userId.toString()));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            const docRef = querySnapshot.docs[0].ref;
+            const updatedImage = resultData.u_image ? (IMAGE_BASE_URL + resultData.u_image) : user.u_image;
+            
+            await updateDoc(docRef, {
+              name: user.name,
+              profileImage: updatedImage,
+              updatedAt: serverTimestamp()
+            });
+            console.log("Firebase profile updated successfully!");
+          } else {
+            console.warn("No matching Firebase document found for userId:", userId);
+          }
+        } catch (fbError) {
+          console.error("Firebase Sync Error:", fbError);
+        }
+        // -------------------------
+
         Swal.fire({
           icon: "success",
           title: "Profile Update",
-          text: data.message || "Profile updated successfully!",
+          text: resultData.message || "Profile updated successfully!",
           confirmButtonColor: "#f97316",
         });
         navigate("/hirer-dashboard");
@@ -171,7 +164,7 @@ const EditHirerProfile = () => {
         Swal.fire({
           icon: "error",
           title: "Profile Update",
-          text: data.message || "Failed to update profile",
+          text: resultData.message || "Failed to update profile",
           confirmButtonColor: "#f97316",
         });
       }

@@ -223,20 +223,34 @@ const PostAJob = () => {
   // 1. Duplicate Check (Logic remains the same)
     const MIN_GAP_HOURS = 2;
 
+    const hasDuplicateDate = schedules.some((s, i) =>
+      schedules.findIndex(o => o.startDate === s.startDate) !== i
+    );
+    console.log(hasDuplicateDate);
+    if (hasDuplicateDate) {
+      Swal.fire({
+        icon: "error",
+        title: "Duplicate Date",
+        text: "Each schedule must have a unique date."
+      });
+      setLoading(false);
+      return;
+    }
+
    const hasConflict = schedules.some((s, idx) => {
-  const startA = new Date(`${s.startDate} ${s.startTime}`);
-  const endA = new Date(startA.getTime() + s.duration * 60 * 60 * 1000);
+      const startA = new Date(`${s.startDate} ${s.startTime}`);
+      const endA = new Date(startA.getTime() + s.duration * 60 * 60 * 1000);
 
-  return schedules.some((other, j) => {
-    if (idx === j) return false;
-    if (s.startDate !== other.startDate) return false;
+      return schedules.some((other, j) => {
+        if (idx === j) return false;
+        if (s.startDate !== other.startDate) return false;
 
-    const startB = new Date(`${other.startDate} ${other.startTime}`);
-    const endB = new Date(startB.getTime() + other.duration * 60 * 60 * 1000);
+        const startB = new Date(`${other.startDate} ${other.startTime}`);
+        const endB = new Date(startB.getTime() + other.duration * 60 * 60 * 1000);
 
-    return startA < endB && startB < endA;
-  });
-});
+        return startA < endB && startB < endA;
+      });
+    });
     const hasInvalidDuration = schedules.some((s) => Number(s.duration) < 2);
 
     if (hasConflict) {

@@ -20,7 +20,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app); // Disabled due to 403 Forbidden error
 
 // 3. This will now work because getFirestore is defined
 export const db = getFirestore(app);
