@@ -23,5 +23,5 @@ jobs:
             git pull origin main
             npm install
             npm run build
-            # If using Nginx, ensure it points to /var/www/my-app/dist
+            # If using Nginx, ensure it points to /home/iyouwork.com/public_html
             sudo systemctl restart nginx
