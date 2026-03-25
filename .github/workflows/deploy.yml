@@ -3,25 +3,33 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - main  # Trigger on push to main
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Updated to v4 to fix the Node.js 20 deprecation warning
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            # Navigate to your project folder
             cd /home/iyouwork.com/public_html
-            git pull origin main
+            
+            # Force pull to ensure local changes don't block the update
+            git fetch origin main
+            git reset --hard origin/main
+            
+            # Clean install and build
             npm install
             npm run build
-            # If using Nginx, ensure it points to /home/iyouwork.com/public_html
+            
+            # Restart the web server
             sudo systemctl restart nginx
