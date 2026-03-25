@@ -5,11 +5,14 @@ on:
     branches:
       - main
 
+# This section tells GitHub to use Node 24 for all actions in this file
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Updated to v4 to fix the Node.js 20 deprecation warning
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -28,6 +31,7 @@ jobs:
             git reset --hard origin/main
             
             # Clean install and build
+            # Note: Ensure Node.js is also updated on your VPS to match
             npm install
             npm run build
             
