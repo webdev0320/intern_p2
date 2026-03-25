@@ -7,7 +7,6 @@ export const COLLECTIONS = {
     ? "conversations"
     : "conversationsStaging",
 };
-
 export const FIELDS = {
   SENDER_ID: "senderId",
   RECEIVER_ID: "receiverId",
