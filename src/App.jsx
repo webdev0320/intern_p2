@@ -27,6 +27,7 @@ import Worker_login from "./Componants/Sign_in/Worker_login.jsx";
 import Hirer_login from "./Componants/Sign_in/Hirer_login.jsx";
 
 // Other pages
+import HomePageNew from "./pages/HomePageNew.jsx";
 import FindWork from "./pages/FindWork.jsx";
 import EmpDashboard from "./pages/EmpDashboard.jsx";
 import HirerDashboard from "./pages/HirerDashboard.jsx";
@@ -155,7 +156,7 @@ function App() {
         <main className="pt-16">
           <Routes>
             {/* Public Routes */}
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomePageNew />} />
             <Route path="/signup" element={<SignUpModal />} />
             <Route path="/signup/worker" element={<WorkerSignUpPage />} />
             <Route path="/signup/hirer" element={<HirerSignUpPage />} />
