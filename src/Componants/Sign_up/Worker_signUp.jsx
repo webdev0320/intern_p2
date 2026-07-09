@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState, useRef } from "react";
 import Swal from "sweetalert2";
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
@@ -285,8 +285,8 @@ const WorkerSignUpPage = () => {
                                         </div>
                                         <div className="flex items-start gap-2">
                                             <input type="checkbox" required id="terms" className="mt-1 w-4 h-4 accent-blue-600" />
-                                            <label htmlFor="terms" className="text-sm text-gray-600">
-                                                I agree to the <span className="text-blue-600 font-bold">Terms & Privacy Policy</span>
+                                            <label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer">
+                                                I agree to the <Link to="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-bold hover:underline">Terms & Conditions</Link> and <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-blue-600 font-bold hover:underline">Privacy Policy</Link>
                                             </label>
                                         </div>
                                     </div>

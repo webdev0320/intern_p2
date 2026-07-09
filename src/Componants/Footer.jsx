@@ -1,5 +1,6 @@
 import React from 'react'
 import { Linkedin, Facebook, Instagram } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "../assets/logo_p2.png"
 
 const Footer = () => {
@@ -28,12 +29,12 @@ const Footer = () => {
                             <div>
                                 <h3 className="font-semibold mb-4">FOR WORKERS</h3>
                                 <ul className="space-y-2 text-sm">
-                                    <li>Latest jobs</li>
-                                    <li>Find work</li>
-                                    <li>Community</li>
-                                    <li>Registration process</li>
-                                    <li>Coopler payments</li>
-                                    <li>Help centre</li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Latest jobs</li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Find work</li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Community</li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Registration process</li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Coopler payments</li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Help centre</li>
                                 </ul>
                                 <img
                                     src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
@@ -47,8 +48,8 @@ const Footer = () => {
                             <div>
                                 <h3 className="font-semibold mb-4">FOR BUSINESSES</h3>
                                 <ul className="space-y-2 text-sm">
-                                    <li>Temp Staffing Pricing</li>
-                                    <li>Help centre</li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Temp Staffing Pricing</li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Help centre</li>
                                 </ul>
                             </div>
 
@@ -57,12 +58,19 @@ const Footer = () => {
                             <div>
                                 <h3 className="font-semibold mb-4">COOPLE</h3>
                                 <ul className="space-y-2 text-sm">
-                                    <li>About us</li>
-                                    <li>Blog</li>
-                                    <li>Careers</li>
-                                    <li>Legal</li>
-                                    <li>Imprint</li>
-                                    <li>Contact</li>
+                                    <li>
+                                        <Link to="/about" className="hover:text-orange-500 transition-colors duration-150">About us</Link>
+                                    </li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Blog</li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Careers</li>
+                                    <li>
+                                        <Link to="/privacy-policy" className="hover:text-orange-500 transition-colors duration-150">Privacy Policy</Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/terms-and-conditions" className="hover:text-orange-500 transition-colors duration-150">Terms & Conditions</Link>
+                                    </li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Imprint</li>
+                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Contact</li>
                                 </ul>
                             </div>
                         </div>

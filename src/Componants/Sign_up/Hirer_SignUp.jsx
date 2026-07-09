@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
@@ -375,9 +375,13 @@ return (
                     />
                     <label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer">
                         I agree that I have read and accepted the{" "}
-                        <span className="text-orange-500 font-bold hover:underline">
-                            Terms of Use & Privacy Policy
-                        </span>
+                        <Link to="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="text-orange-500 font-bold hover:underline">
+                            Terms of Use
+                        </Link>{" "}
+                        &{" "}
+                        <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-orange-500 font-bold hover:underline">
+                            Privacy Policy
+                        </Link>
                     </label>
                 </div>
                 <button type="submit" className="w-full bg-orange-500 text-white py-3 rounded-lg font-bold">Next: Set Location</button>

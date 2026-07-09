@@ -60,6 +60,8 @@ import FollowWorkers from "./pages/FollowWorkers";
 import FAQs from "./pages/FAQs";
 import Support from "./pages/Support";
 import About from "./pages/About";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 import Invite from "./pages/Invite";
 import MyEarnings from "./pages/MyEarnings";
 import Sidebar from "./Componants/Sidebar.jsx";
@@ -200,6 +202,8 @@ function App() {
             <Route path="/faqs" element={<FAQs />} />
             <Route path="/support" element={<Support />} />
             <Route path="/about" element={<About />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/stripe-card" element={<StripeCard />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/sidebar" element={<PrivateRoute><Sidebar /></PrivateRoute>} />
