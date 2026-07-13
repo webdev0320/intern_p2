@@ -1,189 +1,250 @@
-import React, { useState } from 'react';
-import { 
-  MapPin, 
-  CreditCard, 
-  Briefcase, 
-  TrendingUp, 
-  Building2, 
-  User 
-} from 'lucide-react';
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { Smartphone, Apple, ShieldCheck, Lock, Clock, Monitor, Hammer, Calculator, Truck, Activity, Edit3, Star } from "lucide-react";
+import HowItWorks from "../Componants/HowItWorks";
+import iyouworkWorkersHero from "../assets/images/iyouwork_workers_hero_1783942223712.jpg";
 
-// --- Sub-Components (Internal for now) ---
-
-const JobCard = ({ role, location, pay, type, description }) => (
-  <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
-    <h3 className="font-bold text-lg text-slate-900 mb-3">{role}</h3>
-    <div className="flex flex-wrap gap-2 mb-4">
-      <span className="flex items-center gap-1 text-sm text-slate-600 bg-slate-100 px-2 py-1 rounded-md">
-        <MapPin size={14} /> {location}
-      </span>
-      <span className="flex items-center gap-1 text-sm font-medium text-blue-700 bg-blue-50 px-2 py-1 rounded-md">
-        <CreditCard size={14} /> {pay}
-      </span>
-      <span className="text-sm text-slate-600 bg-slate-100 px-2 py-1 rounded-md">{type}</span>
-    </div>
-    <p className="text-slate-600 text-sm mb-4">{description}</p>
-    <button className="w-full text-blue-600 border border-blue-600 hover:bg-blue-50 py-2 rounded-lg font-medium transition">
-      Apply Now
-    </button>
-  </div>
-);
-
-// --- Main Page Component ---
-
-const HomePageNew = () => {
-  const [activeTab, setActiveTab] = useState('business');
+export default function HomePage() {
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans">
+    <div id="home-page">
+      {/* Hero Section */}
+      <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-gray-900 leading-tight mb-6">
+              The right worker for every shift — <span className="text-[#E87722]">effortlessly.</span>
+            </h1>
+            <p className="text-lg text-gray-600 mb-8 max-w-lg leading-relaxed">
+              With iyouwork's Flexwork Platform, perfect your staffing for maximum productivity and minimum cost. Free to join as a hirer or worker.
+            </p>
+            <div className="flex flex-wrap gap-4 mb-8">
+              <button 
+                onClick={() => navigate("/signin")}
+                className="bg-[#E87722] hover:bg-[#d6691c] text-white px-6 py-3 rounded-md font-medium transition-colors cursor-pointer"
+              >
+                Post a gig
+              </button>
+              <button 
+                onClick={() => navigate("/signin")}
+                className="bg-white border border-gray-300 text-gray-900 hover:bg-gray-50 px-6 py-3 rounded-md font-medium transition-colors cursor-pointer"
+              >
+                Find work
+              </button>
+            </div>
+            
+            <div className="flex flex-wrap gap-4 mb-8">
+              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 px-4 py-2 rounded-md text-sm text-gray-600">
+                <Smartphone className="h-4 w-4" /> Google Play
+              </div>
+              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 px-4 py-2 rounded-md text-sm text-gray-600">
+                <Apple className="h-4 w-4" /> App Store
+              </div>
+            </div>
 
-
-      {/* 1. Hero Section */}
-      <section className="px-8 py-16 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-        <div className="space-y-6">
-          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight tracking-tight">
-            Flexible staffing across the UK, simplified.
-          </h1>
-          <p className="text-xl text-slate-600">
-            Join the UK’s leading platform for flexible work. Find reliable staff in minutes, or discover local shifts that fit your schedule—from London to Manchester.
-          </p>
-          <div className="flex gap-4 pt-4">
-            <button className="bg-orange-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-orange-600 transition">Hire Staff Today</button>
-            <button className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition">Find Local Shifts</button>
+            <div className="flex flex-wrap gap-6 pt-6 border-t border-gray-100">
+              <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <ShieldCheck className="h-5 w-5 text-[#E87722]" /> Free to join
+              </div>
+              <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Lock className="h-5 w-5 text-[#E87722]" /> Secure payments
+              </div>
+              <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Clock className="h-5 w-5 text-[#E87722]" /> Paid in 5–7 days
+              </div>
+            </div>
+          </div>
+          <div className="relative h-64 md:h-96 w-full rounded-2xl overflow-hidden bg-gray-100 border border-gray-200">
+             <img src={iyouworkWorkersHero} alt="iyouwork professionals" className="object-cover w-full h-full" referrerPolicy="no-referrer" />
           </div>
         </div>
-        <div className="relative">
-          <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80" alt="Team" className="rounded-3xl shadow-2xl" />
-          <div className="absolute -bottom-8 -left-8 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-4">
-            <span className="text-3xl">⭐</span>
+      </section>
+
+      {/* How It Works */}
+      <HowItWorks />
+
+      {/* Categories */}
+      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center md:text-left mb-12">
+          <h2 className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">Work across every industry</h2>
+          <p className="text-gray-600 text-lg max-w-2xl">From hands-on labour to professional services — find the right gig or the right person.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex items-start gap-4 hover:shadow-md transition-shadow">
+            <div className="bg-blue-50 text-[#185FA5] p-3 rounded-lg flex-shrink-0">
+              <Monitor className="h-6 w-6" />
+            </div>
             <div>
-              <p className="font-bold text-lg">4.8/5</p>
-              <p className="text-slate-500 text-sm">from 10,000+ UK reviews</p>
+              <h4 className="text-base font-bold text-gray-900 mb-1">IT & Technology</h4>
+              <p className="text-sm text-gray-600 mb-2">Developers, support techs, network engineers</p>
+              <div className="text-xs font-semibold text-[#1A6FB8]">340+ active gigs</div>
+            </div>
+          </div>
+          
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex items-start gap-4 hover:shadow-md transition-shadow">
+            <div className="bg-green-50 text-[#3B6D11] p-3 rounded-lg flex-shrink-0">
+              <Hammer className="h-6 w-6" />
+            </div>
+            <div>
+              <h4 className="text-base font-bold text-gray-900 mb-1">Labour & Trades</h4>
+              <p className="text-sm text-gray-600 mb-2">Builders, electricians, plumbers, general labour</p>
+              <div className="text-xs font-semibold text-[#1A6FB8]">510+ active gigs</div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex items-start gap-4 hover:shadow-md transition-shadow">
+            <div className="bg-orange-50 text-[#854F0B] p-3 rounded-lg flex-shrink-0">
+              <Calculator className="h-6 w-6" />
+            </div>
+            <div>
+              <h4 className="text-base font-bold text-gray-900 mb-1">Finance & Accounting</h4>
+              <p className="text-sm text-gray-600 mb-2">Bookkeepers, accountants, payroll specialists</p>
+              <div className="text-xs font-semibold text-[#1A6FB8]">180+ active gigs</div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex items-start gap-4 hover:shadow-md transition-shadow">
+            <div className="bg-red-50 text-[#993C1D] p-3 rounded-lg flex-shrink-0">
+              <Truck className="h-6 w-6" />
+            </div>
+            <div>
+              <h4 className="text-base font-bold text-gray-900 mb-1">Logistics & Delivery</h4>
+              <p className="text-sm text-gray-600 mb-2">Drivers, warehouse staff, couriers</p>
+              <div className="text-xs font-semibold text-[#1A6FB8]">290+ active gigs</div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex items-start gap-4 hover:shadow-md transition-shadow">
+            <div className="bg-pink-50 text-[#993556] p-3 rounded-lg flex-shrink-0">
+              <Activity className="h-6 w-6" />
+            </div>
+            <div>
+              <h4 className="text-base font-bold text-gray-900 mb-1">Healthcare & Care</h4>
+              <p className="text-sm text-gray-600 mb-2">Care assistants, medical support, cleaners</p>
+              <div className="text-xs font-semibold text-[#1A6FB8]">220+ active gigs</div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex items-start gap-4 hover:shadow-md transition-shadow">
+            <div className="bg-indigo-50 text-[#534AB7] p-3 rounded-lg flex-shrink-0">
+              <Edit3 className="h-6 w-6" />
+            </div>
+            <div>
+              <h4 className="text-base font-bold text-gray-900 mb-1">Admin & Office</h4>
+              <p className="text-sm text-gray-600 mb-2">Receptionists, data entry, PA support</p>
+              <div className="text-xs font-semibold text-[#1A6FB8]">160+ active gigs</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. Trust Banner */}
-      <section className="bg-slate-50 py-16 mt-16">
-        <div className="max-w-7xl mx-auto px-8">
-          <h2 className="text-center text-3xl font-bold mb-12">Trusted by thousands of businesses nationwide.</h2>
-          <div className="grid md:grid-cols-4 gap-8">
-            {[
-              { label: 'Registered UK Workers', val: '150,000+' },
-              { label: 'Hiring Companies', val: '5,000+' },
-              { label: 'Shift Fulfillment', val: '98%' },
-              { label: 'Wages Paid This Year', val: '£15m+' },
-            ].map((stat, i) => (
-              <div key={i} className="text-center p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                <p className="text-3xl font-extrabold text-blue-600 mb-2">{stat.val}</p>
-                <p className="text-slate-600 font-medium">{stat.label}</p>
+      {/* Social Proof */}
+      <section className="py-20 bg-gray-50 border-y border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+            <div className="bg-white rounded-xl p-6 text-center border border-gray-200 shadow-sm">
+              <div className="text-3xl font-display font-bold text-[#1A6FB8] mb-1">12k+</div>
+              <div className="text-sm text-gray-600">Registered workers</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 text-center border border-gray-200 shadow-sm">
+              <div className="text-3xl font-display font-bold text-[#1A6FB8] mb-1">4.8<span className="text-xl">★</span></div>
+              <div className="text-sm text-gray-600">App Store rating</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 text-center border border-gray-200 shadow-sm">
+              <div className="text-3xl font-display font-bold text-[#1A6FB8] mb-1">3,200+</div>
+              <div className="text-sm text-gray-600">Gigs completed</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 text-center border border-gray-200 shadow-sm">
+              <div className="text-3xl font-display font-bold text-[#1A6FB8] mb-1">98%</div>
+              <div className="text-sm text-gray-600">On-time payment</div>
+            </div>
+          </div>
+
+          <div className="text-center md:text-left mb-12">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-4">What people are saying</h2>
+            <p className="text-gray-600 text-lg">Real hirers and workers across the UK.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+              <div className="flex text-[#E87722] mb-4">
+                <Star className="h-5 w-5 fill-current" />
+                <Star className="h-5 w-5 fill-current" />
+                <Star className="h-5 w-5 fill-current" />
+                <Star className="h-5 w-5 fill-current" />
+                <Star className="h-5 w-5 fill-current" />
               </div>
-            ))}
+              <p className="text-gray-700 italic mb-6 text-lg">"We filled three last-minute warehouse shifts in under an hour. The app is incredibly simple and the workers showed up exactly as described."</p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-blue-50 text-[#185FA5] flex items-center justify-center font-bold text-lg">JM</div>
+                <div>
+                  <h5 className="font-bold text-gray-900">James M.</h5>
+                  <span className="text-sm text-gray-500">Warehouse Manager, Manchester</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+              <div className="flex text-[#E87722] mb-4">
+                <Star className="h-5 w-5 fill-current" />
+                <Star className="h-5 w-5 fill-current" />
+                <Star className="h-5 w-5 fill-current" />
+                <Star className="h-5 w-5 fill-current" />
+                <Star className="h-5 w-5 fill-current" />
+              </div>
+              <p className="text-gray-700 italic mb-6 text-lg">"I picked up two IT support gigs in my first week. The pay landed in my account on time, no chasing. Best flex-work platform I've used."</p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-green-50 text-[#3B6D11] flex items-center justify-center font-bold text-lg">PS</div>
+                <div>
+                  <h5 className="font-bold text-gray-900">Priya S.</h5>
+                  <span className="text-sm text-gray-500">IT Support Worker, London</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 3. How It Works */}
-      <section className="py-20 max-w-4xl mx-auto px-8">
-        <h2 className="text-4xl font-bold text-center mb-10">How it works</h2>
-        <div className="flex justify-center gap-4 mb-12">
-          <button onClick={() => setActiveTab('business')} className={`px-6 py-2 rounded-full font-semibold ${activeTab === 'business' ? 'bg-blue-600 text-white' : 'bg-slate-100'}`}>For Businesses</button>
-          <button onClick={() => setActiveTab('worker')} className={`px-6 py-2 rounded-full font-semibold ${activeTab === 'worker' ? 'bg-blue-600 text-white' : 'bg-slate-100'}`}>For Workers</button>
-        </div>
+      {/* CTA */}
+      <section className="py-24 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl md:text-5xl font-display font-bold text-gray-900 mb-6">Ready to get started?</h2>
+        <p className="text-xl text-gray-600 mb-10">Join thousands of hirers and workers already using iyouwork. Free to sign up — on web or mobile.</p>
         
-        {activeTab === 'business' ? (
-          <div className="space-y-8">
-            <h3 className="text-2xl font-bold text-center">Fill your rotas instantly without the agency fees.</h3>
-            {['Post your shifts.', 'Review matches.', 'Hire and manage.'].map((step, i) => (
-              <div key={i} className="flex gap-4 items-start bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                <span className="bg-orange-100 text-orange-600 font-bold px-4 py-2 rounded-full">0{i+1}</span>
-                <p className="text-lg pt-1"><strong className="text-blue-700">{step}</strong> Description here...</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-8">
-            <h3 className="text-2xl font-bold text-center">Work when you want, where you want.</h3>
-            {['Build your profile.', 'Browse and apply.', 'Get paid weekly.'].map((step, i) => (
-              <div key={i} className="flex gap-4 items-start bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                <span className="bg-blue-100 text-blue-600 font-bold px-4 py-2 rounded-full">0{i+1}</span>
-                <p className="text-lg pt-1"><strong className="text-blue-700">{step}</strong> Description here...</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+        <div className="flex flex-wrap justify-center gap-4 mb-12">
+          <button 
+            onClick={() => navigate("/signin")}
+            className="bg-[#E87722] hover:bg-[#d6691c] text-white px-8 py-3 rounded-md font-medium text-lg transition-colors cursor-pointer"
+          >
+            Post a gig
+          </button>
+          <button 
+            onClick={() => navigate("/signin")}
+            className="bg-white border border-gray-300 text-gray-900 hover:bg-gray-50 px-8 py-3 rounded-md font-medium text-lg transition-colors cursor-pointer"
+          >
+            Find work near me
+          </button>
+        </div>
 
-      {/* 4. Industries */}
-      <section className="py-20 bg-white max-w-7xl mx-auto px-8">
-        <h2 className="text-4xl font-bold mb-4">Opportunities across every major sector.</h2>
-        <p className="text-lg text-slate-600 mb-12 max-w-2xl">Whether you need extra hands for a busy weekend or want to pick up a side hustle, we cover the UK's biggest industries.</p>
-        <div className="grid md:grid-cols-4 gap-6">
-          {[
-            { title: 'Hospitality', icon: <Briefcase /> },
-            { title: 'Retail', icon: <TrendingUp /> },
-            { title: 'Logistics', icon: <Building2 /> },
-            { title: 'Admin', icon: <User /> },
-          ].map((ind, i) => (
-            <div key={i} className="p-8 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-200 transition">
-              <div className="text-blue-600 mb-4">{ind.icon}</div>
-              <h4 className="font-bold text-xl mb-2">{ind.title}</h4>
-              <p className="text-sm text-slate-500">Roles: Bartenders, Sales Assistants, Drivers...</p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <button className="flex items-center gap-3 bg-white border border-gray-300 px-6 py-3 rounded-xl hover:bg-gray-50 transition-colors">
+            <Smartphone className="h-8 w-8 text-[#1A6FB8]" />
+            <div className="text-left">
+              <div className="text-xs text-gray-500">Get it on</div>
+              <div className="text-sm font-bold text-gray-900">Google Play</div>
             </div>
-          ))}
+          </button>
+          <button className="flex items-center gap-3 bg-white border border-gray-300 px-6 py-3 rounded-xl hover:bg-gray-50 transition-colors">
+            <Apple className="h-8 w-8 text-gray-900" />
+            <div className="text-left">
+              <div className="text-xs text-gray-500">Download on the</div>
+              <div className="text-sm font-bold text-gray-900">App Store</div>
+            </div>
+          </button>
         </div>
       </section>
-
-      {/* 5. Featured Shifts */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-8">
-          <h2 className="text-4xl font-bold mb-12">Hot shifts available right now</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <JobCard role="Experienced Bartender" location="Central London" pay="£13.50 / hr" type="Flexible Shift" description="Fast-paced cocktail bar looking for experienced staff." />
-            <JobCard role="Warehouse Operative" location="Birmingham" pay="£11.44 / hr" type="Fixed Term" description="Urgent cover needed for a busy distribution centre." />
-            <JobCard role="Event Steward" location="Manchester Arena" pay="£12.00 / hr" type="Weekend Shift" description="Crowd management and ticket scanning for a festival." />
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Testimonials */}
-      <section className="py-20 max-w-7xl mx-auto px-8 grid md:grid-cols-2 gap-8">
-        <div className="bg-slate-900 text-white p-10 rounded-3xl">
-          <p className="text-lg mb-6">"Since switching from traditional temp agencies, we've cut our staffing costs by 20% and always have reliable cover for busy weekends."</p>
-          <p className="font-bold">— Sarah T., Area Manager (London)</p>
-        </div>
-        <div className="bg-orange-100 text-slate-900 p-10 rounded-3xl">
-          <p className="text-lg mb-6">"I use the app to pick up extra shifts around my university timetable. The weekly pay is a lifesaver, and it's so easy to use."</p>
-          <p className="font-bold">— James M., Student (Leeds)</p>
-        </div>
-      </section>
-
-      {/* 7. Dual CTA */}
-      <section className="flex flex-col md:flex-row">
-        <div className="flex-1 bg-blue-700 text-white p-16 text-center">
-          <h3 className="text-3xl font-bold mb-4">Looking for flexible work?</h3>
-          <p className="mb-8 opacity-90">Take control of your schedule. Sign up today and start earning.</p>
-          <button className="bg-white text-blue-700 px-8 py-3 rounded-lg font-bold">Download the App</button>
-        </div>
-        <div className="flex-1 bg-orange-500 text-white p-16 text-center">
-          <h3 className="text-3xl font-bold mb-4">Need staff urgently?</h3>
-          <p className="mb-8 opacity-90">Don't let staff shortages slow you down. Post a shift in minutes.</p>
-          <button className="bg-white text-orange-500 px-8 py-3 rounded-lg font-bold">Create Company Account</button>
-        </div>
-      </section>
-
-      {/* 8. Footer */}
-      <footer className="bg-slate-50 py-16 px-8 border-t border-slate-200">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
-          <div><h4 className="font-bold mb-4">For Workers</h4><ul className="space-y-2 text-slate-600 text-sm"><li>Browse Jobs</li><li>Worker FAQs</li></ul></div>
-          <div><h4 className="font-bold mb-4">For Businesses</h4><ul className="space-y-2 text-slate-600 text-sm"><li>Post a Job</li><li>Pricing</li></ul></div>
-          <div><h4 className="font-bold mb-4">Company</h4><ul className="space-y-2 text-slate-600 text-sm"><li>About Us</li><li>Careers</li></ul></div>
-          <div className="text-sm text-slate-500 mt-auto">© 2026 iyouwork UK Ltd. All rights reserved.</div>
-        </div>
-      </footer>
     </div>
   );
-};
+}
 
-export default HomePageNew;

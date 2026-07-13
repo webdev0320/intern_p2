@@ -1,93 +1,109 @@
-import React from 'react'
-import { Linkedin, Facebook, Instagram } from "lucide-react";
+import * as React from "react";
+import { Send, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import logo from "../assets/logo_p2.png"
+import Logo from "./Logo";
 
-const Footer = () => {
-    return (
-        <footer className="">
-            <section className='bg-gray-100 p-7  text-gray-800'>
-                {/* Top section */}
-                <div className="max-w-7xl mx-auto px-6 py-16">
-                    <div className="flex flex-wrap gap-10 justify-between ">
-                        {/* Logo & language */}
-                        <div className="space-y-6">
-                            <img src={logo} className='w-16' alt="i u work" />
-                            {/* <div className="flex items-center gap-2 text-sm">
-                            <span>CH</span>
-                            <span className="opacity-60">EN</span>
-                        </div> */}
-                            <div className="flex gap-4 pt-4">
-                                <a className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" href="#"><Linkedin size={18} /></a>
-                                <a className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" href="#"><Facebook size={18} /></a>
-                                <a className="p-2 rounded-full bg-gray-200 hover:bg-gray-300" href="#"><Instagram size={18} /></a>
-                            </div>
-                        </div>
+export default function Footer() {
+  const [email, setEmail] = React.useState("");
+  const [status, setStatus] = React.useState("idle");
+  const [errorMessage, setErrorMessage] = React.useState("");
 
-                        <div className='flex justify-between flex-wrap gap-8 md:gap-24 pr-9'>
-                            {/* For Workers */}
-                            <div>
-                                <h3 className="font-semibold mb-4">FOR WORKERS</h3>
-                                <ul className="space-y-2 text-sm">
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Latest jobs</li>
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Find work</li>
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Community</li>
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Registration process</li>
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Coopler payments</li>
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Help centre</li>
-                                </ul>
-                                <img
-                                    src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
-                                    alt="App Store"
-                                    className="mt-6 w-40"
-                                />
-                            </div>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Regex validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setStatus("error");
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
 
+    setStatus("submitting");
+    setErrorMessage("");
 
-                            {/* For Businesses */}
-                            <div>
-                                <h3 className="font-semibold mb-4">FOR BUSINESSES</h3>
-                                <ul className="space-y-2 text-sm">
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Temp Staffing Pricing</li>
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Help centre</li>
-                                </ul>
-                            </div>
+    // Simulate API call with a 1.2 second delay
+    setTimeout(() => {
+      setStatus("success");
+      setEmail("");
+    }, 1200);
+  };
 
-
-                            {/* Coople */}
-                            <div>
-                                <h3 className="font-semibold mb-4">COOPLE</h3>
-                                <ul className="space-y-2 text-sm">
-                                    <li>
-                                        <Link to="/about" className="hover:text-orange-500 transition-colors duration-150">About us</Link>
-                                    </li>
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Blog</li>
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Careers</li>
-                                    <li>
-                                        <Link to="/privacy-policy" className="hover:text-orange-500 transition-colors duration-150">Privacy Policy</Link>
-                                    </li>
-                                    <li>
-                                        <Link to="/terms-and-conditions" className="hover:text-orange-500 transition-colors duration-150">Terms & Conditions</Link>
-                                    </li>
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Imprint</li>
-                                    <li className="hover:text-orange-500 transition-colors duration-150 cursor-pointer">Contact</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </section>
-            {/* Bottom bar */}
-            <div className="bg-gray-900 text-white text-sm py-4">
-                <div className=" max-w-7xl mx-auto md:px-20 px-6">
-                    © 2026 Coople. All rights reserved.
-                </div>
+  return (
+    <footer className="bg-gray-50 border-t border-gray-200 pt-16 pb-8" id="main-footer">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+          <div className="lg:col-span-2">
+            <Link to="/" className="inline-block mb-4">
+              <Logo className="h-8" />
+            </Link>
+            <p className="text-sm text-gray-600 mb-6 max-w-sm">
+              Connecting freelance talent with task-based project requirements efficiently.
+            </p>
+            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+              <Link to="/privacy" className="hover:text-gray-900 transition-colors">Privacy policy</Link>
+              <Link to="/terms" className="hover:text-gray-900 transition-colors">Terms of use</Link>
+              <Link to="/faq" className="hover:text-gray-900 transition-colors">FAQ</Link>
+              <Link to="/contact" className="hover:text-gray-900 transition-colors">Contact us</Link>
+              <Link to="/trust" className="hover:text-gray-900 transition-colors">Trust & safety</Link>
             </div>
-
-        </footer>
-
-    )
+          </div>
+          
+          <div className="lg:col-span-2">
+            <h3 className="text-sm font-bold text-gray-900 mb-2">Subscribe to our newsletter</h3>
+            <p className="text-sm text-gray-600 mb-4">Keep updated on new job opportunities and platform announcements.</p>
+            {status === "success" ? (
+              <div 
+                className="flex items-center gap-3 text-green-800 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm max-w-md animate-fade-in" 
+                id="newsletter-success"
+              >
+                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold">Successfully subscribed!</p>
+                  <p className="text-xs text-green-600">Thank you for joining our community.</p>
+                </div>
+              </div>
+            ) : (
+              <form 
+                className="flex flex-col gap-1.5 max-w-md"
+                onSubmit={handleSubmit}
+                id="newsletter-form"
+              >
+                <div className="flex gap-2">
+                  <input 
+                    type="email" 
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (status === "error") setStatus("idle");
+                    }}
+                    placeholder="Enter your email address" 
+                    className="flex-1 min-w-0 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-1 focus:ring-brand-blue focus:border-brand-blue outline-none"
+                    required
+                    disabled={status === "submitting"}
+                  />
+                  <button 
+                    type="submit" 
+                    disabled={status === "submitting"}
+                    className="bg-brand-blue hover:bg-brand-blue/90 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 flex-shrink-0 disabled:opacity-75 disabled:cursor-not-allowed"
+                  >
+                    <span>{status === "submitting" ? "Submitting..." : "Subscribe"}</span>
+                    <Send className="h-4 w-4" />
+                  </button>
+                </div>
+                {status === "error" && (
+                  <p className="text-xs text-red-600 font-medium" id="newsletter-error">
+                    {errorMessage}
+                  </p>
+                )}
+              </form>
+            )}
+          </div>
+        </div>
+        <div className="text-center text-xs text-gray-400 pt-8 border-t border-gray-200">
+          &copy; {new Date().getFullYear()} iyouwork Ltd. All rights reserved. UK registered company.
+        </div>
+      </div>
+    </footer>
+  );
 }
-
-export default Footer

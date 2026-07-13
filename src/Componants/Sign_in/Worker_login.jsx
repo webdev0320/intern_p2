@@ -4,6 +4,7 @@ import { Mail, Lock, LogIn } from 'lucide-react';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { COLLECTIONS } from "../../firebaseConstants";
+import Logo from "../Logo.jsx";
 
 const generateRandomToken = (length = 140) => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_:';
@@ -145,20 +146,18 @@ useEffect(() => {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 p-2 flex flex-col justify-center to-indigo-100'>
+    <div className='min-h-screen bg-gradient-to-br from-brand-blue/5 to-brand-blue/15 p-2 flex flex-col justify-center'>
       <div className="flex flex-col items-center justify-center p-4">
         <div className="max-w-md w-full">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
 
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-center">
-              <div className="flex items-center justify-center space-x-3">
-                <div className="bg-white p-3 rounded-full">
-                  <LogIn className="w-8 h-8 text-blue-600" />
-                </div>
-                <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
+            <div className="bg-gradient-to-r from-brand-blue to-brand-blue/90 p-8 text-center flex flex-col items-center">
+              <div className="bg-white px-6 py-2.5 rounded-xl mb-4 shadow-sm">
+                <Logo className="h-8" />
               </div>
-              <p className="text-blue-100 mt-4">Sign in to your account</p>
+              <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
+              <p className="text-white/80 mt-1 text-sm">Sign in to your worker account</p>
             </div>
 
             {/* Form */}
@@ -166,7 +165,7 @@ useEffect(() => {
               <form onSubmit={handleSubmit} className="space-y-6">
 
                 {error && (
-                  <div className="bg-red-100 text-red-700 p-3 rounded-lg text-sm">
+                  <div className="bg-red-50 text-red-700 border border-red-100 p-3 rounded-lg text-sm">
                     {error}
                   </div>
                 )}
@@ -174,14 +173,14 @@ useEffect(() => {
                 {/* Email */}
                 <div>
                   <label className="text-sm font-medium text-gray-700 flex items-center">
-                    <Mail className="w-4 h-4 mr-2" /> Email
+                    <Mail className="w-4 h-4 mr-2 text-brand-blue" /> Email
                   </label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full bg-white px-4 py-3 border rounded-lg mt-1"
+                    className="w-full bg-white px-4 py-3 border border-gray-200 rounded-lg mt-1 focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue outline-none transition-all"
                     required
                   />
                 </div>
@@ -189,35 +188,38 @@ useEffect(() => {
                 {/* Password */}
                 <div>
                   <label className="text-sm font-medium text-gray-700 flex items-center">
-                    <Lock className="w-4 h-4 mr-2" /> Password
+                    <Lock className="w-4 h-4 mr-2 text-brand-blue" /> Password
                   </label>
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full bg-white px-4 py-3 border rounded-lg mt-1"
+                    className="w-full bg-white px-4 py-3 border border-gray-200 rounded-lg mt-1 focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue outline-none transition-all"
                     required
                   />
                 </div>
 
                 {/* Remember me */}
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={handleChange}
-                    className="h-4 w-4"
-                  />
-                  <label className="ml-2 text-sm">Remember me</label>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="rememberMe"
+                      id="rememberMe"
+                      checked={formData.rememberMe}
+                      onChange={handleChange}
+                      className="h-4 w-4 rounded border-gray-300 text-brand-blue focus:ring-brand-blue"
+                    />
+                    <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-600 cursor-pointer">Remember me</label>
+                  </div>
                 </div>
 
                 {/* Button */}
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg disabled:opacity-60"
+                  className="w-full bg-brand-blue hover:bg-brand-blue/90 text-white py-3 rounded-lg font-semibold shadow-lg shadow-brand-blue/15 transition-all active:scale-[0.99] disabled:opacity-60 cursor-pointer"
                 >
                   {loading ? "Signing in..." : "Sign In"}
                 </button>
@@ -226,11 +228,11 @@ useEffect(() => {
 
               {/* Signup */}
               <div className="mt-6 text-center">
-                <p className="text-sm">
+                <p className="text-sm text-gray-600">
                   Don't have an account?{" "}
                   <button
                     onClick={() => navigate("/signup/worker")}
-                    className="text-blue-600 font-semibold"
+                    className="text-brand-blue hover:underline font-semibold cursor-pointer"
                   >
                     Sign up
                   </button>
@@ -243,10 +245,10 @@ useEffect(() => {
       </div>
 
       {/* Back button */}
-      <div className="p-2">
+      <div className="p-2 max-w-md mx-auto w-full">
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-gray-600"
+          className="flex items-center gap-2 text-gray-600 hover:text-brand-blue font-medium transition-colors cursor-pointer"
         >
           ← Back to Home
         </button>

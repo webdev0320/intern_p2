@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 // Components
-import Header_1 from "./Componants/1_Header.jsx";
+import Navbar from "./Componants/Navbar.jsx";
 import Hero_2 from "./Componants/2_Hero.jsx";
 import Trusted_3 from "./Componants/3_Trusted.jsx";
 import Manage_4 from './Componants/4_Manage.jsx';
@@ -16,6 +16,7 @@ import Test_Hire from "./Componants/11_Test_Hire.jsx";
 import Outsource_admin from "./Componants/12_Outsource_admin.jsx";
 import Latest_news from "./Componants/13_Latest_news.jsx";
 import SignUpModal from "./Componants/SignUp_btn";
+import SignIn_Modal from "./Componants/SignIn_btn";
 import Ready_to_take from "./Componants/14_Ready_to_take.jsx";
 import Footer from "./Componants/Footer.jsx";
 
@@ -55,11 +56,12 @@ import Invoices from "./pages/Invoices";
 import EmpInvoices from "./pages/EmpInvoices";
 import Wallet from "./pages/Wallet";
 import EmpWallet from "./pages/EmpWallet";
+import History from "./pages/History";
 import Resolution from "./pages/Resolution";
 import FollowWorkers from "./pages/FollowWorkers";
 import FAQs from "./pages/FAQs";
 import Support from "./pages/Support";
-import About from "./pages/About";
+import AboutPage from "./pages/About.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import Invite from "./pages/Invite";
@@ -87,6 +89,15 @@ import HirerChat from "./pages/HirerChat";
 import HirerMessages from "./pages/HirerMessages";
 
 
+import Pricing from "./pages/Pricing.jsx";
+import Vetting from "./pages/Vetting.jsx";
+import WorkerPayments from "./pages/WorkerPayments.jsx";
+import WorkerVerification from "./pages/WorkerVerification.jsx";
+import WorkerBenefits from "./pages/WorkerBenefits.jsx";
+import IndustriesLabour from "./pages/IndustriesLabour.jsx";
+import IndustriesIT from "./pages/IndustriesIT.jsx";
+import IndustriesFinance from "./pages/IndustriesFinance.jsx";
+import IndustriesLogistics from "./pages/IndustriesLogistics.jsx";
 import StripeCard from "./pages/StripeCard.jsx";
 import { Elements } from "@stripe/react-stripe-js";
 import { stripePromise } from "./stripe";
@@ -132,7 +143,6 @@ function HomePage() {
       <Outsource_admin />
       <Latest_news />
       <Ready_to_take />
-      <Footer />
     </>
   );
 }
@@ -153,13 +163,14 @@ function App() {
     <Router>
       <div className="min-h-screen pb-12">
         {/* Header */}
-        <Header_1 open={profileOpen} setOpen={setProfileOpen} />
+        <Navbar />
 
         <main className="pt-16">
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<HomePageNew />} />
             <Route path="/signup" element={<SignUpModal />} />
+            <Route path="/signin" element={<SignIn_Modal />} />
             <Route path="/signup/worker" element={<WorkerSignUpPage />} />
             <Route path="/signup/hirer" element={<HirerSignUpPage />} />
             <Route path="/login/worker" element={<Worker_login />} />
@@ -199,9 +210,19 @@ function App() {
 
             <Route path="/resolution" element={<Resolution />} />
             <Route path="/follow-workers" element={<FollowWorkers />} />
-            <Route path="/faqs" element={<FAQs />} />
+            <Route path="/faq" element={<FAQs />} />
             <Route path="/support" element={<Support />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Support />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/business/pricing" element={<Pricing />} />
+            <Route path="/business/vetting" element={<Vetting />} />
+            <Route path="/workers/payments" element={<WorkerPayments />} />
+            <Route path="/workers/get-verified" element={<WorkerVerification />} />
+            <Route path="/workers/overview" element={<WorkerBenefits />} />
+            <Route path="/business/industries/labour" element={<IndustriesLabour />} />
+            <Route path="/business/industries/it" element={<IndustriesIT />} />
+            <Route path="/business/industries/finance" element={<IndustriesFinance />} />
+            <Route path="/business/industries/logistics" element={<IndustriesLogistics />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/stripe-card" element={<StripeCard />} />
@@ -218,9 +239,10 @@ function App() {
             <Route path="/emp-wallet" element={<PrivateRoute><EmpWallet /></PrivateRoute>} />
             <Route path="/resolution" element={<PrivateRoute><Resolution /></PrivateRoute>} />
             <Route path="/follow-workers" element={<PrivateRoute><FollowWorkers /></PrivateRoute>} />
-            <Route path="/faqs" element={<PrivateRoute><FAQs /></PrivateRoute>} />
+            <Route path="/faq" element={<PrivateRoute><FAQs /></PrivateRoute>} />
             <Route path="/support" element={<PrivateRoute><Support /></PrivateRoute>} />
-            <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
+            <Route path="/contact" element={<PrivateRoute><Support /></PrivateRoute>} />
+            <Route path="/about" element={<PrivateRoute><AboutPage /></PrivateRoute>} />
             <Route path="/invite" element={<PrivateRoute><Invite /></PrivateRoute>} />
             <Route path="/employer-congrats-page" element={<PrivateRoute><EmpCongratsPage /></PrivateRoute>} />
             <Route path="/job-details/:offerId" element={<PrivateRoute><JobDetails /></PrivateRoute>} />
@@ -250,6 +272,8 @@ function App() {
             <Route path="/hirer-chat/:offerId" element={<PrivateRoute><HirerChat /></PrivateRoute>} />  
           </Routes>
         </main>
+        
+        <Footer />
 
         {/* Bottom Navigation: show only when logged in */}
         {isLoggedIn && <BottomNavigation setProfileOpen={setProfileOpen} />}
