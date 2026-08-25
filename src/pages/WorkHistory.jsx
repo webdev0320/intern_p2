@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaWhatsapp } from "react-icons/fa6";
 import Swal from "sweetalert2";
@@ -12,14 +12,18 @@ function WorkHistory() {
   const IMAGE_BASE_URL = import.meta.env.VITE_API_IMAGE_BASE_URL;
   const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const userId = localStorage.getItem("user_id");
-  const getApiType = useCallback(() => {
+  const getApiType = () => {
     if (type === "new") return 1;
     if (type === "inprogress") return 2;
     if (type === "finished") return 3;
     return 1;
+  };
+
+  useEffect(() => {
+    fetchJobs();
   }, [type]);
 
-  const fetchJobs = useCallback(async () => {
+  const fetchJobs = async () => {
     try {
       setLoading(true);
     setJobs([]); // clear previous jobs
@@ -37,11 +41,7 @@ function WorkHistory() {
     } finally {
       setLoading(false);
     }
-  }, [BASE_URL, userId, getApiType]);
-
-  useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+  };
 
 
   const handleInProgressCancel = async (job) => {

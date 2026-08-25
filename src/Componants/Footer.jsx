@@ -1,109 +1,118 @@
-import * as React from "react";
-import { Send, CheckCircle2 } from "lucide-react";
+import React from "react";
+import { Linkedin, Facebook, Instagram, MapPin, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
-import Logo from "./Logo";
+import logo from "../assets/logo_p2.png";
 
-export default function Footer() {
-  const [email, setEmail] = React.useState("");
-  const [status, setStatus] = React.useState("idle");
-  const [errorMessage, setErrorMessage] = React.useState("");
+const workerLinks = [
+  { label: "Browse gigs", path: "/workers/find-work" },
+  { label: "How you get paid", path: "/workers/payments" },
+  { label: "Get verified", path: "/workers/get-verified" },
+  { label: "Worker benefits", path: "/workers/overview" },
+  { label: "Find work near me", path: "/emp-find-work" },
+];
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Regex validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setStatus("error");
-      setErrorMessage("Please enter a valid email address.");
-      return;
-    }
+const businessLinks = [
+  { label: "Post a gig", path: "/post-a-gig" },
+  { label: "Pricing & fees", path: "/business/pricing" },
+  { label: "Managed staffing", path: "/business/managed-staffing" },
+  { label: "Hirer dashboard features", path: "/business/hirer-dashboard" },
+  { label: "Worker vetting & compliance", path: "/business/vetting" },
+  { label: "Hire finance staff", path: "/business/industries/finance" },
+  { label: "Hire logistics staff", path: "/business/industries/logistics" },
+  { label: "Hire labour & trades", path: "/business/industries/labour" },
+  { label: "Hire IT contractors", path: "/business/industries/it" },
+];
 
-    setStatus("submitting");
-    setErrorMessage("");
+const companyLinks = [
+  { label: "About us", path: "/about" },
+  { label: "FAQs", path: "/faqs" },
+  { label: "Help & support", path: "/support" },
+  { label: "Privacy policy", path: "/privacy-policy" },
+  { label: "Terms & conditions", path: "/terms-and-conditions" },
+];
 
-    // Simulate API call with a 1.2 second delay
-    setTimeout(() => {
-      setStatus("success");
-      setEmail("");
-    }, 1200);
-  };
+const Footer = () => {
+    return (
+        <footer className="bg-gray-100 text-gray-800">
+            <div className="max-w-7xl mx-auto px-6 py-16">
+                <div className="flex flex-wrap gap-10 justify-between">
+                    <div className="max-w-xs space-y-5">
+                        <Link to="/" className="inline-block">
+                            <img src={logo} className="w-16" alt="iyouwork logo" />
+                        </Link>
+                        <p className="text-sm text-gray-600 leading-relaxed">
+                            iyouwork is the UK flexible staffing platform for the gig economy. Hire vetted workers for your shifts or find flexible work near you — free to join for hirers and workers alike.
+                        </p>
+                        <div className="space-y-2 text-sm text-gray-600">
+                            <div className="flex items-center gap-2"><MapPin size={15} className="flex-shrink-0 text-[#E87722]" /> London, United Kingdom</div>
+                            <div className="flex items-center gap-2"><Mail size={15} className="flex-shrink-0 text-[#E87722]" /> support@iyouwork.com</div>
+                        </div>
+                        <div className="flex gap-4 pt-2">
+                            <a aria-label="LinkedIn" className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors" href="#"><Linkedin size={18} /></a>
+                            <a aria-label="Facebook" className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors" href="#"><Facebook size={18} /></a>
+                            <a aria-label="Instagram" className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors" href="#"><Instagram size={18} /></a>
+                        </div>
+                    </div>
 
-  return (
-    <footer className="bg-gray-50 border-t border-gray-200 pt-16 pb-8" id="main-footer">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          <div className="lg:col-span-2">
-            <Link to="/" className="inline-block mb-4">
-              <Logo className="h-8" />
-            </Link>
-            <p className="text-sm text-gray-600 mb-6 max-w-sm">
-              Connecting freelance talent with task-based project requirements efficiently.
-            </p>
-            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-              <Link to="/privacy" className="hover:text-gray-900 transition-colors">Privacy policy</Link>
-              <Link to="/terms" className="hover:text-gray-900 transition-colors">Terms of use</Link>
-              <Link to="/faq" className="hover:text-gray-900 transition-colors">FAQ</Link>
-              <Link to="/contact" className="hover:text-gray-900 transition-colors">Contact us</Link>
-              <Link to="/trust" className="hover:text-gray-900 transition-colors">Trust & safety</Link>
+                    <nav aria-label="For workers">
+                        <h3 className="font-semibold mb-4">FOR WORKERS</h3>
+                        <ul className="space-y-2 text-sm">
+                            {workerLinks.map((link) => (
+                                <li key={link.label}>
+                                    <Link to={link.path} className="hover:text-orange-500 transition-colors duration-150">{link.label}</Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+
+                    <nav aria-label="For businesses">
+                        <h3 className="font-semibold mb-4">FOR BUSINESSES</h3>
+                        <ul className="space-y-2 text-sm">
+                            {businessLinks.map((link) => (
+                                <li key={link.label}>
+                                    <Link to={link.path} className="hover:text-orange-500 transition-colors duration-150">{link.label}</Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+
+                    <nav aria-label="Company and legal">
+                        <h3 className="font-semibold mb-4">COMPANY</h3>
+                        <ul className="space-y-2 text-sm">
+                            {companyLinks.map((link) => (
+                                <li key={link.label}>
+                                    <Link to={link.path} className="hover:text-orange-500 transition-colors duration-150">{link.label}</Link>
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="flex gap-3 mt-6">
+                            <a href="#" aria-label="Download on the App Store">
+                                <img
+                                    src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                                    alt="Download iyouwork on the App Store"
+                                    className="w-36"
+                                />
+                            </a>
+                            <a href="#" aria-label="Get it on Google Play">
+                                <img
+                                    src="https://play.google.com/intl/en_gb/badges/static/images/badges/en_badge_web_generic.png"
+                                    alt="Get iyouwork on Google Play"
+                                    className="w-40"
+                                />
+                            </a>
+                        </div>
+                    </nav>
+                </div>
             </div>
-          </div>
-          
-          <div className="lg:col-span-2">
-            <h3 className="text-sm font-bold text-gray-900 mb-2">Subscribe to our newsletter</h3>
-            <p className="text-sm text-gray-600 mb-4">Keep updated on new job opportunities and platform announcements.</p>
-            {status === "success" ? (
-              <div 
-                className="flex items-center gap-3 text-green-800 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm max-w-md animate-fade-in" 
-                id="newsletter-success"
-              >
-                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
-                <div>
-                  <p className="font-semibold">Successfully subscribed!</p>
-                  <p className="text-xs text-green-600">Thank you for joining our community.</p>
+
+            <div className="bg-gray-900 text-white text-sm py-4">
+                <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-between gap-3">
+                    <span>© 2026 iYouWork. All rights reserved.</span>
+                    <span className="text-gray-400">Flexible jobs &amp; temp staffing across the UK</span>
                 </div>
-              </div>
-            ) : (
-              <form 
-                className="flex flex-col gap-1.5 max-w-md"
-                onSubmit={handleSubmit}
-                id="newsletter-form"
-              >
-                <div className="flex gap-2">
-                  <input 
-                    type="email" 
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (status === "error") setStatus("idle");
-                    }}
-                    placeholder="Enter your email address" 
-                    className="flex-1 min-w-0 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-1 focus:ring-brand-blue focus:border-brand-blue outline-none"
-                    required
-                    disabled={status === "submitting"}
-                  />
-                  <button 
-                    type="submit" 
-                    disabled={status === "submitting"}
-                    className="bg-brand-blue hover:bg-brand-blue/90 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 flex-shrink-0 disabled:opacity-75 disabled:cursor-not-allowed"
-                  >
-                    <span>{status === "submitting" ? "Submitting..." : "Subscribe"}</span>
-                    <Send className="h-4 w-4" />
-                  </button>
-                </div>
-                {status === "error" && (
-                  <p className="text-xs text-red-600 font-medium" id="newsletter-error">
-                    {errorMessage}
-                  </p>
-                )}
-              </form>
-            )}
-          </div>
-        </div>
-        <div className="text-center text-xs text-gray-400 pt-8 border-t border-gray-200">
-          &copy; {new Date().getFullYear()} iyouwork Ltd. All rights reserved. UK registered company.
-        </div>
-      </div>
-    </footer>
-  );
-}
+            </div>
+        </footer>
+    );
+};
+
+export default Footer;

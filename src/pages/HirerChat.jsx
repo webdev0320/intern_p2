@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { FaPaperPlane } from "react-icons/fa";
 import { db } from "../firebaseConfig";
 import {
@@ -17,40 +17,35 @@ import {
 import { COLLECTIONS, FIELDS } from "../firebaseConstants";
 
 const HirerChat = () => {
-  const { offerId } = useParams(); 
+  const { offerId } = useParams();
   const navigate = useNavigate();
-  const userId = localStorage.getItem("user_id"); // current employee ID
-  let recieverData = offerId.split('-');
-  
-  // IDs from URL: 37-83 -> senderId is 37, receiverId is 83
-  let workerNumericId = recieverData[0]; // The Worker (Employee)
-  let hirerNumericId = recieverData[1];  // The Hirer (You)
+  const userId = localStorage.getItem("user_id");
+  const myNumericId = localStorage.getItem("user_id");
+  const myFirebaseKey = localStorage.getItem("firebase_key");
 
-  if(userId==recieverData[0]){
+  const recieverData = offerId.split('-');
+
+  let workerNumericId = recieverData[0];
+  let hirerNumericId = recieverData[1];
+
+  if (userId == recieverData[0]) {
     hirerNumericId = recieverData[0];
     workerNumericId = recieverData[1];
   }
-  if(userId==recieverData[1]){
+  if (userId == recieverData[1]) {
     hirerNumericId = recieverData[1];
     workerNumericId = recieverData[0];
-  }  
+  }
 
-  console.log(hirerNumericId);
-  console.log(workerNumericId);
-
-
-
-
-  const [receiver, setReceiver] = useState(null); // This will be the Worker
-  const [sender, setSender] = useState(null);     // This will be the Hirer
+  const [receiver, setReceiver] = useState(null);
+  const [sender, setSender] = useState(null);
   const [recFirebaseId, setRecFirebaseId] = useState('');
   const [senderFirebaseId, setSenderFirebaseId] = useState('');
   const [loading, setLoading] = useState(true);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const messagesEndRef = useRef(null);
 
-  const myFirebaseKey = localStorage.getItem("firebase_key");
-  const myNumericId = localStorage.getItem("user_id");
-
-  // 1. Fetch Worker Profile (The Receiver for this chat)
   useEffect(() => {
     const fetchWorkerProfile = async () => {
       try {
@@ -64,12 +59,13 @@ const HirerChat = () => {
         }
       } catch (err) {
         console.error("Error fetching worker:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchWorkerProfile();
   }, [workerNumericId]);
 
-  // 2. Fetch Hirer Profile (The Sender/Self)
   useEffect(() => {
     const fetchHirerProfile = async () => {
       try {
@@ -83,21 +79,15 @@ const HirerChat = () => {
         }
       } catch (err) {
         console.error("Error fetching hirer:", err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchHirerProfile();
   }, [hirerNumericId]);
 
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
-  const messagesEndRef = useRef(null);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  useEffect(scrollToBottom, [messages]);
-
-  // 3. Listen for Messages
   useEffect(() => {
     if (!offerId) return;
     const q = query(
@@ -105,13 +95,12 @@ const HirerChat = () => {
       orderBy(FIELDS.TIMESTAMP, "asc")
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const msgs = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
       setMessages(msgs);
     });
     return () => unsubscribe();
   }, [offerId]);
 
-  // 4. Mark messages as read when entering
   useEffect(() => {
     if (!offerId || !myFirebaseKey) return;
     setDoc(doc(db, COLLECTIONS.CONVERSATIONS, offerId), { [myFirebaseKey]: 0 }, { merge: true });
@@ -125,7 +114,6 @@ const HirerChat = () => {
     setNewMessage("");
 
     try {
-      // Add to Chat Staging
       await addDoc(collection(db, "chatStaging", offerId, "userChats"), {
         [FIELDS.SENDER_ID]: myFirebaseKey,
         [FIELDS.MESSAGE]: messageText,
@@ -133,30 +121,20 @@ const HirerChat = () => {
         senderNumericId: myNumericId,
       });
 
-      // Update Conversation Summary (Metadata Fix)
       await setDoc(doc(db, COLLECTIONS.CONVERSATIONS, offerId), {
         [FIELDS.LAST_MESSAGE]: messageText,
         [FIELDS.TIMESTAMP]: serverTimestamp(),
         [FIELDS.CHAT_ID]: offerId,
-
-        // Hirer info (Sender)
         senderId: senderFirebaseId,
-        senderName: sender.name,
-        senderImage: sender.profileImage || "",
-
-        // Worker info (Receiver)
+        senderName: sender?.name,
+        senderImage: sender?.profileImage || "",
         receiverId: recFirebaseId,
-        receiverName: receiver.name,
-        receiverImage: receiver.profileImage || "",
-
-        // Participant IDs for the main list query
+        receiverName: receiver?.name,
+        receiverImage: receiver?.profileImage || "",
         participantIds: [senderFirebaseId, recFirebaseId],
-
-        // Read/Unread Status
-        [senderFirebaseId]: 0, 
-        [recFirebaseId]: 1, 
+        [senderFirebaseId]: 0,
+        [recFirebaseId]: 1,
       }, { merge: true });
-
     } catch (err) {
       console.error("Error sending message:", err);
     }
@@ -166,7 +144,6 @@ const HirerChat = () => {
 
   return (
     <div className="fixed top-[65px] inset-x-0 bottom-0 flex flex-col bg-white z-[40]">
-      {/* Header */}
       <div className="bg-white border-b px-4 py-3 flex items-center gap-3 shadow-sm shrink-0">
         <div className="w-10 h-10 rounded-full bg-orange-100 overflow-hidden border shrink-0">
           <img src={receiver.profileImage || receiver.u_image} className="w-full h-full object-cover" alt="" />
@@ -175,13 +152,12 @@ const HirerChat = () => {
         <div className="font-bold text-gray-900 truncate">{receiver.name}</div>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f8f9fa]">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg[FIELDS.SENDER_ID] === myFirebaseKey ? "justify-end" : "justify-start"}`}>
             <div className={`px-4 py-2 rounded-2xl max-w-[75%] shadow-sm ${
-                msg[FIELDS.SENDER_ID] === myFirebaseKey 
-                  ? "bg-orange-600 text-white rounded-tr-none" 
+                msg[FIELDS.SENDER_ID] === myFirebaseKey
+                  ? "bg-orange-600 text-white rounded-tr-none"
                   : "bg-white border border-gray-200 text-gray-800 rounded-tl-none"
               }`}>
               {msg[FIELDS.MESSAGE]}
@@ -191,8 +167,7 @@ const HirerChat = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="p-4 bg-white border-t pb-[90px] shrink-0"> 
+      <div className="p-4 bg-white border-t pb-[90px] shrink-0">
         <form onSubmit={handleSendMessage} className="flex gap-2 items-center max-w-5xl mx-auto">
           <input
             value={newMessage}

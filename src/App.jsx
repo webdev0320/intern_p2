@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 // Components
-import Navbar from "./Componants/Navbar.jsx";
+import Header_1 from "./Componants/1_Header.jsx";
+import SeoManager from "./Componants/Seo.jsx";
 import Hero_2 from "./Componants/2_Hero.jsx";
 import Trusted_3 from "./Componants/3_Trusted.jsx";
 import Manage_4 from './Componants/4_Manage.jsx';
@@ -16,7 +17,6 @@ import Test_Hire from "./Componants/11_Test_Hire.jsx";
 import Outsource_admin from "./Componants/12_Outsource_admin.jsx";
 import Latest_news from "./Componants/13_Latest_news.jsx";
 import SignUpModal from "./Componants/SignUp_btn";
-import SignIn_Modal from "./Componants/SignIn_btn";
 import Ready_to_take from "./Componants/14_Ready_to_take.jsx";
 import Footer from "./Componants/Footer.jsx";
 
@@ -45,6 +45,7 @@ import EmpServices from "./pages/EmpServices";
 import BottomNavigation from "./Componants/BottomNavigation";
 import EmpFindWork from "./pages/EmpFindWork.jsx";
 import PostAJob from "./pages/PostAJob.jsx";
+import PostAGigLanding from "./pages/PostAGigLanding.jsx";
 import EmpCongratsPage from "./pages/EmpCongratsPage";
 import JobDetails from "./pages/JobDetails";
 import JobDetailsWorker from "./pages/JobDetailsWorker";
@@ -56,12 +57,11 @@ import Invoices from "./pages/Invoices";
 import EmpInvoices from "./pages/EmpInvoices";
 import Wallet from "./pages/Wallet";
 import EmpWallet from "./pages/EmpWallet";
-import History from "./pages/History";
 import Resolution from "./pages/Resolution";
 import FollowWorkers from "./pages/FollowWorkers";
 import FAQs from "./pages/FAQs";
 import Support from "./pages/Support";
-import AboutPage from "./pages/About.jsx";
+import About from "./pages/About";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import Invite from "./pages/Invite";
@@ -89,16 +89,21 @@ import HirerChat from "./pages/HirerChat";
 import HirerMessages from "./pages/HirerMessages";
 
 
+import StripeCard from "./pages/StripeCard.jsx";
+
+// New pages
 import Pricing from "./pages/Pricing.jsx";
 import Vetting from "./pages/Vetting.jsx";
-import WorkerPayments from "./pages/WorkerPayments.jsx";
-import WorkerVerification from "./pages/WorkerVerification.jsx";
-import WorkerBenefits from "./pages/WorkerBenefits.jsx";
-import IndustriesLabour from "./pages/IndustriesLabour.jsx";
-import IndustriesIT from "./pages/IndustriesIT.jsx";
-import IndustriesFinance from "./pages/IndustriesFinance.jsx";
-import IndustriesLogistics from "./pages/IndustriesLogistics.jsx";
-import StripeCard from "./pages/StripeCard.jsx";
+import ManagedStaffing from "./pages/ManagedStaffing.jsx";
+import HirerDashboardOverview from "./pages/HirerDashboardOverview.jsx";
+import FindWorkLanding from "./pages/FindWorkLanding.jsx";
+import Payments from "./pages/Payments.jsx";
+import GetVerified from "./pages/GetVerified.jsx";
+import WorkersOverview from "./pages/WorkersOverview.jsx";
+import FinanceIndustry from "./pages/FinanceIndustry.jsx";
+import LogisticsIndustry from "./pages/LogisticsIndustry.jsx";
+import LabourIndustry from "./pages/LabourIndustry.jsx";
+import ITIndustry from "./pages/ITIndustry.jsx";
 import { Elements } from "@stripe/react-stripe-js";
 import { stripePromise } from "./stripe";
 import Notifications from "./pages/Notifications";
@@ -161,21 +166,35 @@ function App() {
 
   return (
     <Router>
+      <SeoManager />
       <div className="min-h-screen pb-12">
         {/* Header */}
-        <Navbar />
+        <Header_1 open={profileOpen} setOpen={setProfileOpen} />
 
         <main className="pt-16">
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<HomePageNew />} />
             <Route path="/signup" element={<SignUpModal />} />
-            <Route path="/signin" element={<SignIn_Modal />} />
             <Route path="/signup/worker" element={<WorkerSignUpPage />} />
             <Route path="/signup/hirer" element={<HirerSignUpPage />} />
             <Route path="/login/worker" element={<Worker_login />} />
             <Route path="/login/hirer" element={<Hirer_login />} />
 
+            <Route path="/business/pricing" element={<Pricing />} />
+            <Route path="/business/vetting" element={<Vetting />} />
+            <Route path="/business/managed-staffing" element={<ManagedStaffing />} />
+            <Route path="/business/hirer-dashboard" element={<HirerDashboardOverview />} />
+            <Route path="/workers/find-work" element={<FindWorkLanding />} />
+            <Route path="/workers/payments" element={<Payments />} />
+            <Route path="/workers/get-verified" element={<GetVerified />} />
+            <Route path="/workers/overview" element={<WorkersOverview />} />
+            <Route path="/business/industries/finance" element={<FinanceIndustry />} />
+            <Route path="/business/industries/logistics" element={<LogisticsIndustry />} />
+            <Route path="/business/industries/labour" element={<LabourIndustry />} />
+            <Route path="/business/industries/it" element={<ITIndustry />} />
+
+            <Route path="/post-a-gig" element={<PostAGigLanding />} />
             <Route path="/emp-find-work" element={<EmpFindWork />} />
             <Route path="/post-job" element={<PostAJob />} />
             <Route path="/feedbacks" element={<Feedbacks />} />
@@ -210,19 +229,9 @@ function App() {
 
             <Route path="/resolution" element={<Resolution />} />
             <Route path="/follow-workers" element={<FollowWorkers />} />
-            <Route path="/faq" element={<FAQs />} />
+            <Route path="/faqs" element={<FAQs />} />
             <Route path="/support" element={<Support />} />
-            <Route path="/contact" element={<Support />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/business/pricing" element={<Pricing />} />
-            <Route path="/business/vetting" element={<Vetting />} />
-            <Route path="/workers/payments" element={<WorkerPayments />} />
-            <Route path="/workers/get-verified" element={<WorkerVerification />} />
-            <Route path="/workers/overview" element={<WorkerBenefits />} />
-            <Route path="/business/industries/labour" element={<IndustriesLabour />} />
-            <Route path="/business/industries/it" element={<IndustriesIT />} />
-            <Route path="/business/industries/finance" element={<IndustriesFinance />} />
-            <Route path="/business/industries/logistics" element={<IndustriesLogistics />} />
+            <Route path="/about" element={<About />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/stripe-card" element={<StripeCard />} />
@@ -239,10 +248,9 @@ function App() {
             <Route path="/emp-wallet" element={<PrivateRoute><EmpWallet /></PrivateRoute>} />
             <Route path="/resolution" element={<PrivateRoute><Resolution /></PrivateRoute>} />
             <Route path="/follow-workers" element={<PrivateRoute><FollowWorkers /></PrivateRoute>} />
-            <Route path="/faq" element={<PrivateRoute><FAQs /></PrivateRoute>} />
+            <Route path="/faqs" element={<PrivateRoute><FAQs /></PrivateRoute>} />
             <Route path="/support" element={<PrivateRoute><Support /></PrivateRoute>} />
-            <Route path="/contact" element={<PrivateRoute><Support /></PrivateRoute>} />
-            <Route path="/about" element={<PrivateRoute><AboutPage /></PrivateRoute>} />
+            <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
             <Route path="/invite" element={<PrivateRoute><Invite /></PrivateRoute>} />
             <Route path="/employer-congrats-page" element={<PrivateRoute><EmpCongratsPage /></PrivateRoute>} />
             <Route path="/job-details/:offerId" element={<PrivateRoute><JobDetails /></PrivateRoute>} />
@@ -272,7 +280,7 @@ function App() {
             <Route path="/hirer-chat/:offerId" element={<PrivateRoute><HirerChat /></PrivateRoute>} />  
           </Routes>
         </main>
-        
+
         <Footer />
 
         {/* Bottom Navigation: show only when logged in */}

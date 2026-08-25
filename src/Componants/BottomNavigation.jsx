@@ -117,7 +117,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
         {/* Dashboard */}
         <button
           onClick={handleRedirect}
-          className="flex flex-col items-center text-gray-500 text-sm"
+          className="flex flex-col items-center text-gray-500 text-sm cursor-pointer hover:text-[#E87722] transition-colors duration-200"
         >
           <FaTableCellsLarge className="text-xl mb-1" />
           Dashboard
@@ -125,14 +125,14 @@ const BottomNavigation = ({ setProfileOpen }) => {
 
         {/* Messages */}
         {role === "emp" && (
-        <button onClick={() => navigate("/hirer-messages")} className="flex flex-col items-center text-gray-500 text-sm">
+        <button onClick={() => navigate("/hirer-messages")} className="flex flex-col items-center text-gray-500 text-sm cursor-pointer hover:text-[#E87722] transition-colors duration-200">
           <FaEnvelope className="text-xl mb-1" />
           Messages
         </button>
         )}
 
         {role === "self-emp" && (
-        <button onClick={() => navigate("/messages")} className="flex flex-col items-center text-gray-500 text-sm">
+        <button onClick={() => navigate("/messages")} className="flex flex-col items-center text-gray-500 text-sm cursor-pointer hover:text-[#E87722] transition-colors duration-200">
           <FaEnvelope className="text-xl mb-1" />
           Messages
         </button>
@@ -142,7 +142,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
         {role === "emp" && (
           <div
             onClick={() => navigate("/post-job")}
-            className="bg-orange-500 w-14 h-14 rounded-full flex items-center justify-center text-white -mt-7 shadow-lg cursor-pointer"
+            className="bg-orange-500 w-14 h-14 rounded-full flex items-center justify-center text-white -mt-7 shadow-lg cursor-pointer hover:bg-[#d6691c] hover:scale-105 transition-all duration-200"
           >
             <FaBriefcase className="text-2xl" />
           </div>
@@ -151,7 +151,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
         {role === "self-emp" && (
           <div
             onClick={() => navigate("/emp-find-work")}
-            className="bg-blue-500 w-14 h-14 rounded-full flex items-center justify-center text-white -mt-7 shadow-lg cursor-pointer"
+            className="bg-blue-500 w-14 h-14 rounded-full flex items-center justify-center text-white -mt-7 shadow-lg cursor-pointer hover:bg-[#155a94] hover:scale-105 transition-all duration-200"
           >
             <FaUser className="text-2xl" />
           </div>
@@ -160,7 +160,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
         {/* Switch Button (single, dynamic) */}
         <button
           onClick={handleSwitch}
-          className="flex flex-col items-center text-gray-500 text-sm"
+          className="flex flex-col items-center text-gray-500 text-sm cursor-pointer hover:text-[#E87722] transition-colors duration-200"
         >
           <FaArrowsRotate className="text-xl mb-1" />
           {role === "self-emp" ? "Switch To Hirer" : "Switch To Worker"}
@@ -169,7 +169,7 @@ const BottomNavigation = ({ setProfileOpen }) => {
         {/* Settings */}
         <button
           onClick={() => setProfileOpen(prev => !prev)}
-          className="flex flex-col items-center text-gray-500 text-sm"
+          className="flex flex-col items-center text-gray-500 text-sm cursor-pointer hover:text-[#E87722] transition-colors duration-200"
         >
           <FaGear className="text-xl mb-1" />
           Settings

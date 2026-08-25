@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 
 const Wallet = () => {
@@ -25,7 +25,13 @@ const Wallet = () => {
   const [transferId, setTransferId] = useState(null); 
   const [fromId, setFromId] = useState(null); 
   const [toId, setToId] = useState(null); 
-  const fetchBalance = useCallback(async () => {
+  useEffect(() => {
+    fetchBalance();
+    fetchWalletHistory();
+  }, []);
+
+  /* ---------------- BALANCE API ---------------- */
+  const fetchBalance = async () => {
     try {
       const payload = new FormData();
       payload.append("user_id", userId);
@@ -40,10 +46,10 @@ const Wallet = () => {
     } catch (error) {
       console.error("Balance error:", error);
     }
-  }, [BASE_URL, userId]);
+  };
 
   /* ---------------- WALLET HISTORY API ---------------- */
-  const fetchWalletHistory = useCallback(async () => {
+  const fetchWalletHistory = async () => {
     try {
       const response = await fetch(
         `${BASE_URL}/api/users/walletHistory?user_id=${userId}`
@@ -55,12 +61,7 @@ const Wallet = () => {
     } finally {
       setLoading(false);
     }
-  }, [BASE_URL, userId]);
-
-  useEffect(() => {
-    fetchBalance();
-    fetchWalletHistory();
-  }, [fetchBalance, fetchWalletHistory]);
+  };
 
   /* ---------------- HANDLE TRANSFER REQUEST ---------------- */
   const handleTransferRequest = async () => {
